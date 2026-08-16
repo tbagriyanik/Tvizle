@@ -84,20 +84,39 @@ export const Player: React.FC = () => {
   const startDrag = (e: React.PointerEvent<HTMLDivElement>, type: 'mini' | 'expanded') => {
     if (isFullscreen) return;
     if (type === 'expanded' && !window.matchMedia('(min-width: 768px)').matches) return;
+    e.preventDefault();
     const rect = tvContainerRef.current?.getBoundingClientRect();
     const currentPos = type === 'mini'
       ? (miniPos ?? { x: rect?.left ?? 0, y: rect?.top ?? 0 })
       : (expandedPos ?? { x: rect?.left ?? 0, y: rect?.top ?? 0 });
-    dragRef.current = { type, startX: e.clientX, startY: e.clientY, startPos: currentPos };
+    const startX = e.clientX;
+    const startY = e.clientY;
+    let moved = false;
 
     const onMove = (ev: PointerEvent) => {
-      const d = dragRef.current;
-      if (!d) return;
-      const np = { x: d.startPos.x + (ev.clientX - d.startX), y: d.startPos.y + (ev.clientY - d.startY) };
-      if (d.type === 'mini') setMiniPos(np);
+      const dx = ev.clientX - startX;
+      const dy = ev.clientY - startY;
+      // Threshold so a simple click on a button/video still fires, but a real drag takes over.
+      if (!moved && Math.hypot(dx, dy) < 5) return;
+      moved = true;
+      const np = { x: currentPos.x + dx, y: currentPos.y + dy };
+      if (type === 'mini') setMiniPos(np);
       else setExpandedPos(np);
     };
+
+    const suppressClick = (ev: MouseEvent) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      ev.stopImmediatePropagation();
+      window.removeEventListener('click', suppressClick, true);
+    };
+
     const onUp = () => {
+      // If a drag actually happened, swallow the ensuing click so buttons/video
+      // don't also fire after the panel was moved.
+      if (moved) {
+        window.addEventListener('click', suppressClick, true);
+      }
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);
       dragRef.current = null;
