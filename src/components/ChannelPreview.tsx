@@ -41,21 +41,6 @@ export const ChannelPreview: React.FC<ChannelPreviewProps> = ({
         className={`relative overflow-hidden flex items-center justify-center select-none group/radio ${className}`}
         style={{ background: brand.gradient }}
       >
-        {/* Vinyl Record Visual Disc Background */}
-        <div 
-          className={`absolute w-20 h-20 sm:w-24 sm:h-24 rounded-full pointer-events-none flex items-center justify-center opacity-90 transition-transform duration-700 group-hover/radio:scale-105`}
-          style={{
-            background: 'radial-gradient(circle, #18181b 0%, #09090b 45%, #18181b 70%, #000000 100%)',
-            boxShadow: `0 0 20px rgba(0,0,0,0.6), inset 0 0 10px rgba(255,255,255,0.08), 0 0 12px ${brand.accentColor}33`,
-            border: '1px solid rgba(255,255,255,0.12)'
-          }}
-        >
-          {/* Vinyl Grooves (Subtle concentric rings) */}
-          <div className="absolute inset-1.5 rounded-full border border-white/[0.05]" />
-          <div className="absolute inset-4 rounded-full border border-white/[0.06]" />
-          <div className="absolute inset-6 rounded-full border border-white/[0.05]" />
-        </div>
-
         {/* Editorial scrim to unify/refine the artwork */}
         <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-black/30 via-transparent to-black/45" />
 

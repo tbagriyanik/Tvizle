@@ -740,6 +740,7 @@ export const Player: React.FC = () => {
             className={`w-full h-full object-contain bg-black ${isSwitching ? 'opacity-0' : 'opacity-100'}`}
             playsInline
             muted={volume === 0}
+            onClick={(e) => { e.stopPropagation(); setIsPlaying(!isPlaying); }}
           />
           
           {isLoading && !hasError && (
