@@ -37,14 +37,20 @@ const getInitialTab = (): string => {
 
 const initialTab = getInitialTab();
 
+const getSystemLanguage = (): Language =>
+  typeof navigator !== 'undefined' && navigator.language?.toLowerCase().startsWith('tr') ? 'tr' : 'en';
+
+const getSystemThemeMode = (): ThemeMode =>
+  typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+
 const defaultState: AppState = {
   currentChannel: null,
   isPlaying: false,
   favorites: [],
   history: [],
   themeColor: 'blue',
-  themeMode: 'dark',
-  language: 'tr',
+  themeMode: getSystemThemeMode(),
+  language: getSystemLanguage(),
   country: 'all',
   sidebarOpen: false,
   volume: 0.8,

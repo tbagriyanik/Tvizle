@@ -7,6 +7,52 @@ interface AudioVisualizerProps {
   audioRef?: React.RefObject<HTMLAudioElement | null>;
 }
 
+// A single shared Web Audio graph reused for the app's lifetime.
+// Creating/closing per-channel AudioContexts breaks playback because a
+// MediaElementSource permanently routes the element's audio through the graph.
+let sharedCtx: AudioContext | null = null;
+let sharedAnalyser: AnalyserNode | null = null;
+let connectedSource: MediaElementAudioSourceNode | null = null;
+let connectedElement: HTMLMediaElement | null = null;
+
+const getSharedAnalyser = (): AnalyserNode | null => {
+  if (typeof window === 'undefined') return null;
+  if (!sharedCtx || !sharedAnalyser) {
+    try {
+      const AC: typeof AudioContext =
+        window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      sharedCtx = new AC();
+      sharedAnalyser = sharedCtx.createAnalyser();
+      sharedAnalyser.fftSize = 256;
+      sharedAnalyser.smoothingTimeConstant = 0.7;
+      sharedAnalyser.connect(sharedCtx.destination);
+    } catch (_) {
+      return null;
+    }
+  }
+  return sharedAnalyser;
+};
+
+const connectElement = (el: HTMLMediaElement) => {
+  if (!sharedCtx || !sharedAnalyser) return;
+  if (connectedElement === el) return;
+  if (connectedSource) {
+    try {
+      connectedSource.disconnect();
+    } catch (_) {
+      /* ignore */
+    }
+    connectedSource = null;
+  }
+  try {
+    connectedSource = sharedCtx.createMediaElementSource(el);
+    connectedSource.connect(sharedAnalyser);
+    connectedElement = el;
+  } catch (_) {
+    connectedElement = null;
+  }
+};
+
 export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({ isPlaying, volume, audioRef }) => {
   const { themeColor } = useAppContext();
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -28,30 +74,7 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({ isPlaying, vol
     const heights = new Array(numBars).fill(4);
     const targetHeights = new Array(numBars).fill(4);
 
-    // Real-time audio graph (drives the bars with the actual music)
-    let audioCtx: AudioContext | null = null;
-    let analyser: AnalyserNode | null = null;
-    let audioGraphReady = false;
     const freqData = new Uint8Array(128);
-
-    const ensureAudioGraph = () => {
-      const el = audioRef?.current;
-      if (!el || audioGraphReady) return;
-      try {
-        const AC: typeof AudioContext =
-          window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-        audioCtx = new AC();
-        analyser = audioCtx.createAnalyser();
-        analyser.fftSize = 256;
-        analyser.smoothingTimeConstant = 0.7;
-        const source = audioCtx.createMediaElementSource(el);
-        source.connect(analyser);
-        analyser.connect(audioCtx.destination);
-        audioGraphReady = true;
-      } catch (_) {
-        audioGraphReady = false;
-      }
-    };
 
     const resize = () => {
       if (!canvas || !canvas.parentElement) return;
@@ -65,12 +88,14 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({ isPlaying, vol
     const draw = () => {
       if (!ctx || !canvas) return;
 
-      // Ensure the audio graph is connected and running (retry/resume each frame)
-      if (!audioGraphReady) {
-        ensureAudioGraph();
-      }
-      if (audioCtx && audioCtx.state === 'suspended') {
-        audioCtx.resume().catch(() => {});
+      // Build/reuse the shared graph and (re)connect the current audio element.
+      const analyser = getSharedAnalyser();
+      const el = audioRef?.current;
+      if (analyser && el) {
+        connectElement(el);
+        if (sharedCtx && sharedCtx.state === 'suspended') {
+          sharedCtx.resume().catch(() => {});
+        }
       }
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -93,8 +118,15 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({ isPlaying, vol
 
       const effectiveVol = isPlaying ? Math.max(0.1, volume) : 0.05;
 
-      // Try to react to the real music; fall back to a synthetic wave otherwise
-      const useRealData = isPlaying && audioGraphReady && analyser && audioCtx && audioCtx.state === 'running';
+      // Use real frequency data only when the shared graph is live and routed
+      // to the current element; otherwise fall back to a calm synthetic wave.
+      const useRealData = !!(
+        isPlaying &&
+        analyser &&
+        sharedCtx &&
+        connectedElement === audioRef?.current &&
+        sharedCtx.state === 'running'
+      );
 
       if (useRealData) {
         analyser!.getByteFrequencyData(freqData);
@@ -147,19 +179,12 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({ isPlaying, vol
       animationFrameIdRef.current = requestAnimationFrame(draw);
     };
     
-    ensureAudioGraph();
     draw();
     
     return () => {
       window.removeEventListener('resize', resize);
       if (animationFrameIdRef.current !== null) {
         cancelAnimationFrame(animationFrameIdRef.current);
-      }
-      if (audioCtx) {
-        audioCtx.close().catch(() => {});
-        audioCtx = null;
-        analyser = null;
-        audioGraphReady = false;
       }
     };
   }, [isPlaying, volume, themeColor, audioRef]);
