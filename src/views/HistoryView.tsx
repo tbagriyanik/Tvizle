@@ -127,7 +127,7 @@ export const HistoryView: React.FC = () => {
           onClick={() => setShowConfirmModal(false)}
         >
           <div 
-            className="bg-white dark:bg-gray-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-gray-200 dark:border-gray-700 space-y-4"
+            className="bg-white/85 dark:bg-gray-800/85 backdrop-blur-xl rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-white/40 dark:border-gray-700 space-y-4"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto">

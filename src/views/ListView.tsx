@@ -40,14 +40,15 @@ export const ListView: React.FC<ListViewProps> = ({
     setCurrentChannel,
     favorites,
     toggleFavorite,
-    language
+    language,
+    sortBy,
+    setSortBy
   } = useAppContext();
 
   const finalEmptyMessage = emptyMessage || t(language, 'list.empty');
 
   const [filterQuery, setFilterQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>(selectedCategory || 'all');
-  const [sortBy, setSortBy] = useState<'default' | 'name-asc' | 'name-desc'>('default');
   const [viewMode, setViewMode] = useState<'grid' | 'compact'>('grid');
 
   // Extract unique categories and their counts

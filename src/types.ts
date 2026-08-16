@@ -18,7 +18,8 @@ export interface HistoryItem {
 export type ThemeColor = 'blue' | 'red' | 'green' | 'purple' | 'orange';
 export type ThemeMode = 'light' | 'dark';
 export type Language = 'tr' | 'en';
-export type Country = 'all' | 'tr' | 'us' | 'de' | 'fr' | 'gb' | 'qa' | 'it' | 'es' | 'nl' | 'au' | 'ca' | 'jp';
+export type Country = 'all' | 'tr' | 'us' | 'de' | 'fr' | 'gb' | 'qa' | 'it' | 'es' | 'nl' | 'au' | 'ca' | 'jp' | 'ru' | 'cn' | 'kr' | 'pt';
+export type SortOrder = 'default' | 'name-asc' | 'name-desc';
 
 export interface AppState {
   currentChannel: Channel | null;
@@ -36,6 +37,7 @@ export interface AppState {
   activeTab: string;
   navHistory: string[];
   historyIndex: number;
+  sortBy: SortOrder;
   selectedCategory?: string;
   sleepTimerMinutes?: number | null;
   sleepTimerEnd?: number | null;

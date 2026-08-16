@@ -101,7 +101,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       )}
 
       {/* Desktop & Tablet Sidebar */}
-      <aside className={`fixed top-0 left-0 bottom-0 w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 z-50 transition-transform duration-300 ease-in-out lg:translate-x-0 flex flex-col ${sidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
+      <aside className={`fixed top-0 left-0 bottom-0 w-64 bg-white/85 dark:bg-gray-900/85 backdrop-blur-xl border-r border-gray-200 dark:border-gray-800 z-50 transition-transform duration-300 ease-in-out lg:translate-x-0 flex flex-col ${sidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
         
         {/* Brand Header */}
         <div className="h-16 flex items-center justify-between px-6 border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
@@ -189,7 +189,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       <main className={`flex-1 lg:ml-64 flex flex-col transition-all duration-300 ${currentChannel ? 'pb-32 md:pb-28' : 'pb-20 lg:pb-8'}`}>
         
         {/* Top Header Bar */}
-        <header className="h-16 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-4 md:px-8 sticky top-0 z-30">
+        <header className="h-16 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-white/40 dark:border-gray-800 flex items-center justify-between px-4 md:px-8 sticky top-0 z-30">
           
           {/* Left: Mobile Menu & Nav History Controls */}
           <div className="flex items-center gap-2">
@@ -263,7 +263,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       </main>
 
       {/* Mobile Bottom Navigation Bar (Thumb friendly) */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 flex items-center justify-around h-15 px-2">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-t border-white/40 dark:border-gray-800 flex items-center justify-around h-15 px-2">
         {mobileNavItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
@@ -296,7 +296,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           onClick={() => setShowShortcutsModal(false)}
         >
           <div 
-            className="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-200 dark:border-gray-700 space-y-5"
+            className="bg-white/85 dark:bg-gray-800/85 backdrop-blur-xl rounded-2xl max-w-md w-full p-6 shadow-2xl border border-white/40 dark:border-gray-700 space-y-5"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-3">

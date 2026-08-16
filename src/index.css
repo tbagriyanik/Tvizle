@@ -7,3 +7,65 @@
 @theme {
   --font-sans: 'Nunito', ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
+
+/* ---------- Glassmorphism panels ---------- */
+.glass {
+  background-color: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+.dark .glass {
+  background-color: rgba(15, 23, 42, 0.72);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ---------- 3D player buttons (solid, light/dark) ---------- */
+.btn-3d {
+  --btn3d-top: #ffffff;
+  --btn3d-mid: #f1f5f9;
+  --btn3d-bot: #d7dde4;
+  --btn3d-edge: rgba(100, 116, 139, 0.65);
+  position: relative;
+  background-image: linear-gradient(180deg, var(--btn3d-top), var(--btn3d-mid) 50%, var(--btn3d-bot));
+  border: 1px solid rgba(100, 116, 139, 0.35);
+  border-bottom: 3px solid var(--btn3d-edge);
+  box-shadow: 0 1px 1px rgba(255, 255, 255, 0.85) inset, 0 2px 4px rgba(15, 23, 42, 0.18);
+  transition: transform 90ms ease, box-shadow 90ms ease, filter 150ms ease;
+}
+.dark .btn-3d {
+  --btn3d-top: #3b434d;
+  --btn3d-mid: #313840;
+  --btn3d-bot: #252b32;
+  --btn3d-edge: rgba(0, 0, 0, 0.65);
+  border-color: rgba(0, 0, 0, 0.35);
+  box-shadow: 0 1px 1px rgba(255, 255, 255, 0.08) inset, 0 2px 4px rgba(0, 0, 0, 0.45);
+}
+.btn-3d:hover {
+  filter: brightness(1.06);
+}
+.btn-3d:active {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.12);
+}
+.btn-3d.btn-3d-theme {
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.08) 45%, rgba(0, 0, 0, 0.26));
+  border-bottom: 3px solid rgba(0, 0, 0, 0.3);
+}
+
+/* ---------- 3D player buttons (translucent, over video) ---------- */
+.btn-3d-glass {
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1) 50%, rgba(0, 0, 0, 0.24));
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-bottom: 3px solid rgba(0, 0, 0, 0.35);
+  box-shadow: 0 1px 1px rgba(255, 255, 255, 0.12) inset, 0 2px 5px rgba(0, 0, 0, 0.4);
+  transition: transform 90ms ease, box-shadow 90ms ease, filter 150ms ease;
+}
+.btn-3d-glass:hover {
+  filter: brightness(1.15);
+}
+.btn-3d-glass:active {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
+}

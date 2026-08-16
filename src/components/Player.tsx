@@ -19,7 +19,7 @@ import {
   Heart, 
   RotateCcw, 
   RotateCw, 
-  Moon, 
+  Timer, 
   RefreshCw, 
   Check 
 } from 'lucide-react';
@@ -29,6 +29,7 @@ import { mockChannels } from '../data';
 import { AudioVisualizer } from './AudioVisualizer';
 import { getChannelBrand } from '../utils/channelLogos';
 import { t } from '../utils/i18n';
+import { Channel } from '../types';
 
 export const Player: React.FC = () => {
   const { 
@@ -45,7 +46,8 @@ export const Player: React.FC = () => {
     sleepTimerMinutes,
     sleepTimerEnd,
     setSleepTimer,
-    language
+    language,
+    sortBy
   } = useAppContext();
 
   const [expanded, setExpanded] = useState(false);
@@ -195,9 +197,21 @@ export const Player: React.FC = () => {
   const favoriteChannelsOfType = allChannels.filter(c => favorites.includes(c.id) && c.type === currentChannel?.type);
   const allFavoriteChannels = allChannels.filter(c => favorites.includes(c.id));
 
-  const activeList = isFavorite
-    ? (favoriteChannelsOfType.length > 0 ? favoriteChannelsOfType : (allFavoriteChannels.length > 0 ? allFavoriteChannels : allChannels.filter(c => c.type === currentChannel?.type)))
-    : allChannels.filter(c => c.type === currentChannel?.type);
+  const sortChannels = (list: Channel[]): Channel[] => {
+    if (sortBy === 'name-asc') {
+      return [...list].sort((a, b) => a.name.localeCompare(b.name, 'tr'));
+    }
+    if (sortBy === 'name-desc') {
+      return [...list].sort((a, b) => b.name.localeCompare(a.name, 'tr'));
+    }
+    return list;
+  };
+
+  const activeList = sortChannels(
+    isFavorite
+      ? (favoriteChannelsOfType.length > 0 ? favoriteChannelsOfType : (allFavoriteChannels.length > 0 ? allFavoriteChannels : allChannels.filter(c => c.type === currentChannel?.type)))
+      : allChannels.filter(c => c.type === currentChannel?.type)
+  );
 
   const currentIndex = activeList.findIndex(c => c.id === currentChannel?.id);
 
@@ -699,7 +713,7 @@ export const Player: React.FC = () => {
   const isDesktopView = typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches;
 
   return (
-    <div className={`fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 shadow-xl ${expanded && isTv ? 'h-full md:h-[60vh] md:rounded-2xl md:border' : 'h-20 md:h-22'}`}
+    <div className={`fixed bottom-0 left-0 right-0 z-50 flex flex-col bg-white/90 dark:bg-gray-900/90 border-t border-gray-200 dark:border-gray-800 shadow-xl ${expanded && isTv ? 'h-full md:h-[60vh] md:rounded-2xl md:border' : 'h-20 md:h-22'}`}
       style={expanded && isTv ? {
         top: expandedPos?.y,
         left: expandedPos?.x,
@@ -898,10 +912,10 @@ export const Player: React.FC = () => {
                   toggleFavorite(currentChannel.id);
                   resetFsControlsTimer();
                 }}
-                className={`w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center ${
+                className={`btn-3d-glass w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center ${
                   isFavorite 
-                    ? 'bg-red-500/25 text-red-500 border border-red-500/50' 
-                    : 'bg-white/10 text-white/80 hover:text-white hover:bg-white/20 border border-white/10'
+                    ? 'bg-red-500/25 text-red-500' 
+                    : 'bg-white/10 text-white/80 hover:text-white'
                 }`}
                 title={isFavorite ? t(language, 'list.removeFav') : t(language, 'list.addFav')}
               >
@@ -914,7 +928,7 @@ export const Player: React.FC = () => {
                   handlePrev();
                   resetFsControlsTimer();
                 }}
-                className="w-11 h-11 md:w-12 md:h-12 rounded-xl bg-white/10 text-white/80 hover:text-white hover:bg-white/20 border border-white/10 flex items-center justify-center"
+                className="btn-3d-glass w-11 h-11 md:w-12 md:h-12 rounded-xl text-white/80 hover:text-white flex items-center justify-center"
                 title={isFavorite ? t(language, 'player.prevFav') : t(language, 'player.prev')}
               >
                 <SkipBack size={20} fill="currentColor" />
@@ -926,7 +940,7 @@ export const Player: React.FC = () => {
                   setIsPlaying(!isPlaying);
                   resetFsControlsTimer();
                 }}
-                className={`w-13 h-13 md:w-14 md:h-14 rounded-2xl flex items-center justify-center text-white ${getThemeBgClass(themeColor)} shadow-xl border border-white/30`}
+                className={`btn-3d btn-3d-theme w-13 h-13 md:w-14 md:h-14 rounded-2xl flex items-center justify-center text-white ${getThemeBgClass(themeColor)}`}
                 title={isPlaying ? t(language, 'player.stop') : t(language, 'player.play')}
               >
                 {isPlaying ? (
@@ -942,7 +956,7 @@ export const Player: React.FC = () => {
                   handleNext();
                   resetFsControlsTimer();
                 }}
-                className="w-11 h-11 md:w-12 md:h-12 rounded-xl bg-white/10 text-white/80 hover:text-white hover:bg-white/20 border border-white/10 flex items-center justify-center"
+                className="btn-3d-glass w-11 h-11 md:w-12 md:h-12 rounded-xl text-white/80 hover:text-white flex items-center justify-center"
                 title={isFavorite ? t(language, 'player.nextFav') : t(language, 'player.next')}
               >
                 <SkipForward size={20} fill="currentColor" />
@@ -955,10 +969,10 @@ export const Player: React.FC = () => {
                     setShowFsVolumeSlider(!showFsVolumeSlider);
                     resetFsControlsTimer();
                   }}
-                  className={`w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center ${
+                  className={`btn-3d-glass w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center ${
                     showFsVolumeSlider || volume === 0
-                      ? 'bg-white/25 text-white border border-white/40'
-                      : 'bg-white/10 text-white/80 hover:text-white hover:bg-white/20 border border-white/10'
+                      ? 'bg-white/25 text-white'
+                      : 'bg-white/10 text-white/80 hover:text-white'
                   }`}
                   title={t(language, 'player.volume')}
                 >
@@ -1005,10 +1019,10 @@ export const Player: React.FC = () => {
                     toggleQualityMenu();
                     resetFsControlsTimer();
                   }}
-                  className={`w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center ${
+                  className={`btn-3d-glass w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center ${
                     showQualityMenu
-                      ? 'bg-white/25 text-white border border-white/40'
-                      : 'bg-white/10 text-white/80 hover:text-white hover:bg-white/20 border border-white/10'
+                      ? 'bg-white/25 text-white'
+                      : 'bg-white/10 text-white/80 hover:text-white'
                   } ${qualities.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
                   title={t(language, 'player.quality')}
                   disabled={qualities.length === 0}
@@ -1055,7 +1069,7 @@ export const Player: React.FC = () => {
                   e.stopPropagation();
                   toggleFullscreen();
                 }}
-                className="w-11 h-11 md:w-12 md:h-12 rounded-xl bg-white/10 hover:bg-red-500/30 text-white/80 hover:text-red-300 border border-white/10 flex items-center justify-center"
+                className="btn-3d-glass w-11 h-11 md:w-12 md:h-12 rounded-xl text-white/80 hover:text-red-300 flex items-center justify-center"
                 title={t(language, 'player.exitFullscreen')}
               >
                 <Minimize size={20} />
@@ -1166,7 +1180,7 @@ export const Player: React.FC = () => {
       )}
 
       {/* Bottom Bar Controls */}
-      <div className={`h-16 md:h-18 px-3 md:px-6 flex items-center justify-between gap-2 ${hasTimeShift ? '' : 'pt-1'}`}>
+      <div className="h-16 md:h-18 px-3 md:px-6 flex items-center justify-between gap-2 mt-auto">
         
         {/* Info (Left) */}
         <div className="flex items-center gap-2.5 md:gap-4 flex-1 min-w-0 md:w-1/3">
@@ -1243,7 +1257,7 @@ export const Player: React.FC = () => {
         <div className="hidden md:flex flex-1 items-center justify-center gap-2">
           <button 
             onClick={() => seekRelative(-10)}
-            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+            className="btn-3d text-gray-600 dark:text-gray-300 p-2 rounded-lg"
             title={t(language, 'player.rewind10')}
           >
             <RotateCcw size={17} />
@@ -1251,7 +1265,7 @@ export const Player: React.FC = () => {
 
           <button 
             onClick={handlePrev}
-            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+            className="btn-3d text-gray-600 dark:text-gray-300 p-2 rounded-lg"
             title={isFavorite ? t(language, 'player.prevFav') : t(language, 'player.prev')}
           >
             <SkipBack size={20} fill="currentColor" />
@@ -1259,7 +1273,7 @@ export const Player: React.FC = () => {
           
           <button 
             onClick={() => setIsPlaying(!isPlaying)}
-            className={`w-10 h-10 flex items-center justify-center rounded-xl text-white ${getThemeBgClass(themeColor)} hover:opacity-90 shadow-sm`}
+            className={`btn-3d btn-3d-theme w-10 h-10 flex items-center justify-center rounded-xl text-white ${getThemeBgClass(themeColor)}`}
             title={isPlaying ? t(language, 'player.stopSpace') : t(language, 'player.playSpace')}
           >
             {isPlaying ? <Pause size={17} fill="currentColor" /> : <Play size={17} fill="currentColor" className="ml-0.5" />}
@@ -1267,7 +1281,7 @@ export const Player: React.FC = () => {
           
           <button 
             onClick={handleNext}
-            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+            className="btn-3d text-gray-600 dark:text-gray-300 p-2 rounded-lg"
             title={isFavorite ? t(language, 'player.nextFav') : t(language, 'player.next')}
           >
             <SkipForward size={20} fill="currentColor" />
@@ -1276,7 +1290,7 @@ export const Player: React.FC = () => {
           <button 
             onClick={() => seekRelative(10)}
             disabled={isLiveEdge}
-            className={`p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 ${isLiveEdge ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+            className={`btn-3d p-2 rounded-lg ${isLiveEdge ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed opacity-60' : 'text-gray-600 dark:text-gray-300'}`}
             title={t(language, 'player.forward10')}
           >
             <RotateCw size={17} />
@@ -1290,21 +1304,21 @@ export const Player: React.FC = () => {
           <div className="flex md:hidden items-center gap-1">
              <button 
               onClick={handlePrev}
-              className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-1.5"
+              className="btn-3d text-gray-600 dark:text-gray-300 p-1.5 rounded-lg"
               title={t(language, 'player.prev')}
             >
               <SkipBack size={18} fill="currentColor" />
             </button>
             <button 
               onClick={() => setIsPlaying(!isPlaying)}
-              className={`w-8 h-8 flex items-center justify-center rounded-xl text-white ${getThemeBgClass(themeColor)} hover:opacity-90`}
+              className={`btn-3d btn-3d-theme w-8 h-8 flex items-center justify-center rounded-xl text-white ${getThemeBgClass(themeColor)}`}
               title={isPlaying ? "Durdur" : "Oynat"}
             >
               {isPlaying ? <Pause size={15} fill="currentColor" /> : <Play size={15} fill="currentColor" className="ml-0.5" />}
             </button>
             <button 
               onClick={handleNext}
-              className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-1.5"
+              className="btn-3d text-gray-600 dark:text-gray-300 p-1.5 rounded-lg"
               title={t(language, 'player.next')}
             >
               <SkipForward size={18} fill="currentColor" />
@@ -1315,7 +1329,7 @@ export const Player: React.FC = () => {
           <div className="hidden md:flex items-center gap-1.5">
             <button 
               onClick={() => setVolume(volume === 0 ? 0.8 : 0)} 
-              className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="btn-3d text-gray-600 dark:text-gray-300 p-1.5 rounded-lg"
               title={volume === 0 ? t(language, 'player.unmuteM') : t(language, 'player.muteM')}
             >
               {volume === 0 ? <VolumeX size={18} className="text-red-500" /> : <Volume2 size={18} />}
@@ -1335,19 +1349,19 @@ export const Player: React.FC = () => {
               onClick={() => setShowSleepTimerMenu(!showSleepTimerMenu)}
               className={`p-1.5 rounded-lg flex items-center gap-1 text-xs font-semibold ${
                 sleepTimerEnd 
-                  ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' 
-                  : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                  ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shadow-inner' 
+                  : 'btn-3d text-gray-600 dark:text-gray-300'
               }`}
               title={t(language, 'player.sleepTimer')}
             >
-              <Moon size={17} className={sleepTimerEnd ? 'text-blue-500 animate-pulse' : ''} />
+              <Timer size={17} className={sleepTimerEnd ? 'text-blue-500 animate-pulse' : ''} />
               {sleepRemainingText && (
                 <span className="hidden sm:inline font-mono text-[10px]">{sleepRemainingText}</span>
               )}
             </button>
 
             {showSleepTimerMenu && (
-              <div className="absolute bottom-full right-0 mb-2 w-48 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden z-50 p-1.5 space-y-0.5">
+              <div className="absolute bottom-full right-0 mb-2 w-48 bg-white/85 dark:bg-gray-800/85 backdrop-blur-xl rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden z-50 p-1.5 space-y-0.5">
                 <div className="px-3 py-1.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 dark:border-gray-700/50">
                   {t(language, 'player.sleepTimerTitle')}
                 </div>
@@ -1386,7 +1400,7 @@ export const Player: React.FC = () => {
           <div className="relative hidden sm:block">
             <button 
               onClick={toggleQualityMenu}
-              className={`p-1.5 rounded-lg ${qualities.length === 0 ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+              className={`p-1.5 rounded-lg ${qualities.length === 0 ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed' : 'btn-3d text-gray-600 dark:text-gray-300'}`}
               title={t(language, 'player.quality')}
               disabled={qualities.length === 0}
             >
@@ -1394,7 +1408,7 @@ export const Player: React.FC = () => {
             </button>
             
             {showQualityMenu && qualities.length > 0 && (
-              <div className="absolute bottom-full right-0 mb-2 w-32 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden z-50 p-1">
+              <div className="absolute bottom-full right-0 mb-2 w-32 bg-white/85 dark:bg-gray-800/85 backdrop-blur-xl rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden z-50 p-1">
                 <button
                   onClick={() => changeQuality(-1)}
                   className={`w-full text-left px-3 py-1.5 rounded-lg text-xs ${selectedQuality === -1 ? getThemeTextClass(themeColor) + ' font-bold bg-gray-100 dark:bg-gray-700' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
@@ -1426,7 +1440,7 @@ export const Player: React.FC = () => {
                     setIsPip(!isPip);
                   }
                 }}
-                className={`p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 ${isPip && !expanded ? getThemeTextClass(themeColor) : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+                className={`btn-3d p-1.5 rounded-lg ${isPip && !expanded ? getThemeTextClass(themeColor) : 'text-gray-600 dark:text-gray-300'}`}
                 title={t(language, 'player.pip')}
               >
                 <PictureInPicture size={18} />
@@ -1434,7 +1448,7 @@ export const Player: React.FC = () => {
 
               <button 
                 onClick={toggleFullscreen}
-                className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="btn-3d text-gray-600 dark:text-gray-300 p-1.5 rounded-lg"
                 title={t(language, 'player.fullscreenF')}
               >
                 <Maximize size={18} />
@@ -1444,7 +1458,7 @@ export const Player: React.FC = () => {
           
           <button 
             onClick={() => setCurrentChannel(null)}
-            className="text-gray-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="btn-3d text-gray-500 hover:text-red-500 dark:text-gray-300 p-1.5 rounded-lg transition-colors"
             title={t(language, 'player.closePlayer')}
           >
             <X size={18} />

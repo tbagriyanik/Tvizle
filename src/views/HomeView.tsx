@@ -94,6 +94,10 @@ export const HomeView: React.FC = () => {
     { id: 'au', flag: '🇦🇺', label: COUNTRY_LABELS.au[language] },
     { id: 'ca', flag: '🇨🇦', label: COUNTRY_LABELS.ca[language] },
     { id: 'jp', flag: '🇯🇵', label: COUNTRY_LABELS.jp[language] },
+    { id: 'ru', flag: '🇷🇺', label: COUNTRY_LABELS.ru[language] },
+    { id: 'cn', flag: '🇨🇳', label: COUNTRY_LABELS.cn[language] },
+    { id: 'kr', flag: '🇰🇷', label: COUNTRY_LABELS.kr[language] },
+    { id: 'pt', flag: '🇵🇹', label: COUNTRY_LABELS.pt[language] },
   ];
 
   const handleCategoryClick = (type: 'tv' | 'radio', cat: string) => {

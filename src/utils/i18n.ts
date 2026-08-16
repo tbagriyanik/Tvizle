@@ -229,4 +229,8 @@ export const COUNTRY_LABELS: Record<string, { tr: string; en: string }> = {
   au: { tr: 'Avustralya', en: 'Australia' },
   ca: { tr: 'Kanada', en: 'Canada' },
   jp: { tr: 'Japonya', en: 'Japan' },
+  ru: { tr: 'Rusya', en: 'Russia' },
+  cn: { tr: 'Çin', en: 'China' },
+  kr: { tr: 'Güney Kore', en: 'South Korea' },
+  pt: { tr: 'Portekiz', en: 'Portugal' },
 };

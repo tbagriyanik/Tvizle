@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import localforage from 'localforage';
-import { AppState, Channel, ThemeColor, ThemeMode, Country, Language } from '../types';
+import { AppState, Channel, ThemeColor, ThemeMode, Country, Language, SortOrder } from '../types';
 
 interface AppContextType extends AppState {
   setCurrentChannel: (channel: Channel | null) => void;
@@ -19,6 +19,7 @@ interface AppContextType extends AppState {
   setActiveTab: (tab: string) => void;
   setSelectedCategory: (category: string | undefined) => void;
   setSleepTimer: (minutes: number | null) => void;
+  setSortBy: (sort: SortOrder) => void;
   goBack: () => void;
   goForward: () => void;
   canGoBack: boolean;
@@ -59,6 +60,7 @@ const defaultState: AppState = {
   activeTab: initialTab,
   navHistory: [initialTab],
   historyIndex: 0,
+  sortBy: 'default',
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -210,6 +212,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         language: state.language,
         country: state.country,
         volume: state.volume,
+        sortBy: state.sortBy,
       }));
     } catch (e) {
       console.warn('Failed to save state to localStorage:', e);
@@ -298,6 +301,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     localforage.setItem('customM3UChannels', channels).catch(e => console.error('Failed to save custom channels', e));
   };
 
+  const setSortBy = (sortBy: SortOrder) => setState(s => ({ ...s, sortBy }));
+
   return (
     <AppContext.Provider value={{
       ...state,
@@ -317,6 +322,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setActiveTab,
       setSelectedCategory,
       setSleepTimer,
+      setSortBy,
       goBack,
       goForward,
       canGoBack,
