@@ -99,14 +99,6 @@ export const mockChannels: Channel[] = [
     category: 'Haber',
   },
   {
-    id: 'tv-cnnturk',
-    name: 'CNN Türk',
-    type: 'tv',
-    url: 'https://demiroren.daioncdn.net/cnnturk/cnnturk.m3u8?app=cnnturk_web&ce=3',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/CNN_T%C3%BCrk_logo.svg/512px-CNN_T%C3%BCrk_logo.svg.png',
-    category: 'Haber',
-  },
-  {
     id: 'tv-ntv',
     name: 'NTV',
     type: 'tv',
@@ -377,33 +369,6 @@ logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/KEXP_logo.svg/5
   // ===== ULUSLARARASI KANALLAR =====
   // ABD
   {
-    id: 'tv-abcnews',
-    name: 'ABC News Live',
-    type: 'tv',
-    url: 'https://content.uplynk.com/channel/3324f2467c414329b3b0cc5cd987b6be.m3u8',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/ABC_News_Logo.svg/512px-ABC_News_Logo.svg.png',
-    category: 'Dünya / Haber',
-    country: 'us',
-  },
-  {
-    id: 'tv-cbsnews',
-    name: 'CBS News 24/7',
-    type: 'tv',
-    url: 'https://cbsn-us.cbsnstream.cbsnews.com/out/v1/1df9ca0d0f8d43dab2e61ac3c4ef66d9/master.m3u8',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/CBS_News_logo.svg/512px-CBS_News_logo.svg.png',
-    category: 'Dünya / Haber',
-    country: 'us',
-  },
-  {
-    id: 'tv-nbcnewsnow',
-    name: 'NBC News Now',
-    type: 'tv',
-    url: 'https://nbcnews-now-stream-ak.akamaized.net/now-rapid/now-rapid.m3u8',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/NBC_News_Now_logo.svg/512px-NBC_News_Now_logo.svg.png',
-    category: 'Dünya / Haber',
-    country: 'us',
-  },
-  {
     id: 'tv-bloombergus',
     name: 'Bloomberg TV+',
     type: 'tv',
@@ -413,15 +378,6 @@ logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/KEXP_logo.svg/5
     country: 'us',
   },
   // İngiltere
-  {
-    id: 'tv-bbcnews',
-    name: 'BBC News',
-    type: 'tv',
-    url: 'https://vs-hls-pushb-ww-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_news_24/pc_hd_abr_v2.m3u8',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/BBC_News_2022_%28Boxed%29.svg/512px-BBC_News_2022_%28Boxed%29.svg.png',
-    category: 'Dünya / Haber',
-    country: 'gb',
-  },
   {
     id: 'radio-bbcradio1',
     name: 'BBC Radio 1',
@@ -442,24 +398,6 @@ logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/KEXP_logo.svg/5
   },
   // Almanya
   {
-    id: 'tv-ard',
-    name: 'Das Erste',
-    type: 'tv',
-    url: 'https://mcdn.daserste.de/daserste/int/master.m3u8',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Das_Erste_Logo_2019.svg/512px-Das_Erste_Logo_2019.svg.png',
-    category: 'Dünya / Genel',
-    country: 'de',
-  },
-  {
-    id: 'tv-ntvde',
-    name: 'n-tv',
-    type: 'tv',
-    url: 'https://n-tv.de/stream/ntvlive.m3u8',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/N-tv_logo.svg/512px-N-tv_logo.svg.png',
-    category: 'Dünya / Haber',
-    country: 'de',
-  },
-  {
     id: 'radio-antennede',
     name: 'Antenne Bayern',
     type: 'radio',
@@ -469,34 +407,7 @@ logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/KEXP_logo.svg/5
     country: 'de',
   },
   // Fransa
-  {
-    id: 'tv-tv5monde',
-    name: 'TV5 Monde',
-    type: 'tv',
-    url: 'https://tv5mondeenglish.akamaized.net/hls/live/2042344/tv5mondeenglish_2/index.m3u8',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/TV5_Monde_%282019%29.svg/512px-TV5_Monde_%282019%29.svg.png',
-    category: 'Dünya / Genel',
-    country: 'fr',
-  },
   // Katar
-  {
-    id: 'tv-aljazeera-ar',
-    name: 'Al Jazeera Arabic',
-    type: 'tv',
-    url: 'https://live-hls-web-aja-2.sa.akiniche.net/ajamanar/index.m3u8',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Aljazeera_%28alt%29.svg/512px-Aljazeera_%28alt%29.svg.png',
-    category: 'Dünya / Haber',
-    country: 'qa',
-  },
-  {
-    id: 'tv-beinsports',
-    name: 'beIN Sports MENA',
-    type: 'tv',
-    url: 'https://raw.githubusercontent.com/Free-TV/IPTV/master/playlists/playlist_sd.m3u8',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/BeIN_Sports_logo.svg/512px-BeIN_Sports_logo.svg.png',
-    category: 'Dünya / Spor',
-    country: 'qa',
-  },
   {
     id: 'tv-aljazeera-eng',
     name: 'Al Jazeera English',
@@ -559,15 +470,6 @@ logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/KEXP_logo.svg/5
   },
 
   // ===== Fransa (Ek) =====
-  {
-    id: 'tv-france24-ar',
-    name: 'France 24 Arabic',
-    type: 'tv',
-    url: 'https://live.france24.com/hls/live/2037218-b/F24_AR_HI_HLS/master_2300.m3u8',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/France_24_logo.svg/512px-France_24_logo.svg.png',
-    category: 'Dünya / Haber',
-    country: 'fr',
-  },
   {
     id: 'radio-rfi',
     name: 'RFI Monde',
@@ -670,35 +572,8 @@ logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/KEXP_logo.svg/5
   // ===== Kanada =====
 
   // ===== Japonya =====
-  {
-    id: 'tv-nhkworld',
-    name: 'NHK World-Japan',
-    type: 'tv',
-    url: 'https://nhkwlive-ojp.akamaized.net/hls/live/2003459/nhkwlive-ojp-en/index_1M.m3u8',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/NHK_World_logo.svg/512px-NHK_World_logo.svg.png',
-    category: 'Dünya / Genel',
-    country: 'jp',
-  },
 
   // ===== ABD (Ek 2) =====
-  {
-    id: 'tv-cspan',
-    name: 'C-SPAN',
-    type: 'tv',
-    url: 'https://cspan1-lh.akamaihd.net/i/cspan1_1@302840/master.m3u8',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/C-SPAN_logo.svg/512px-C-SPAN_logo.svg.png',
-    category: 'Dünya / Haber',
-    country: 'us',
-  },
-  {
-    id: 'tv-weathernation',
-    name: 'WeatherNation',
-    type: 'tv',
-    url: 'https://weathernationtv.akamaized.net/hls/live/2062135/WeatherNationTV/master.m3u8',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/WeatherNation_logo.svg/512px-WeatherNation_logo.svg.png',
-    category: 'Dünya / Genel',
-    country: 'us',
-  },
   {
     id: 'radio-somafm',
     name: 'SomaFM Groove Salad',
@@ -739,26 +614,8 @@ logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/KEXP_logo.svg/5
   },
 
   // ===== Almanya (Ek 2) =====
-  {
-    id: 'tv-zdf',
-    name: 'ZDF',
-    type: 'tv',
-    url: 'https://zdf-hls-19.akamaized.net/playout2/0815_0001/a1f5a1c7b2f34d62b7f3f6fcd8e6d1f2/master.m3u8',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/ZDF_logo_%282019%29.svg/512px-ZDF_logo_%282019%29.svg.png',
-    category: 'Dünya / Genel',
-    country: 'de',
-  },
 
   // ===== Fransa (Ek 2) =====
-  {
-    id: 'tv-bfmtv',
-    name: 'BFM TV',
-    type: 'tv',
-    url: 'https://bfmtv.akamaized.net/hls/live/2115043/bfmtv/bfmtv_720p/index.m3u8',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/BFM_TV_logo.svg/512px-BFM_TV_logo.svg.png',
-    category: 'Dünya / Haber',
-    country: 'fr',
-  },
   {
     id: 'radio-europe1',
     name: 'Europe 1',
@@ -770,15 +627,6 @@ logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/KEXP_logo.svg/5
   },
 
   // ===== İtalya (Ek) =====
-  {
-    id: 'tv-rainews24',
-    name: 'Rai News 24',
-    type: 'tv',
-    url: 'https://rainews1-live.akamaized.net/hls/live/598326/rainews1/rainews_1.m3u8',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Rai_News_24_logo_2022.svg/512px-Rai_News_24_logo_2022.svg.png',
-    category: 'Dünya / Haber',
-    country: 'it',
-  },
   {
     id: 'radio-rai3',
     name: 'Rai Radio 3',
