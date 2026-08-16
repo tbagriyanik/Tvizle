@@ -819,19 +819,19 @@ export function getChannelBrand(id: string, name: string, type: 'tv' | 'radio'):
     }
   }
 
-  // Deterministic colorful gradient for other TV/Radio channels
+  // Deterministic, editorial gradient for other TV/Radio channels
   let hash = 0;
   for (let i = 0; i < name.length; i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash);
   }
   
-  const hue1 = Math.abs(hash) % 360;
-  const hue2 = (hue1 + 45) % 360;
+  const hue = Math.abs(hash) % 360;
+  const isDark = hue % 2 === 0;
 
   return {
-    bgColor: `hsl(${hue1}, 40%, 15%)`,
-    gradient: `linear-gradient(135deg, hsl(${hue1}, 55%, 10%) 0%, hsl(${hue1}, 65%, 22%) 55%, hsl(${hue2}, 75%, 40%) 130%)`,
-    accentColor: `hsl(${hue1}, 85%, 60%)`,
+    bgColor: `hsl(${hue}, 22%, 12%)`,
+    gradient: `linear-gradient(160deg, hsl(${hue}, 28%, 10%) 0%, hsl(${hue}, 26%, 16%) 55%, hsl(${hue}, 30%, 24%) 100%)`,
+    accentColor: `hsl(${hue}, 55%, ${isDark ? 62 : 58}%)`,
     textLogo: name,
     subtitle: type === 'tv' ? 'CANLI YAYIN' : 'RADYO YAYINI',
     frequency: type === 'radio' ? 'CANLI RADYO' : undefined,

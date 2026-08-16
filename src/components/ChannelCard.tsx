@@ -43,7 +43,7 @@ export const ChannelCard: React.FC<{ channel: Channel }> = ({ channel }) => {
         </div>
       ) : (
         /* Radio Card Top Section (Album Art / Vinyl Cover) */
-        <div className="h-32 sm:h-36 relative overflow-hidden bg-gray-950">
+        <div className="h-24 sm:h-28 relative overflow-hidden bg-gray-950">
           <ChannelPreview 
             channel={channel} 
             className="w-full h-full"
@@ -53,12 +53,12 @@ export const ChannelCard: React.FC<{ channel: Channel }> = ({ channel }) => {
           {/* Favorite Toggle Button */}
           <button 
             onClick={(e) => { e.stopPropagation(); toggleFavorite(channel.id); }}
-            className={`absolute top-2.5 right-2.5 p-1.5 rounded-lg z-30 bg-black/60 hover:bg-black/80 backdrop-blur-xs border border-white/15 transition-transform active:scale-95 ${
+            className={`absolute top-2.5 right-2.5 p-2 rounded-lg z-30 bg-black/50 hover:bg-black/70 border border-white/10 ${
               isFavorite ? 'text-red-500' : 'text-white/80 hover:text-white'
             }`}
             title={isFavorite ? t(language, 'list.removeFav') : t(language, 'list.addFav')}
           >
-            <Heart size={15} fill={isFavorite ? 'currentColor' : 'none'} />
+            <Heart size={16} fill={isFavorite ? 'currentColor' : 'none'} />
           </button>
         </div>
       )}

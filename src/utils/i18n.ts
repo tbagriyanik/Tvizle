@@ -40,6 +40,7 @@ const translations: Record<string, { tr: string; en: string }> = {
   'settings.languageDesc': { tr: 'Uygulama arayüzünün dilini seçin.', en: 'Choose the app interface language.' },
   'settings.appearanceMode': { tr: 'Görünüm Modu', en: 'Appearance Mode' },
   'settings.light': { tr: 'Aydınlık', en: 'Light' },
+  'settings.dark': { tr: 'Koyu', en: 'Dark' },
   'settings.off': { tr: 'Kapalı', en: 'Off' },
   'settings.blue': { tr: 'Mavi', en: 'Blue' },
   'settings.red': { tr: 'Kırmızı', en: 'Red' },

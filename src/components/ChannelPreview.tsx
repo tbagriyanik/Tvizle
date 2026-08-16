@@ -43,7 +43,7 @@ export const ChannelPreview: React.FC<ChannelPreviewProps> = ({
       >
         {/* Vinyl Record Visual Disc Background */}
         <div 
-          className={`absolute w-28 h-28 sm:w-32 sm:h-32 rounded-full pointer-events-none flex items-center justify-center opacity-85 transition-transform duration-700 group-hover/radio:scale-105`}
+          className={`absolute w-20 h-20 sm:w-24 sm:h-24 rounded-full pointer-events-none flex items-center justify-center opacity-90 transition-transform duration-700 group-hover/radio:scale-105`}
           style={{
             background: 'radial-gradient(circle, #18181b 0%, #09090b 45%, #18181b 70%, #000000 100%)',
             boxShadow: `0 0 20px rgba(0,0,0,0.6), inset 0 0 10px rgba(255,255,255,0.08), 0 0 12px ${brand.accentColor}33`,
@@ -51,26 +51,19 @@ export const ChannelPreview: React.FC<ChannelPreviewProps> = ({
           }}
         >
           {/* Vinyl Grooves (Subtle concentric rings) */}
-          <div className="absolute inset-1.5 rounded-full border border-white/[0.04]" />
-          <div className="absolute inset-3.5 rounded-full border border-white/[0.06]" />
+          <div className="absolute inset-1.5 rounded-full border border-white/[0.05]" />
+          <div className="absolute inset-4 rounded-full border border-white/[0.06]" />
           <div className="absolute inset-6 rounded-full border border-white/[0.05]" />
-          <div className="absolute inset-8 rounded-full border border-white/[0.07]" />
-          <div className="absolute inset-11 rounded-full border border-white/[0.05]" />
-
-          {/* Vinyl Sheen Overlay (Metallic Refraction Lines) */}
-          <div 
-            className="absolute inset-0 rounded-full opacity-20 pointer-events-none"
-            style={{
-              background: 'conic-gradient(from 45deg, transparent 0deg, rgba(255,255,255,0.4) 60deg, transparent 120deg, transparent 180deg, rgba(255,255,255,0.4) 240deg, transparent 300deg)'
-            }}
-          />
         </div>
+
+        {/* Editorial scrim to unify/refine the artwork */}
+        <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-black/30 via-transparent to-black/45" />
 
         {/* Center Artwork / Logo Spindle Label */}
         <div className="relative z-10 flex flex-col items-center justify-center p-1.5 text-center max-w-[85%]">
           {hasValidLogo ? (
             <div 
-              className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full p-1.5 bg-black/60 backdrop-blur-md border border-white/25 flex items-center justify-center shadow-md transition-all duration-300 ${
+              className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full p-1 bg-black/60 backdrop-blur-md border border-white/25 flex items-center justify-center shadow-md transition-all duration-300 ${
                 isPlaying ? 'ring-2 ring-offset-1 ring-offset-black/50 scale-105' : ''
               }`}
               style={{
@@ -87,7 +80,7 @@ export const ChannelPreview: React.FC<ChannelPreviewProps> = ({
             </div>
           ) : (
             <div 
-              className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-black/65 backdrop-blur-md border border-white/20 flex flex-col items-center justify-center text-white shadow-md transition-all duration-300 ${
+              className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/65 backdrop-blur-md border border-white/20 flex flex-col items-center justify-center text-white shadow-md transition-all duration-300 ${
                 isPlaying ? 'ring-2 ring-offset-1 ring-offset-black/50 scale-105' : ''
               }`}
               style={{
@@ -96,27 +89,18 @@ export const ChannelPreview: React.FC<ChannelPreviewProps> = ({
               }}
             >
               <div 
-                className="text-[10px] font-black tracking-widest uppercase drop-shadow"
+                className="text-[9px] font-black tracking-widest uppercase drop-shadow"
                 style={{ color: brand.accentColor }}
               >
                 {getInitials(brand.textLogo || channel.name)}
               </div>
-              <Radio size={10} className="text-white/60 mt-0.5" />
+              <Radio size={9} className="text-white/60 mt-0.5" />
             </div>
           )}
 
-          {/* Station Title on Card */}
-          <div className="mt-1 font-bold text-white text-[11px] tracking-wide truncate max-w-[130px] drop-shadow-md">
-            {brand.textLogo || channel.name}
-          </div>
-          
-          <div className="text-[9px] text-white/80 font-medium tracking-wider uppercase truncate max-w-[115px] drop-shadow-xs">
-            {brand.subtitle || channel.category}
-          </div>
-
           {/* Mini Playing Indicator */}
           {isPlaying && (
-            <div className="mt-1 flex items-center gap-1 rounded-full bg-black/60 backdrop-blur-xs border border-white/10 px-1.5 py-0.5">
+            <div className="mt-1.5 flex items-center gap-1 rounded-full bg-black/60 backdrop-blur-xs border border-white/10 px-1.5 py-0.5">
               <span className="w-1 h-1 rounded-full bg-emerald-400" />
             </div>
           )}
@@ -124,25 +108,10 @@ export const ChannelPreview: React.FC<ChannelPreviewProps> = ({
 
         {/* Top Badges for Radio */}
         {showBadges && (
-          <>
-            {/* Frequency Badge on top-left */}
-            <div className="absolute top-1.5 left-1.5 px-1.5 py-0.2 rounded text-[8.5px] font-bold bg-black/60 backdrop-blur-md text-white/90 uppercase tracking-wider flex items-center gap-1 border border-white/15 shadow-2xs">
-              <Radio size={9} style={{ color: brand.accentColor }} />
-              <span>{brand.frequency || t(language, 'channel.fm')}</span>
-            </div>
-
-            {/* Status / Genre Badge on top-right */}
-            {isPlaying ? (
-              <div className="absolute top-1.5 right-1.5 px-1.5 py-0.2 rounded text-[8px] font-bold bg-emerald-500 text-white uppercase tracking-wider flex items-center gap-0.5 shadow-2xs border border-emerald-400/30">
-                <span className="w-1 h-1 rounded-full bg-white" />
-                <span>{t(language, 'channel.onAir')}</span>
-              </div>
-            ) : (
-              <div className="absolute top-1.5 right-1.5 px-1.5 py-0.2 rounded text-[8px] font-semibold bg-black/50 backdrop-blur-xs text-white/80 uppercase tracking-wider border border-white/10 truncate max-w-[85px]">
-                {brand.genreBadge || channel.category}
-              </div>
-            )}
-          </>
+          <div className="absolute top-1.5 left-1.5 px-1.5 py-0.2 rounded text-[8.5px] font-bold bg-black/60 backdrop-blur-md text-white/90 uppercase tracking-wider flex items-center gap-1 border border-white/15">
+            <Radio size={9} style={{ color: brand.accentColor }} />
+            <span>{brand.frequency || t(language, 'channel.fm')}</span>
+          </div>
         )}
 
         {/* Subtle Ambient Vignette Bottom Scrim */}
@@ -157,6 +126,9 @@ export const ChannelPreview: React.FC<ChannelPreviewProps> = ({
       className={`relative overflow-hidden flex items-center justify-center select-none ${className}`}
       style={{ background: brand.gradient }}
     >
+      {/* Editorial scrim to unify/refine the artwork */}
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/45 via-transparent to-black/20" />
+
       {/* Main Logo & Insignia Centerpiece */}
       <div className="relative z-10 w-full h-full flex flex-col items-center justify-center p-2.5">
         {hasValidLogo ? (
