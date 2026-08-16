@@ -1,15 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Hls from 'hls.js';
-import { Play, Pause, Volume2, VolumeX, Maximize, X, Tv, Radio, SkipBack, SkipForward, Settings, PictureInPicture } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Maximize, X, Tv, Radio, SkipBack, SkipForward, Settings, PictureInPicture, Loader2, AlertCircle } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { getThemeBgClass, getThemeTextClass } from '../utils/theme';
 import { mockChannels } from '../data';
+import { AudioVisualizer } from './AudioVisualizer';
 
 export const Player: React.FC = () => {
   const { currentChannel, isPlaying, setIsPlaying, volume, setVolume, setCurrentChannel, themeColor, customChannels } = useAppContext();
   const [expanded, setExpanded] = useState(false);
   const [isPip, setIsPip] = useState(true);
   const [isSwitching, setIsSwitching] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
@@ -46,6 +49,13 @@ export const Player: React.FC = () => {
     if (hlsRef.current) {
       hlsRef.current.currentLevel = index;
       setSelectedQuality(index);
+      
+      // Save resolution height or auto
+      if (index === -1) {
+        localStorage.setItem('tv_quality', 'auto');
+      } else if (qualities[index]) {
+        localStorage.setItem('tv_quality', qualities[index].height.toString());
+      }
     }
     setShowQualityMenu(false);
   };
@@ -55,6 +65,8 @@ export const Player: React.FC = () => {
     if (!currentChannel) return;
 
     setIsSwitching(true);
+    setIsLoading(true);
+    setHasError(false);
 
     const mediaElement = currentChannel.type === 'tv' ? videoRef.current : audioRef.current;
     if (!mediaElement) return;
@@ -62,6 +74,26 @@ export const Player: React.FC = () => {
     setQualities([]);
     setSelectedQuality(-1);
     setShowQualityMenu(false);
+
+    let loadTimeout = setTimeout(() => {
+      setHasError(true);
+      setIsLoading(false);
+    }, 15000); // 15 seconds timeout
+
+    const handleLoadedOrPlaying = () => {
+      clearTimeout(loadTimeout);
+      setIsLoading(false);
+      setHasError(false);
+    };
+
+    const handleError = () => {
+      clearTimeout(loadTimeout);
+      setHasError(true);
+      setIsLoading(false);
+    };
+
+    mediaElement.addEventListener('playing', handleLoadedOrPlaying);
+    mediaElement.addEventListener('error', handleError);
 
     const isM3u8 = currentChannel.url.includes('.m3u8');
 
@@ -83,13 +115,49 @@ export const Player: React.FC = () => {
       hls.attachMedia(mediaElement);
       
       hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
-        if (currentChannel.type === 'tv') {
-          setQualities(data.levels);
+        setQualities(data.levels);
+        
+        const savedQuality = localStorage.getItem('tv_quality');
+        if (savedQuality && savedQuality !== 'auto') {
+          const targetHeight = parseInt(savedQuality, 10);
+          const matchIndex = data.levels.findIndex(l => l.height === targetHeight);
+          if (matchIndex !== -1) {
+            hls.currentLevel = matchIndex;
+            setSelectedQuality(matchIndex);
+          } else {
+            setSelectedQuality(hls.autoLevelEnabled ? -1 : hls.currentLevel);
+          }
+        } else {
           setSelectedQuality(hls.autoLevelEnabled ? -1 : hls.currentLevel);
         }
+
         setIsSwitching(false);
         if (isPlaying) {
-          mediaElement.play().catch(e => console.log("Otomatik oynatma engellendi", e));
+          mediaElement.play().catch(e => {
+            console.log("Otomatik oynatma engellendi", e);
+            handleLoadedOrPlaying();
+          });
+        } else {
+          handleLoadedOrPlaying();
+        }
+      });
+
+      hls.on(Hls.Events.ERROR, (event, data) => {
+        if (data.fatal) {
+          switch (data.type) {
+            case Hls.ErrorTypes.NETWORK_ERROR:
+              console.log('fatal network error encountered, try to recover');
+              hls.startLoad();
+              break;
+            case Hls.ErrorTypes.MEDIA_ERROR:
+              console.log('fatal media error encountered, try to recover');
+              hls.recoverMediaError();
+              break;
+            default:
+              handleError();
+              hls.destroy();
+              break;
+          }
         }
       });
 
@@ -105,6 +173,7 @@ export const Player: React.FC = () => {
       
       const playHandler = () => {
         setIsSwitching(false);
+        handleLoadedOrPlaying();
         if (isPlaying) {
           mediaElement.play().catch(e => console.log("Otomatik oynatma engellendi", e));
         }
@@ -114,6 +183,9 @@ export const Player: React.FC = () => {
     }
 
     return () => {
+      clearTimeout(loadTimeout);
+      mediaElement.removeEventListener('playing', handleLoadedOrPlaying);
+      mediaElement.removeEventListener('error', handleError);
       if (hlsRef.current) {
         hlsRef.current.destroy();
         hlsRef.current = null;
@@ -176,6 +248,8 @@ export const Player: React.FC = () => {
   return (
     <div className={`fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 shadow-[0_-4px_10px_rgba(0,0,0,0.1)] transition-all duration-300 ${expanded && isTv ? 'h-full md:h-[60vh] md:bottom-4 md:left-auto md:right-4 md:w-[600px] md:rounded-xl md:border' : 'h-20'}`}>
       
+      {!isTv && <AudioVisualizer isPlaying={isPlaying} volume={volume} audioRef={audioRef} />}
+
       {/* TV Player Container */}
       {isTv && (
         <div className={expanded ? "relative w-full h-[calc(100%-80px)] bg-black" : (isPip ? "absolute bottom-full right-4 mb-4 w-64 md:w-80 aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-700 z-50 group transition-all duration-300" : "absolute w-1 h-1 opacity-0 pointer-events-none overflow-hidden")}>
@@ -185,6 +259,21 @@ export const Player: React.FC = () => {
             playsInline
             muted={volume === 0}
           />
+          
+          {isLoading && !hasError && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-20">
+              <Loader2 className={`w-10 h-10 animate-spin ${getThemeTextClass(themeColor)}`} />
+            </div>
+          )}
+          
+          {hasError && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 z-20 text-white p-4 text-center">
+              <AlertCircle className="w-12 h-12 text-red-500 mb-2" />
+              <p className="text-sm md:text-base font-medium">Yayın Hatası</p>
+              <p className="text-xs text-gray-400 mt-1">Bu kanala şu an bağlanılamıyor.</p>
+            </div>
+          )}
+          
           {expanded ? (
             <button 
               onClick={() => setExpanded(false)}
@@ -215,23 +304,38 @@ export const Player: React.FC = () => {
 
       {/* Native audio element for Radio to prevent CORS and parsing issues */}
       {!isTv && (
-        <audio ref={audioRef} src={currentChannel.url} className="hidden" />
+        <audio ref={audioRef} src={currentChannel.url} className="hidden" crossOrigin="anonymous" />
       )}
 
       {/* Bottom Bar Controls */}
       <div className="h-16 md:h-20 px-3 md:px-6 flex items-center justify-between gap-2">
         {/* Info (Left) */}
         <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0 md:w-1/3">
-          <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
+          <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800 relative">
             {currentChannel.logo ? (
-              <img src={currentChannel.logo} alt={currentChannel.name} className="w-full h-full object-cover" />
+              <img src={currentChannel.logo} alt={currentChannel.name} className={`w-full h-full object-cover ${hasError ? 'opacity-30 grayscale' : ''}`} />
             ) : (
-              isTv ? <Tv className={`w-5 h-5 md:w-6 md:h-6 ${getThemeTextClass(themeColor)}`} /> : <Radio className={`w-5 h-5 md:w-6 md:h-6 ${getThemeTextClass(themeColor)}`} />
+              isTv ? <Tv className={`w-5 h-5 md:w-6 md:h-6 ${hasError ? 'text-gray-400' : getThemeTextClass(themeColor)}`} /> : <Radio className={`w-5 h-5 md:w-6 md:h-6 ${hasError ? 'text-gray-400' : getThemeTextClass(themeColor)}`} />
+            )}
+            
+            {isLoading && !hasError && (
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[1px]">
+                <Loader2 className="w-5 h-5 animate-spin text-white" />
+              </div>
+            )}
+            {hasError && (
+              <div className="absolute inset-0 bg-red-500/20 flex items-center justify-center">
+                <AlertCircle className="w-5 h-5 text-red-500" />
+              </div>
             )}
           </div>
           <div className="overflow-hidden pr-2">
-            <h4 className="font-semibold text-sm md:text-base text-gray-900 dark:text-white truncate">{currentChannel.name}</h4>
-            <p className="text-xs text-gray-500 dark:text-gray-400 capitalize truncate">{currentChannel.type} • {currentChannel.category}</p>
+            <h4 className={`font-semibold text-sm md:text-base truncate ${hasError ? 'text-red-500 dark:text-red-400' : 'text-gray-900 dark:text-white'}`}>
+              {hasError ? 'Yayın Hatası' : currentChannel.name}
+            </h4>
+            <p className="text-xs text-gray-500 dark:text-gray-400 capitalize truncate">
+              {hasError ? 'Bağlanılamadı' : `${currentChannel.type} • ${currentChannel.category}`}
+            </p>
           </div>
         </div>
 
@@ -295,44 +399,38 @@ export const Player: React.FC = () => {
             />
           </div>
           
-          {isTv && (
-            <div className="relative hidden md:block">
-              <button 
-                onClick={toggleQualityMenu}
-                className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-2"
-                title="Kalite Ayarları"
-              >
-                <Settings size={20} />
-              </button>
-              
-              {showQualityMenu && (
-                <div className="absolute bottom-full right-0 mb-2 w-32 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden z-50">
-                  <div className="py-1">
+          <div className="relative hidden md:block">
+            <button 
+              onClick={toggleQualityMenu}
+              className={`p-2 transition-colors ${qualities.length === 0 ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+              title="Kalite Ayarları"
+              disabled={qualities.length === 0}
+            >
+              <Settings size={20} />
+            </button>
+            
+            {showQualityMenu && qualities.length > 0 && (
+              <div className="absolute bottom-full right-0 mb-2 w-32 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden z-50">
+                <div className="py-1">
+                  <button
+                    onClick={() => changeQuality(-1)}
+                    className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${selectedQuality === -1 ? getThemeTextClass(themeColor) + ' font-bold' : 'text-gray-700 dark:text-gray-300'}`}
+                  >
+                    Otomatik
+                  </button>
+                  {qualities.map((q, index) => (
                     <button
-                      onClick={() => changeQuality(-1)}
-                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${selectedQuality === -1 ? getThemeTextClass(themeColor) + ' font-bold' : 'text-gray-700 dark:text-gray-300'}`}
+                      key={index}
+                      onClick={() => changeQuality(index)}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${selectedQuality === index ? getThemeTextClass(themeColor) + ' font-bold' : 'text-gray-700 dark:text-gray-300'}`}
                     >
-                      Otomatik
+                      {q.height ? `${q.height}p` : `Kalite ${index + 1}`}
                     </button>
-                    {qualities.map((q, index) => (
-                      <button
-                        key={index}
-                        onClick={() => changeQuality(index)}
-                        className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${selectedQuality === index ? getThemeTextClass(themeColor) + ' font-bold' : 'text-gray-700 dark:text-gray-300'}`}
-                      >
-                        {q.height}p
-                      </button>
-                    ))}
-                    {qualities.length === 0 && (
-                      <div className="px-4 py-2 text-sm text-gray-400">
-                        Seçenek Yok
-                      </div>
-                    )}
-                  </div>
+                  ))}
                 </div>
-              )}
-            </div>
-          )}
+              </div>
+            )}
+          </div>
 
           {isTv && (
             <>
