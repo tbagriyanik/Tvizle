@@ -1,10 +1,44 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ChannelCard } from '../components/ChannelCard';
 import { mockChannels } from '../data';
 import { useAppContext } from '../context/AppContext';
 import { Play, Radio, Tv, Heart, Clock, ChevronRight, Sparkles } from 'lucide-react';
 import { getThemeBgClass, getThemeTextClass } from '../utils/theme';
 import { getChannelBrand } from '../utils/channelLogos';
+import { Channel } from '../types';
+
+const RecentChannelItem: React.FC<{ channel: Channel; onSelect: () => void }> = ({ channel, onSelect }) => {
+  const [imgError, setImgError] = useState(false);
+  const brand = getChannelBrand(channel.id, channel.name, channel.type);
+
+  const showLogo = !!channel.logo && !imgError;
+
+  return (
+    <button
+      onClick={onSelect}
+      className="flex items-center gap-2.5 p-2 rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200/80 dark:border-gray-600/50 text-left transition-all group"
+    >
+      <div
+        className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden"
+        style={{ background: brand.gradient }}
+      >
+        {showLogo ? (
+          <img src={channel.logo} alt={channel.name} className="w-full h-full object-contain p-0.5" onError={() => setImgError(true)} />
+        ) : (
+          channel.type === 'tv' ? <Tv size={14} className="text-white" /> : <Radio size={14} className="text-white" />
+        )}
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-xs font-semibold text-gray-900 dark:text-white truncate group-hover:text-blue-500">
+          {channel.name}
+        </p>
+        <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">
+          {channel.category}
+        </p>
+      </div>
+    </button>
+  );
+};
 
 export const HomeView: React.FC = () => {
   const { 
@@ -125,35 +159,9 @@ export const HomeView: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-            {recentChannels.map(ch => {
-              const brand = getChannelBrand(ch.id, ch.name, ch.type);
-              return (
-                <button
-                  key={`recent-${ch.id}`}
-                  onClick={() => setCurrentChannel(ch)}
-                  className="flex items-center gap-2.5 p-2 rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200/80 dark:border-gray-600/50 text-left transition-all group"
-                >
-                  <div 
-                    className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden"
-                    style={{ background: brand.gradient }}
-                  >
-                    {ch.logo ? (
-                      <img src={ch.logo} alt={ch.name} className="w-full h-full object-contain p-0.5" />
-                    ) : (
-                      ch.type === 'tv' ? <Tv size={14} className="text-white" /> : <Radio size={14} className="text-white" />
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs font-semibold text-gray-900 dark:text-white truncate group-hover:text-blue-500">
-                      {ch.name}
-                    </p>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">
-                      {ch.category}
-                    </p>
-                  </div>
-                </button>
-              );
-            })}
+            {recentChannels.map(ch => (
+              <RecentChannelItem key={`recent-${ch.id}`} channel={ch} onSelect={() => setCurrentChannel(ch)} />
+            ))}
           </div>
         </section>
       )}
