@@ -3,7 +3,7 @@ import { useAppContext } from '../context/AppContext';
 import { ThemeColor, Language } from '../types';
 import { getThemeBorderClass, getThemeTextClass } from '../utils/theme';
 import { t } from '../utils/i18n';
-import { Moon, Sun, Palette, Languages } from 'lucide-react';
+import { Moon, Sun, Palette, Languages, Github, ExternalLink } from 'lucide-react';
 
 export const SettingsView: React.FC = () => {
   const { themeColor, setThemeColor, themeMode, setThemeMode, language, setLanguage } = useAppContext();
@@ -87,6 +87,32 @@ export const SettingsView: React.FC = () => {
               </button>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3">
+          <Github className="text-gray-500" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t(language, 'settings.sourceCode')}</h3>
+        </div>
+        <div className="p-6">
+          <a
+            href="https://github.com/tbagriyanik/Tvizle"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between gap-3 p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-colors text-gray-700 dark:text-gray-200"
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <span className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                <Github className="w-5 h-5" />
+              </span>
+              <div className="min-w-0">
+                <p className="font-semibold truncate">tbagriyanik/Tvizle</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">github.com</p>
+              </div>
+            </div>
+            <ExternalLink size={16} className="flex-shrink-0 text-gray-400" />
+          </a>
         </div>
       </section>
     </div>

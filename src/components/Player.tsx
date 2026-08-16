@@ -139,6 +139,7 @@ export const Player: React.FC = () => {
   };
 
   // Persist mini/expand panel position & size
+  const skipPersistRef = useRef(true);
   useEffect(() => {
     try {
       const raw = localStorage.getItem('playerLayout');
@@ -154,6 +155,11 @@ export const Player: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    // Skip the very first save so we don't overwrite the loaded values with defaults.
+    if (skipPersistRef.current) {
+      skipPersistRef.current = false;
+      return;
+    }
     try {
       localStorage.setItem('playerLayout', JSON.stringify({ miniPos, miniSize, expandedPos, expandedSize }));
     } catch (_) {}
@@ -694,7 +700,7 @@ export const Player: React.FC = () => {
         </div>
       )}
       
-      {!isTv && <AudioVisualizer isPlaying={isPlaying} volume={volume} audioRef={audioRef} />}
+      {!isTv && !hasError && <AudioVisualizer isPlaying={isPlaying} volume={volume} audioRef={audioRef} />}
 
       {/* TV Player Container */}
       {isTv && (

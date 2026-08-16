@@ -99,6 +99,19 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({ isPlaying, vol
     
     window.addEventListener('resize', resize);
     resize();
+
+    // Resume the shared AudioContext on the first user gesture so the analyser
+    // actually receives real frequency data (autoplay policy keeps it suspended
+    // otherwise).
+    const resumeOnGesture = () => {
+      if (sharedCtx && sharedCtx.state === 'suspended') {
+        sharedCtx.resume().catch(() => {});
+      }
+    };
+    window.addEventListener('pointerdown', resumeOnGesture);
+    window.addEventListener('keydown', resumeOnGesture);
+    window.addEventListener('touchstart', resumeOnGesture);
+    resumeOnGesture();
     
     const draw = () => {
       if (!ctx || !canvas) return;
@@ -198,6 +211,9 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({ isPlaying, vol
     
     return () => {
       window.removeEventListener('resize', resize);
+      window.removeEventListener('pointerdown', resumeOnGesture);
+      window.removeEventListener('keydown', resumeOnGesture);
+      window.removeEventListener('touchstart', resumeOnGesture);
       if (animationFrameIdRef.current !== null) {
         cancelAnimationFrame(animationFrameIdRef.current);
       }

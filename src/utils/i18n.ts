@@ -38,6 +38,7 @@ const translations: Record<string, { tr: string; en: string }> = {
   'settings.countryDesc': { tr: 'Kanal listelerinde hangi ülkenin yayınlarının gösterileceğini seçin.', en: 'Choose which country\'s channels to show in the lists.' },
   'settings.language': { tr: 'Dil', en: 'Language' },
   'settings.languageDesc': { tr: 'Uygulama arayüzünün dilini seçin.', en: 'Choose the app interface language.' },
+  'settings.sourceCode': { tr: 'Kaynak Kod', en: 'Source Code' },
   'settings.appearanceMode': { tr: 'Görünüm Modu', en: 'Appearance Mode' },
   'settings.light': { tr: 'Aydınlık', en: 'Light' },
   'settings.dark': { tr: 'Koyu', en: 'Dark' },
