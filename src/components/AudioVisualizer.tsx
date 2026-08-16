@@ -8,11 +8,12 @@ interface AudioVisualizerProps {
 }
 
 // A single shared Web Audio graph reused for the app's lifetime.
-// Creating/closing per-channel AudioContexts breaks playback because a
-// MediaElementSource permanently routes the element's audio through the graph.
+// We tap the audio via captureStream() (a read-only tap) and do NOT reroute the
+// element through the graph, so playback is never affected or silenced.
 let sharedCtx: AudioContext | null = null;
 let sharedAnalyser: AnalyserNode | null = null;
-let connectedSource: MediaElementAudioSourceNode | null = null;
+let connectedSource: MediaStreamAudioSourceNode | null = null;
+let connectedStream: MediaStream | null = null;
 let connectedElement: HTMLMediaElement | null = null;
 
 const getSharedAnalyser = (): AnalyserNode | null => {
@@ -25,7 +26,7 @@ const getSharedAnalyser = (): AnalyserNode | null => {
       sharedAnalyser = sharedCtx.createAnalyser();
       sharedAnalyser.fftSize = 256;
       sharedAnalyser.smoothingTimeConstant = 0.7;
-      sharedAnalyser.connect(sharedCtx.destination);
+      // NOTE: intentionally NOT connected to destination (no audio rerouting)
     } catch (_) {
       return null;
     }
@@ -44,8 +45,22 @@ const connectElement = (el: HTMLMediaElement) => {
     }
     connectedSource = null;
   }
+  if (connectedStream) {
+    try {
+      connectedStream.getTracks().forEach((t) => t.stop());
+    } catch (_) {
+      /* ignore */
+    }
+    connectedStream = null;
+  }
   try {
-    connectedSource = sharedCtx.createMediaElementSource(el);
+    const captureStream = (el as HTMLMediaElement & { captureStream?: () => MediaStream }).captureStream;
+    if (typeof captureStream !== 'function') {
+      connectedElement = null;
+      return;
+    }
+    connectedStream = captureStream.call(el);
+    connectedSource = sharedCtx.createMediaStreamSource(connectedStream);
     connectedSource.connect(sharedAnalyser);
     connectedElement = el;
   } catch (_) {
