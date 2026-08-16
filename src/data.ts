@@ -7,7 +7,7 @@ export const mockChannels: Channel[] = [
     name: 'TRT 1',
     type: 'tv',
     url: 'https://tv-trt1.medya.trt.com.tr/master.m3u8',
-    logo: 'https://images.unsplash.com/photo-1595152772835-219674b2a8a6?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/TRT_1_logo_%282021-%29.svg/512px-TRT_1_logo_%282021-%29.svg.png',
     category: 'Ulusal',
   },
   {
@@ -15,7 +15,7 @@ export const mockChannels: Channel[] = [
     name: 'ATV',
     type: 'tv',
     url: 'https://rnttwmjcin.turknet.ercdn.net/lcpmvefbyo/atv/atv_1080p.m3u8',
-    logo: 'https://images.unsplash.com/photo-1558227096-7bb263bc3eb9?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Atv_logo.svg/512px-Atv_logo.svg.png',
     category: 'Ulusal',
   },
   {
@@ -23,7 +23,7 @@ export const mockChannels: Channel[] = [
     name: 'Kanal D',
     type: 'tv',
     url: 'https://demiroren.daioncdn.net/kanald/kanald.m3u8?app=kanald_web&ce=3',
-    logo: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Kanal_D_logo.svg/512px-Kanal_D_logo.svg.png',
     category: 'Ulusal',
   },
   {
@@ -31,7 +31,7 @@ export const mockChannels: Channel[] = [
     name: 'Show TV',
     type: 'tv',
     url: 'https://ciner-live.ercdn.net/showtv/showtv.m3u8',
-    logo: 'https://images.unsplash.com/photo-1603190287605-e6ade3cb4a00?w=200&h=200&fit=crop',
+    logo: 'https://i.imgur.com/1l7SCCu.png',
     category: 'Ulusal',
   },
   {
@@ -39,7 +39,7 @@ export const mockChannels: Channel[] = [
     name: 'Star TV',
     type: 'tv',
     url: 'https://dogus.daioncdn.net/startv/startv_720p.m3u8?app=a20ac41e-bdc3-4aa1-934d-26b484480ac9&ce=3&sid=8l4w3lst4co5',
-    logo: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&h=200&fit=crop',
+    logo: 'https://i.imgur.com/9O3DHRB.png',
     category: 'Ulusal',
   },
   {
@@ -47,7 +47,7 @@ export const mockChannels: Channel[] = [
     name: 'TV8',
     type: 'tv',
     url: 'https://tv8.daioncdn.net/tv8/tv8.m3u8?app=7ddc255a-ef47-4e81-ab14-c0e5f2949788&ce=3',
-    logo: 'https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/tr/thumb/6/68/Tv8_Yeni_Logo.png/512px-Tv8_Yeni_Logo.png',
     category: 'Ulusal',
   },
   {
@@ -55,7 +55,7 @@ export const mockChannels: Channel[] = [
     name: 'Kanal 7',
     type: 'tv',
     url: 'https://kanal7-live.daioncdn.net/kanal7/kanal7.m3u8',
-    logo: 'https://images.unsplash.com/photo-1603190287605-e6ade3cb4a00?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Kanal_7_logo.svg/512px-Kanal_7_logo.svg.png',
     category: 'Ulusal',
   },
   {
@@ -63,7 +63,7 @@ export const mockChannels: Channel[] = [
     name: 'Teve2',
     type: 'tv',
     url: 'https://live.duhnet.tv/S2/HLS_LIVE/teve2np/playlist.m3u8',
-    logo: 'https://images.unsplash.com/photo-1558227096-7bb263bc3eb9?w=200&h=200&fit=crop',
+    logo: 'https://i.imgur.com/rsoSLih.png',
     category: 'Ulusal',
   },
   {
@@ -71,7 +71,7 @@ export const mockChannels: Channel[] = [
     name: 'Beyaz TV',
     type: 'tv',
     url: 'https://beyaztv-live.daioncdn.net/beyaztv/beyaztv.m3u8',
-    logo: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Beyaz_TV_logo.svg/512px-Beyaz_TV_logo.svg.png',
     category: 'Ulusal',
   },
   {
@@ -79,7 +79,7 @@ export const mockChannels: Channel[] = [
     name: 'TRT Haber',
     type: 'tv',
     url: 'https://tv-trthaber.medya.trt.com.tr/master.m3u8',
-    logo: 'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/TRT_Haber_Eyl%C3%BCl_2020_Logo.svg/512px-TRT_Haber_Eyl%C3%BCl_2020_Logo.svg.png',
     category: 'Haber',
   },
   {
@@ -87,7 +87,7 @@ export const mockChannels: Channel[] = [
     name: 'A Haber',
     type: 'tv',
     url: 'https://rnttwmjcin.turknet.ercdn.net/lcpmvefbyo/ahaber/ahaber.m3u8',
-    logo: 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/A_Haber_logo.svg/512px-A_Haber_logo.svg.png',
     category: 'Haber',
   },
   {
@@ -95,7 +95,7 @@ export const mockChannels: Channel[] = [
     name: 'Habertürk',
     type: 'tv',
     url: 'https://tv.ensonhaber.com/haberturk/haberturk.m3u8',
-    logo: 'https://images.unsplash.com/photo-1526470608268-f674ce90ebd4?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Habert%C3%BCrk_TV_logo.svg/512px-Habert%C3%BCrk_TV_logo.svg.png',
     category: 'Haber',
   },
   {
@@ -103,7 +103,7 @@ export const mockChannels: Channel[] = [
     name: 'CNN Türk',
     type: 'tv',
     url: 'https://demiroren.daioncdn.net/cnnturk/cnnturk.m3u8?app=cnnturk_web&ce=3',
-    logo: 'https://images.unsplash.com/photo-1588681664899-f142ff2dc9b1?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/CNN_T%C3%BCrk_logo.svg/512px-CNN_T%C3%BCrk_logo.svg.png',
     category: 'Haber',
   },
   {
@@ -111,7 +111,7 @@ export const mockChannels: Channel[] = [
     name: 'NTV',
     type: 'tv',
     url: 'https://dogus.daioncdn.net/ntv/ntv.m3u8?app=ntv_web',
-    logo: 'https://images.unsplash.com/photo-1504465039710-0f49c0a47eb7?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Ntv_logo.svg/512px-Ntv_logo.svg.png',
     category: 'Haber',
   },
   {
@@ -119,7 +119,7 @@ export const mockChannels: Channel[] = [
     name: 'Halk TV',
     type: 'tv',
     url: 'https://halktv-live.daioncdn.net/halktv/halktv.m3u8',
-    logo: 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Halk_TV_logo.svg/512px-Halk_TV_logo.svg.png',
     category: 'Haber',
   },
   {
@@ -127,7 +127,7 @@ export const mockChannels: Channel[] = [
     name: 'TV100',
     type: 'tv',
     url: 'https://tv.ensonhaber.com/tv100/tv100.m3u8',
-    logo: 'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/tr/thumb/0/0f/TV100_logo.png/512px-TV100_logo.png',
     category: 'Haber',
   },
   {
@@ -135,7 +135,7 @@ export const mockChannels: Channel[] = [
     name: 'Tele1',
     type: 'tv',
     url: 'https://tele1-live.ercdn.net/tele1/tele1.m3u8',
-    logo: 'https://images.unsplash.com/photo-1572949645841-094f3a9c4c94?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/tr/4/43/Tele1_logosu.png',
     category: 'Haber',
   },
   {
@@ -143,7 +143,7 @@ export const mockChannels: Channel[] = [
     name: 'TGRT Haber',
     type: 'tv',
     url: 'https://tgrthaber-live.daioncdn.net/tgrthaber/tgrthaber.m3u8',
-    logo: 'https://images.unsplash.com/photo-1498644028089-6bf361c4df97?w=200&h=200&fit=crop',
+    logo: 'https://i.imgur.com/PrxwKDw.png',
     category: 'Haber',
   },
   {
@@ -151,7 +151,7 @@ export const mockChannels: Channel[] = [
     name: 'Ülke TV',
     type: 'tv',
     url: 'https://kanal7-live.daioncdn.net/ulketv/ulketv.m3u8',
-    logo: 'https://images.unsplash.com/photo-1526470608268-f674ce90ebd4?w=200&h=200&fit=crop',
+    logo: 'https://i.imgur.com/wdWR7Qk.png',
     category: 'Haber',
   },
   {
@@ -159,7 +159,7 @@ export const mockChannels: Channel[] = [
     name: 'Bloomberg HT',
     type: 'tv',
     url: 'https://tv.ensonhaber.com/bloomberght/bloomberght.m3u8',
-    logo: 'https://images.unsplash.com/photo-1591696205602-2f950c417cb9?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Bloomberg_HT_logo.svg/512px-Bloomberg_HT_logo.svg.png',
     category: 'Ekonomi',
   },
   {
@@ -167,7 +167,7 @@ export const mockChannels: Channel[] = [
     name: 'A Para',
     type: 'tv',
     url: 'https://rnttwmjcin.turknet.ercdn.net/lcpmvefbyo/apara/apara.m3u8',
-    logo: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/A_Para_logo.svg/512px-A_Para_logo.svg.png',
     category: 'Ekonomi',
   },
   {
@@ -175,7 +175,7 @@ export const mockChannels: Channel[] = [
     name: 'TRT Spor',
     type: 'tv',
     url: 'https://tv-trtspor1.medya.trt.com.tr/master.m3u8',
-    logo: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=200&h=200&fit=crop',
+    logo: 'https://i.imgur.com/6tv0zxh.png',
     category: 'Spor',
   },
   {
@@ -183,7 +183,7 @@ export const mockChannels: Channel[] = [
     name: 'A Spor',
     type: 'tv',
     url: 'https://rnttwmjcin.turknet.ercdn.net/lcpmvefbyo/aspor/aspor.m3u8',
-    logo: 'https://images.unsplash.com/photo-1541252260730-0412e8e2108e?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/A_Spor_logo.svg/512px-A_Spor_logo.svg.png',
     category: 'Spor',
   },
   {
@@ -191,7 +191,7 @@ export const mockChannels: Channel[] = [
     name: 'TRT Belgesel',
     type: 'tv',
     url: 'https://tv-trtbelgesel.medya.trt.com.tr/master.m3u8',
-    logo: 'https://images.unsplash.com/photo-1518481146316-d3a3f5b72223?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/TRT_Belgesel_logo_%282019-%29.svg/512px-TRT_Belgesel_logo_%282019-%29.svg.png',
     category: 'Belgesel',
   },
   {
@@ -199,7 +199,7 @@ export const mockChannels: Channel[] = [
     name: 'TRT 2',
     type: 'tv',
     url: 'https://tv-trt2.medya.trt.com.tr/master.m3u8',
-    logo: 'https://images.unsplash.com/photo-1595152772835-219674b2a8a6?w=200&h=200&fit=crop',
+    logo: 'https://i.imgur.com/iOCQdyD.png',
     category: 'Kültür Sanat',
   },
   {
@@ -207,7 +207,7 @@ export const mockChannels: Channel[] = [
     name: 'TRT Çocuk',
     type: 'tv',
     url: 'https://tv-trtcocuk.medya.trt.com.tr/master.m3u8',
-    logo: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/TRT_%C3%87ocuk_logo_%282021%29.svg/512px-TRT_%C3%87ocuk_logo_%282021%29.svg.png',
     category: 'Çocuk',
   },
   {
@@ -215,7 +215,7 @@ export const mockChannels: Channel[] = [
     name: 'Minika Çocuk',
     type: 'tv',
     url: 'https://rnttwmjcin.turknet.ercdn.net/lcpmvefbyo/minikacocuk/minikacocuk.m3u8',
-    logo: 'https://images.unsplash.com/photo-1558227096-7bb263bc3eb9?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Minika_%C3%87ocuk_logo.svg/512px-Minika_%C3%87ocuk_logo.svg.png',
     category: 'Çocuk',
   },
   {
@@ -223,7 +223,7 @@ export const mockChannels: Channel[] = [
     name: 'Minika GO',
     type: 'tv',
     url: 'https://rnttwmjcin.turknet.ercdn.net/lcpmvefbyo/minikago/minikago.m3u8',
-    logo: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Minika_GO_logo.svg/512px-Minika_GO_logo.svg.png',
     category: 'Çocuk',
   },
   {
@@ -231,7 +231,7 @@ export const mockChannels: Channel[] = [
     name: 'Kral Pop TV',
     type: 'tv',
     url: 'https://dogus.daioncdn.net/kralpoptv/kralpoptv.m3u8?app=kralpoptv_web',
-    logo: 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Kral_Pop_TV_logo.svg/512px-Kral_Pop_TV_logo.svg.png',
     category: 'Müzik',
   },
   {
@@ -239,7 +239,7 @@ export const mockChannels: Channel[] = [
     name: 'Dream Türk',
     type: 'tv',
     url: 'https://live.duhnet.tv/S2/HLS_LIVE/dreamturknp/playlist.m3u8',
-    logo: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Dream_T%C3%BCrk_logo.svg/512px-Dream_T%C3%BCrk_logo.svg.png',
     category: 'Müzik',
   },
   {
@@ -247,7 +247,7 @@ export const mockChannels: Channel[] = [
     name: 'TRT Müzik',
     type: 'tv',
     url: 'https://tv-trtmuzik.medya.trt.com.tr/master.m3u8',
-    logo: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=200&h=200&fit=crop',
+    logo: 'https://i.imgur.com/JgUzRH8.png',
     category: 'Müzik',
   },
   {
@@ -255,7 +255,7 @@ export const mockChannels: Channel[] = [
     name: 'Red Bull TV',
     type: 'tv',
     url: 'https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8',
-    logo: 'https://images.unsplash.com/photo-1541252260730-0412e8e2108e?w=200&h=200&fit=crop',
+    logo: 'https://jiotvimages.cdn.jio.com/dare_images/images/Red_Bull_TV.png',
     category: 'Yabancı Spor',
   },
   {
@@ -263,7 +263,7 @@ export const mockChannels: Channel[] = [
     name: 'Al Jazeera',
     type: 'tv',
     url: 'https://live-hls-web-aje-fa.thehlive.com/AJE/index.m3u8',
-    logo: 'https://images.unsplash.com/photo-1554475901-4538ddfbccc2?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Aljazeera_eng.svg/512px-Aljazeera_eng.svg.png',
     category: 'Dünya / Haber',
   },
   {
@@ -271,7 +271,7 @@ export const mockChannels: Channel[] = [
     name: 'France 24',
     type: 'tv',
     url: 'https://live.france24.com/hls/live/2037218-b/F24_EN_HI_HLS/master_2300.m3u8',
-    logo: 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/France_24_logo.svg/512px-France_24_logo.svg.png',
     category: 'Dünya / Haber',
   },
   {
@@ -279,7 +279,7 @@ export const mockChannels: Channel[] = [
     name: 'DW English',
     type: 'tv',
     url: 'https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/master.m3u8',
-    logo: 'https://images.unsplash.com/photo-1526470608268-f674ce90ebd4?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Deutsche_Welle_logo.svg/512px-Deutsche_Welle_logo.svg.png',
     category: 'Dünya / Haber',
   },
   {
@@ -287,7 +287,7 @@ export const mockChannels: Channel[] = [
     name: 'Sky News',
     type: 'tv',
     url: 'https://skynewsau-live.akamaized.net/hls/live/2002689/skynewsau-extra1/master.m3u8',
-    logo: 'https://images.unsplash.com/photo-1588681664899-f142ff2dc9b1?w=200&h=200&fit=crop',
+    logo: 'https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/512/512/skychb1404.png',
     category: 'Dünya / Haber',
   },
   {
@@ -295,7 +295,7 @@ export const mockChannels: Channel[] = [
     name: 'NASA TV',
     type: 'tv',
     url: 'https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8',
-    logo: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/NASA_logo.svg/512px-NASA_logo.svg.png',
     category: 'Dünya / Belgesel',
   },
 
@@ -305,7 +305,7 @@ export const mockChannels: Channel[] = [
     name: 'TRT FM',
     type: 'radio',
     url: 'https://radio-trtfm.medya.trt.com.tr/master.m3u8',
-    logo: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/TRT_FM_logo_2021.svg/512px-TRT_FM_logo_2021.svg.png',
     category: 'Karma',
   },
   {
@@ -313,7 +313,7 @@ export const mockChannels: Channel[] = [
     name: 'PowerTürk',
     type: 'radio',
     url: 'https://listen.powerapp.com.tr/powerturk/mpeg/icecast.audio',
-    logo: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Power_T%C3%BCrk_logo.svg/512px-Power_T%C3%BCrk_logo.svg.png',
     category: 'Türkçe Pop',
   },
   {
@@ -321,7 +321,7 @@ export const mockChannels: Channel[] = [
     name: 'Joy FM',
     type: 'radio',
     url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/JOY_FM.mp3',
-    logo: 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Joy_FM_logo.png/512px-Joy_FM_logo.png',
     category: 'Yabancı Slow',
   },
   {
@@ -329,7 +329,7 @@ export const mockChannels: Channel[] = [
     name: 'Virgin Radio',
     type: 'radio',
     url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/VIRGIN_RADIO.mp3',
-    logo: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Virgin_Radio_logo.svg/512px-Virgin_Radio_logo.svg.png',
     category: 'Yabancı Hit',
   },
   {
@@ -337,7 +337,7 @@ export const mockChannels: Channel[] = [
     name: 'Metro FM',
     type: 'radio',
     url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/METRO_FM.mp3',
-    logo: 'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Metro_FM_logo.png/512px-Metro_FM_logo.png',
     category: 'Yabancı Hit',
   },
   {
@@ -345,7 +345,7 @@ export const mockChannels: Channel[] = [
     name: 'Power FM',
     type: 'radio',
     url: 'https://listen.powerapp.com.tr/powerfm/mpeg/icecast.audio',
-    logo: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Power_FM_logo.svg/512px-Power_FM_logo.svg.png',
     category: 'Yabancı Hit',
   },
   {
@@ -353,7 +353,7 @@ export const mockChannels: Channel[] = [
     name: 'Süper FM',
     type: 'radio',
     url: 'https://21633.live.streamtheworld.com:443/SUPER_FM.mp3',
-    logo: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/S%C3%BCper_FM_logo.png/512px-S%C3%BCper_FM_logo.png',
     category: 'Türkçe Pop',
   },
   {
@@ -361,7 +361,7 @@ export const mockChannels: Channel[] = [
     name: 'KEXP 90.3',
     type: 'radio',
     url: 'https://kexp-mp3-128.streamguys1.com/kexp128.mp3',
-    logo: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=200&h=200&fit=crop',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/KEXP_logo.svg/512px-KEXP_logo.svg.png',
     category: 'Yabancı Müzik',
   }
 ];

@@ -37,9 +37,9 @@ export const Layout: React.FC<LayoutProps> = ({ activeTab, setActiveTab, childre
       {/* Sidebar */}
       <aside className={`fixed top-0 left-0 bottom-0 w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 z-50 transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="h-16 flex items-center justify-between px-6 border-b border-gray-200 dark:border-gray-800">
-          <h1 className={`text-xl font-bold flex items-center gap-2 ${getThemeTextClass(themeColor)}`}>
+          <h1 className={`text-xl font-black tracking-tight flex items-center gap-2 ${getThemeTextClass(themeColor)}`}>
             <Tv className="w-6 h-6" />
-            Tvizle
+            <span>LiveTVizle</span>
           </h1>
           <button className="lg:hidden text-gray-500" onClick={() => setSidebarOpen(false)}>
             <X size={24} />
@@ -78,7 +78,9 @@ export const Layout: React.FC<LayoutProps> = ({ activeTab, setActiveTab, childre
           >
             <Menu size={24} />
           </button>
-          <span className={`ml-2 text-lg font-bold ${getThemeTextClass(themeColor)}`}>Tvizle</span>
+          <span className={`ml-2 text-lg font-black tracking-tight ${getThemeTextClass(themeColor)}`}>
+            LiveTVizle
+          </span>
         </header>
 
         <div className="p-4 md:p-8 max-w-7xl mx-auto">

@@ -16,7 +16,9 @@ import { mockChannels } from './data';
 
 const AppContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState('home');
-  const { favorites, searchQuery } = useAppContext();
+  const { favorites, searchQuery, customChannels } = useAppContext();
+
+  const allChannels = [...mockChannels, ...customChannels];
 
   const renderContent = () => {
     if (searchQuery.trim() !== '') {
@@ -27,11 +29,11 @@ const AppContent: React.FC = () => {
       case 'home':
         return <HomeView />;
       case 'tv':
-        return <ListView title="TV Kanalları" channels={mockChannels.filter(c => c.type === 'tv')} />;
+        return <ListView title="TV Kanalları" channels={allChannels.filter(c => c.type === 'tv')} />;
       case 'radio':
-        return <ListView title="Radyolar" channels={mockChannels.filter(c => c.type === 'radio')} />;
+        return <ListView title="Radyolar" channels={allChannels.filter(c => c.type === 'radio')} />;
       case 'favorites':
-        const favoriteChannels = mockChannels.filter(c => favorites.includes(c.id));
+        const favoriteChannels = allChannels.filter(c => favorites.includes(c.id));
         return <ListView title="Favoriler" channels={favoriteChannels} emptyMessage="Henüz favorilere kanal eklemediniz." />;
       case 'history':
         return <HistoryView />;
