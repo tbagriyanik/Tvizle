@@ -15,9 +15,12 @@ import { M3UView } from './views/M3UView';
 import { mockChannels } from './data';
 
 const AppContent: React.FC = () => {
-  const { favorites, searchQuery, customChannels, activeTab } = useAppContext();
+  const { favorites, searchQuery, customChannels, activeTab, country } = useAppContext();
 
-  const allChannels = [...mockChannels, ...customChannels];
+  const allChannels = [...mockChannels, ...customChannels].filter(c => {
+    if (country === 'all') return true;
+    return (c.country ?? 'tr') === country;
+  });
 
   const renderContent = () => {
     if (searchQuery.trim() !== '') {

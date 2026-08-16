@@ -7,6 +7,7 @@ export interface Channel {
   url: string;
   logo: string;
   category: string;
+  country?: string;
 }
 
 export interface HistoryItem {
@@ -16,6 +17,7 @@ export interface HistoryItem {
 
 export type ThemeColor = 'blue' | 'red' | 'green' | 'purple' | 'orange';
 export type ThemeMode = 'light' | 'dark';
+export type Country = 'all' | 'tr' | 'us' | 'de' | 'fr' | 'gb' | 'qa';
 
 export interface AppState {
   currentChannel: Channel | null;
@@ -24,6 +26,7 @@ export interface AppState {
   history: HistoryItem[];
   themeColor: ThemeColor;
   themeMode: ThemeMode;
+  country: Country;
   sidebarOpen: boolean;
   volume: number;
   searchQuery: string;

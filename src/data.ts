@@ -257,6 +257,7 @@ export const mockChannels: Channel[] = [
     url: 'https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8',
     logo: 'https://jiotvimages.cdn.jio.com/dare_images/images/Red_Bull_TV.png',
     category: 'Yabancı Spor',
+    country: 'us',
   },
   {
     id: 'tv-aljazeera',
@@ -265,6 +266,7 @@ export const mockChannels: Channel[] = [
     url: 'https://live-hls-web-aje-fa.thehlive.com/AJE/index.m3u8',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Aljazeera_eng.svg/512px-Aljazeera_eng.svg.png',
     category: 'Dünya / Haber',
+    country: 'qa',
   },
   {
     id: 'tv-france24',
@@ -273,6 +275,7 @@ export const mockChannels: Channel[] = [
     url: 'https://live.france24.com/hls/live/2037218-b/F24_EN_HI_HLS/master_2300.m3u8',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/France_24_logo.svg/512px-France_24_logo.svg.png',
     category: 'Dünya / Haber',
+    country: 'fr',
   },
   {
     id: 'tv-dw-eng',
@@ -281,6 +284,7 @@ export const mockChannels: Channel[] = [
     url: 'https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/master.m3u8',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Deutsche_Welle_logo.svg/512px-Deutsche_Welle_logo.svg.png',
     category: 'Dünya / Haber',
+    country: 'de',
   },
   {
     id: 'tv-skynews-uk',
@@ -289,6 +293,7 @@ export const mockChannels: Channel[] = [
     url: 'https://skynewsau-live.akamaized.net/hls/live/2002689/skynewsau-extra1/master.m3u8',
     logo: 'https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/512/512/skychb1404.png',
     category: 'Dünya / Haber',
+    country: 'gb',
   },
   {
     id: 'tv-nasatv',
@@ -297,6 +302,7 @@ export const mockChannels: Channel[] = [
     url: 'https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/NASA_logo.svg/512px-NASA_logo.svg.png',
     category: 'Dünya / Belgesel',
+    country: 'us',
   },
 
   // RADYO KANALLARI
@@ -363,5 +369,6 @@ export const mockChannels: Channel[] = [
     url: 'https://kexp-mp3-128.streamguys1.com/kexp128.mp3',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/KEXP_logo.svg/512px-KEXP_logo.svg.png',
     category: 'Yabancı Müzik',
+    country: 'us',
   }
 ];

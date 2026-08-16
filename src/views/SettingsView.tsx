@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useAppContext } from '../context/AppContext';
-import { ThemeColor } from '../types';
+import { ThemeColor, Country } from '../types';
 import { getThemeBgClass, getThemeBorderClass, getThemeTextClass } from '../utils/theme';
-import { Moon, Sun, Monitor, Palette, Download, Smartphone, CheckCircle2, Share2, PlusSquare } from 'lucide-react';
+import { Moon, Sun, Monitor, Palette, Download, Smartphone, CheckCircle2, Share2, PlusSquare, Globe2 } from 'lucide-react';
 
 export const SettingsView: React.FC = () => {
-  const { themeColor, setThemeColor, themeMode, setThemeMode } = useAppContext();
+  const { themeColor, setThemeColor, themeMode, setThemeMode, country, setCountry } = useAppContext();
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isStandalone, setIsStandalone] = useState(false);
   const [installedSuccessfully, setInstalledSuccessfully] = useState(false);
@@ -53,6 +53,16 @@ export const SettingsView: React.FC = () => {
     { id: 'green', label: 'Yeşil', hex: 'bg-green-600' },
     { id: 'purple', label: 'Mor', hex: 'bg-purple-600' },
     { id: 'orange', label: 'Turuncu', hex: 'bg-orange-600' },
+  ];
+
+  const countries: { id: Country, flag: string, label: string }[] = [
+    { id: 'all', flag: '🌍', label: 'Tümü' },
+    { id: 'tr', flag: '🇹🇷', label: 'Türkiye' },
+    { id: 'us', flag: '🇺🇸', label: 'ABD' },
+    { id: 'de', flag: '🇩🇪', label: 'Almanya' },
+    { id: 'fr', flag: '🇫🇷', label: 'Fransa' },
+    { id: 'gb', flag: '🇬🇧', label: 'İngiltere' },
+    { id: 'qa', flag: '🇶🇦', label: 'Katar' },
   ];
 
   return (
@@ -128,6 +138,28 @@ export const SettingsView: React.FC = () => {
                 aria-label={color.label}
                 title={color.label}
               />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3">
+          <Globe2 className="text-gray-500" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Ülke Seçimi</h3>
+        </div>
+        <div className="p-6">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Kanal listelerinde hangi ülkenin yayınlarının gösterileceğini seçin.</p>
+          <div className="flex flex-wrap gap-3">
+            {countries.map(c => (
+              <button
+                key={c.id}
+                onClick={() => setCountry(c.id)}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 text-sm font-semibold transition-all ${country === c.id ? `${getThemeBorderClass(themeColor)} bg-gray-50 dark:bg-gray-700` : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'}`}
+              >
+                <span className="text-base leading-none">{c.flag}</span>
+                <span className={country === c.id ? getThemeTextClass(themeColor) : ''}>{c.label}</span>
+              </button>
             ))}
           </div>
         </div>
