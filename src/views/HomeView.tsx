@@ -2,76 +2,212 @@ import React from 'react';
 import { ChannelCard } from '../components/ChannelCard';
 import { mockChannels } from '../data';
 import { useAppContext } from '../context/AppContext';
-import { Play, Sparkles, Radio, Tv } from 'lucide-react';
-import { getThemeBgClass } from '../utils/theme';
+import { Play, Radio, Tv, Heart, Clock, ChevronRight, Sparkles } from 'lucide-react';
+import { getThemeBgClass, getThemeTextClass } from '../utils/theme';
 import { getChannelBrand } from '../utils/channelLogos';
 
 export const HomeView: React.FC = () => {
-  const { currentChannel, setCurrentChannel, themeColor } = useAppContext();
-  const featured = mockChannels[0]; // TRT 1 as flagship featured channel
+  const { 
+    currentChannel, 
+    setCurrentChannel, 
+    themeColor, 
+    setActiveTab, 
+    setSelectedCategory,
+    history,
+    favorites,
+    customChannels
+  } = useAppContext();
+
+  const allChannels = [...mockChannels, ...customChannels];
+  const featured = mockChannels[0]; // Flagship featured channel (TRT 1)
   const featuredBrand = featured ? getChannelBrand(featured.id, featured.name, featured.type) : null;
 
+  // Recent channels from history
+  const recentChannels = history
+    .map(item => allChannels.find(c => c.id === item.channelId))
+    .filter((c): c is NonNullable<typeof c> => c !== undefined)
+    .slice(0, 6);
+
+  // Favorite channels
+  const favoriteChannels = allChannels.filter(c => favorites.includes(c.id)).slice(0, 4);
+
+  const quickCategories = [
+    { label: 'Ulusal', type: 'tv', cat: 'Ulusal' },
+    { label: 'Haber', type: 'tv', cat: 'Haber' },
+    { label: 'Spor', type: 'tv', cat: 'Spor' },
+    { label: 'Müzik', type: 'tv', cat: 'Müzik' },
+    { label: 'Pop Radyo', type: 'radio', cat: 'Pop' },
+    { label: 'Slow Radyo', type: 'radio', cat: 'Slow' },
+    { label: 'Haber / Spor', type: 'radio', cat: 'Haber/Spor' },
+  ];
+
+  const handleCategoryClick = (type: 'tv' | 'radio', cat: string) => {
+    setActiveTab(type);
+    setSelectedCategory(cat);
+  };
+
   return (
-    <div className="space-y-10 animate-in fade-in duration-500">
+    <div className="space-y-8 animate-in fade-in duration-300">
+      
+      {/* Quick Category Discovery Pills */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+        <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-1 flex-shrink-0 mr-1">
+          <Sparkles size={14} className={getThemeTextClass(themeColor)} />
+          <span>Kategoriler:</span>
+        </span>
+        {quickCategories.map((item, idx) => (
+          <button
+            key={idx}
+            onClick={() => handleCategoryClick(item.type as any, item.cat)}
+            className="px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 shadow-2xs transition-all cursor-pointer flex items-center gap-1.5"
+          >
+            {item.type === 'tv' ? <Tv size={12} className="text-blue-500" /> : <Radio size={12} className="text-amber-500" />}
+            <span>{item.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Featured Banner Hero */}
       {!currentChannel && featured && (
         <section 
-          className="relative rounded-2xl overflow-hidden aspect-[21/9] md:aspect-[24/8] group shadow-2xl border border-white/10"
+          className="relative rounded-2xl overflow-hidden aspect-[21/9] md:aspect-[24/7] shadow-md border border-gray-200 dark:border-gray-800"
           style={{ background: featuredBrand?.gradient || 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' }}
         >
-          {/* Ambient Lighting & Blur Effects */}
-          <div 
-            className="absolute -right-10 -top-10 w-96 h-96 rounded-full opacity-40 blur-3xl pointer-events-none"
-            style={{ background: featuredBrand?.accentColor || '#ef4444' }}
-          />
-
-          <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/60 to-transparent flex flex-col justify-end p-6 md:p-10 z-10">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-600/90 text-white text-xs font-bold uppercase tracking-wider backdrop-blur-md shadow-lg border border-red-400/30">
-                <span className="w-2 h-2 rounded-full bg-white animate-ping" />
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/60 to-transparent flex flex-col justify-end p-6 md:p-8 z-10">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-red-600 text-white text-xs font-bold uppercase tracking-wider">
+                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                 <span>Canlı Yayın</span>
               </div>
-              <span className="px-2.5 py-1 rounded-full bg-white/10 text-white/90 text-xs font-semibold backdrop-blur-md border border-white/10">
+              <span className="px-2 py-0.5 rounded-md bg-white/15 text-white/90 text-xs font-semibold backdrop-blur-xs">
                 HD 1080p
               </span>
-              <span className="px-2.5 py-1 rounded-full bg-white/10 text-white/90 text-xs font-semibold backdrop-blur-md border border-white/10">
+              <span className="px-2 py-0.5 rounded-md bg-white/15 text-white/90 text-xs font-semibold backdrop-blur-xs">
                 {featured.category}
               </span>
             </div>
 
-            <h2 className="text-3xl md:text-5xl font-black text-white mb-2 tracking-tight drop-shadow-md">
+            <h2 className="text-2xl md:text-4xl font-black text-white mb-1 tracking-tight">
               {featured.name}
             </h2>
-            <p className="text-gray-300 max-w-xl mb-6 text-sm md:text-base hidden sm:block leading-relaxed drop-shadow">
-              Ulusal yayınları, dizileri, haber bültenlerini ve canlı spor karşılaşmalarını kesintisiz ve yüksek kalitede izleyin.
+            <p className="text-gray-300 max-w-xl mb-4 text-sm hidden sm:block">
+              Ulusal yayınları, popüler dizileri, ana haber bültenlerini ve canlı spor karşılaşmalarını kesintisiz ve yüksek kalitede izleyin.
             </p>
 
             <div>
               <button 
                 onClick={() => setCurrentChannel(featured)}
-                className={`inline-flex items-center gap-2.5 px-6 py-3 rounded-xl text-white font-bold text-sm md:text-base shadow-xl hover:scale-105 transition-all duration-300 ${getThemeBgClass(themeColor)}`}
+                className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-semibold text-sm ${getThemeBgClass(themeColor)} hover:opacity-90 shadow-md`}
               >
-                <Play size={20} fill="currentColor" />
-                <span>Hemen İzle</span>
+                <Play size={17} fill="currentColor" />
+                <span>Hemen Canlı İzle</span>
               </button>
             </div>
           </div>
         </section>
       )}
 
+      {/* Recently Played Strip (If user has history) */}
+      {recentChannels.length > 0 && (
+        <section className="bg-white dark:bg-gray-800/80 rounded-2xl p-4 md:p-5 border border-gray-200 dark:border-gray-700 shadow-2xs">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Clock size={16} className={getThemeTextClass(themeColor)} />
+              <h3 className="font-bold text-sm md:text-base text-gray-900 dark:text-white">Son İzlenenler</h3>
+            </div>
+            <button
+              onClick={() => setActiveTab('history')}
+              className="text-xs font-semibold text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 flex items-center gap-0.5"
+            >
+              <span>Geçmiş</span>
+              <ChevronRight size={14} />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+            {recentChannels.map(ch => {
+              const brand = getChannelBrand(ch.id, ch.name, ch.type);
+              return (
+                <button
+                  key={`recent-${ch.id}`}
+                  onClick={() => setCurrentChannel(ch)}
+                  className="flex items-center gap-2.5 p-2 rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200/80 dark:border-gray-600/50 text-left transition-all group"
+                >
+                  <div 
+                    className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden"
+                    style={{ background: brand.gradient }}
+                  >
+                    {ch.logo ? (
+                      <img src={ch.logo} alt={ch.name} className="w-full h-full object-contain p-0.5" />
+                    ) : (
+                      ch.type === 'tv' ? <Tv size={14} className="text-white" /> : <Radio size={14} className="text-white" />
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-semibold text-gray-900 dark:text-white truncate group-hover:text-blue-500">
+                      {ch.name}
+                    </p>
+                    <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">
+                      {ch.category}
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Favorites Section (If user has favorites) */}
+      {favoriteChannels.length > 0 && (
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-red-500/10 text-red-500 dark:text-red-400">
+                <Heart size={18} fill="currentColor" />
+              </div>
+              <div>
+                <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">Favori Kanallarınız</h2>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Hızlı erişim için kaydettiğiniz kanallar</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setActiveTab('favorites')}
+              className={`text-xs md:text-sm font-semibold flex items-center gap-1 ${getThemeTextClass(themeColor)} hover:underline`}
+            >
+              <span>Tümünü Gör ({favorites.length})</span>
+              <ChevronRight size={16} />
+            </button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {favoriteChannels.map(channel => (
+              <ChannelCard key={`fav-home-${channel.id}`} channel={channel} />
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Popular TV Channels */}
       <section>
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-lg bg-red-500/10 text-red-500 dark:text-red-400">
-              <Tv size={20} />
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-red-500/10 text-red-500 dark:text-red-400">
+              <Tv size={18} />
             </div>
             <div>
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">Popüler TV Kanalları</h2>
+              <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">Popüler TV Kanalları</h2>
               <p className="text-xs text-gray-500 dark:text-gray-400">En çok izlenen canlı televizyon kanalları</p>
             </div>
           </div>
+          <button
+            onClick={() => { setActiveTab('tv'); setSelectedCategory(undefined); }}
+            className={`text-xs md:text-sm font-semibold flex items-center gap-1 ${getThemeTextClass(themeColor)} hover:underline`}
+          >
+            <span>Tüm TV Kanalları (65)</span>
+            <ChevronRight size={16} />
+          </button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {mockChannels.filter(c => c.type === 'tv').slice(0, 8).map(channel => (
             <ChannelCard key={channel.id} channel={channel} />
           ))}
@@ -80,18 +216,25 @@ export const HomeView: React.FC = () => {
 
       {/* Trending Radios */}
       <section>
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-lg bg-amber-500/10 text-amber-500 dark:text-amber-400">
-              <Radio size={20} />
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-amber-500/10 text-amber-500 dark:text-amber-400">
+              <Radio size={18} />
             </div>
             <div>
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">Trend Radyolar</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Canlı radyo istasyonları ve müzik akışları</p>
+              <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">Trend Radyolar</h2>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Canlı radyo istasyonları ve kesintisiz müzik yayınları</p>
             </div>
           </div>
+          <button
+            onClick={() => { setActiveTab('radio'); setSelectedCategory(undefined); }}
+            className={`text-xs md:text-sm font-semibold flex items-center gap-1 ${getThemeTextClass(themeColor)} hover:underline`}
+          >
+            <span>Tüm Radyolar (65)</span>
+            <ChevronRight size={16} />
+          </button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {mockChannels.filter(c => c.type === 'radio').slice(0, 8).map(channel => (
             <ChannelCard key={channel.id} channel={channel} />
           ))}

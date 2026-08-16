@@ -31,4 +31,7 @@ export interface AppState {
   activeTab: string;
   navHistory: string[];
   historyIndex: number;
+  selectedCategory?: string;
+  sleepTimerMinutes?: number | null;
+  sleepTimerEnd?: number | null;
 }

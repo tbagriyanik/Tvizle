@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Channel } from '../types';
 import { getChannelBrand } from '../utils/channelLogos';
-import { Tv, Radio, Sparkles } from 'lucide-react';
+import { Tv, Radio, Disc, Music2, Waves, Sparkles, Activity } from 'lucide-react';
 
 interface ChannelPreviewProps {
   channel: Channel;
@@ -14,77 +14,152 @@ interface ChannelPreviewProps {
 export const ChannelPreview: React.FC<ChannelPreviewProps> = ({
   channel,
   className = '',
-  size = 'md',
   showBadges = true,
   isPlaying = false,
 }) => {
   const [imgError, setImgError] = useState(false);
   const brand = getChannelBrand(channel.id, channel.name, channel.type);
 
-  // Check if logo is valid and not error
   const hasValidLogo = !!channel.logo && !imgError;
+
+  // Station initials for vinyl monogram fallback
+  const getInitials = (text: string) => {
+    const cleaned = text.replace(/radyo|fm|turkey|türkiye|\.com|web/gi, '').trim();
+    const parts = cleaned.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return (cleaned.slice(0, 3) || text.slice(0, 3)).toUpperCase();
+  };
 
   if (channel.type === 'radio') {
     return (
       <div 
-        className={`relative overflow-hidden flex items-center justify-center select-none ${className}`}
+        className={`relative overflow-hidden flex items-center justify-center select-none group/radio ${className}`}
         style={{ background: brand.gradient }}
       >
-        {/* Decorative vinyl grooves / soundwave pattern */}
-        <div className="absolute inset-0 opacity-15 flex items-center justify-center pointer-events-none">
-          <div className={`w-36 h-36 rounded-full border border-white/40 ${isPlaying ? 'animate-spin' : ''}`} style={{ animationDuration: '8s' }} />
-          <div className={`absolute w-24 h-24 rounded-full border border-white/30 ${isPlaying ? 'animate-spin' : ''}`} style={{ animationDuration: '6s' }} />
-          <div className="absolute w-12 h-12 rounded-full border border-white/20" />
+        {/* Vinyl Record Visual Disc Background */}
+        <div 
+          className={`absolute w-28 h-28 sm:w-32 sm:h-32 rounded-full pointer-events-none flex items-center justify-center opacity-85 transition-transform duration-700 ${
+            isPlaying ? 'animate-[spin_8s_linear_infinite]' : 'group-hover/radio:scale-105'
+          }`}
+          style={{
+            background: 'radial-gradient(circle, #18181b 0%, #09090b 45%, #18181b 70%, #000000 100%)',
+            boxShadow: `0 0 20px rgba(0,0,0,0.6), inset 0 0 10px rgba(255,255,255,0.08), 0 0 12px ${brand.accentColor}33`,
+            border: '1px solid rgba(255,255,255,0.12)'
+          }}
+        >
+          {/* Vinyl Grooves (Subtle concentric rings) */}
+          <div className="absolute inset-1.5 rounded-full border border-white/[0.04]" />
+          <div className="absolute inset-3.5 rounded-full border border-white/[0.06]" />
+          <div className="absolute inset-6 rounded-full border border-white/[0.05]" />
+          <div className="absolute inset-8 rounded-full border border-white/[0.07]" />
+          <div className="absolute inset-11 rounded-full border border-white/[0.05]" />
+
+          {/* Vinyl Sheen Overlay (Metallic Refraction Lines) */}
+          <div 
+            className="absolute inset-0 rounded-full opacity-20 pointer-events-none"
+            style={{
+              background: 'conic-gradient(from 45deg, transparent 0deg, rgba(255,255,255,0.4) 60deg, transparent 120deg, transparent 180deg, rgba(255,255,255,0.4) 240deg, transparent 300deg)'
+            }}
+          />
         </div>
 
-        {/* Ambient glow */}
-        <div 
-          className="absolute inset-0 opacity-30 pointer-events-none blur-xl"
-          style={{ background: `radial-gradient(circle at center, ${brand.accentColor} 0%, transparent 70%)` }}
-        />
+        {/* Dynamic Pulse Glow when playing */}
+        {isPlaying && (
+          <div 
+            className="absolute inset-0 pointer-events-none animate-pulse opacity-30"
+            style={{
+              background: `radial-gradient(circle at center, ${brand.accentColor} 0%, transparent 70%)`
+            }}
+          />
+        )}
 
-        {/* Radio Center Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center p-3 text-center">
+        {/* Center Artwork / Logo Spindle Label */}
+        <div className="relative z-10 flex flex-col items-center justify-center p-1.5 text-center max-w-[85%]">
           {hasValidLogo ? (
-            <div className="w-14 h-14 rounded-full p-2 bg-white/10 backdrop-blur-md border border-white/20 shadow-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+            <div 
+              className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full p-1.5 bg-black/60 backdrop-blur-md border border-white/25 flex items-center justify-center shadow-md transition-all duration-300 ${
+                isPlaying ? 'ring-2 ring-offset-1 ring-offset-black/50 scale-105' : ''
+              }`}
+              style={{
+                borderColor: isPlaying ? brand.accentColor : 'rgba(255,255,255,0.25)',
+                boxShadow: isPlaying ? `0 0 16px ${brand.accentColor}88` : '0 3px 8px rgba(0,0,0,0.5)'
+              }}
+            >
               <img 
                 src={channel.logo} 
                 alt={channel.name} 
-                className="w-full h-full object-contain filter drop-shadow"
+                className="w-full h-full object-contain filter drop-shadow-md"
                 onError={() => setImgError(true)}
               />
             </div>
           ) : (
-            <div className="w-14 h-14 rounded-full bg-white/15 backdrop-blur-md border border-white/25 flex items-center justify-center mb-1 text-white shadow-lg group-hover:scale-110 transition-transform">
-              <Radio size={24} style={{ color: brand.accentColor }} />
+            <div 
+              className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-black/65 backdrop-blur-md border border-white/20 flex flex-col items-center justify-center text-white shadow-md transition-all duration-300 ${
+                isPlaying ? 'ring-2 ring-offset-1 ring-offset-black/50 scale-105' : ''
+              }`}
+              style={{
+                borderColor: isPlaying ? brand.accentColor : 'rgba(255,255,255,0.2)',
+                boxShadow: isPlaying ? `0 0 14px ${brand.accentColor}66` : '0 3px 8px rgba(0,0,0,0.5)'
+              }}
+            >
+              <div 
+                className="text-[10px] font-black tracking-widest uppercase drop-shadow"
+                style={{ color: brand.accentColor }}
+              >
+                {getInitials(brand.textLogo || channel.name)}
+              </div>
+              <Radio size={10} className="text-white/60 mt-0.5" />
             </div>
           )}
 
-          <div className="font-bold text-white text-sm tracking-wide truncate max-w-[140px] drop-shadow-sm">
+          {/* Station Title on Card */}
+          <div className="mt-1 font-bold text-white text-[11px] tracking-wide truncate max-w-[130px] drop-shadow-md">
             {brand.textLogo || channel.name}
           </div>
           
-          <div className="text-[10px] text-white/70 font-medium tracking-wider uppercase truncate max-w-[120px]">
-            {channel.category}
+          <div className="text-[9px] text-white/80 font-medium tracking-wider uppercase truncate max-w-[115px] drop-shadow-xs">
+            {brand.subtitle || channel.category}
           </div>
 
-          {/* Equalizer animation when playing */}
+          {/* Mini Playing Soundwave Visualizer Bars */}
           {isPlaying && (
-            <div className="flex items-end gap-1 mt-1.5 h-3">
-              <span className="w-1 bg-white rounded-full animate-pulse h-2" />
-              <span className="w-1 bg-white rounded-full animate-pulse h-3" style={{ animationDelay: '150ms' }} />
-              <span className="w-1 bg-white rounded-full animate-pulse h-1.5" style={{ animationDelay: '300ms' }} />
+            <div className="flex items-end gap-0.5 mt-1 h-2.5 px-1.5 py-0.5 rounded-full bg-black/60 backdrop-blur-xs border border-white/10">
+              <span className="w-0.5 bg-emerald-400 rounded-full animate-[bounce_0.8s_infinite] h-2" style={{ animationDelay: '0ms' }} />
+              <span className="w-0.5 bg-emerald-400 rounded-full animate-[bounce_0.6s_infinite] h-2.5" style={{ animationDelay: '150ms' }} />
+              <span className="w-0.5 bg-emerald-400 rounded-full animate-[bounce_0.9s_infinite] h-1" style={{ animationDelay: '300ms' }} />
+              <span className="w-0.5 bg-emerald-400 rounded-full animate-[bounce_0.7s_infinite] h-2" style={{ animationDelay: '200ms' }} />
+              <span className="w-0.5 bg-emerald-400 rounded-full animate-[bounce_0.85s_infinite] h-1.5" style={{ animationDelay: '100ms' }} />
             </div>
           )}
         </div>
 
-        {/* Radio Badge */}
+        {/* Top Badges for Radio */}
         {showBadges && (
-          <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded text-[10px] font-bold bg-black/50 text-white/90 backdrop-blur-sm uppercase tracking-wider flex items-center gap-1 border border-white/10">
-            <Radio size={10} className="text-amber-400" />
-            <span>FM</span>
-          </div>
+          <>
+            {/* Frequency Badge on top-left */}
+            <div className="absolute top-1.5 left-1.5 px-1.5 py-0.2 rounded text-[8.5px] font-bold bg-black/60 backdrop-blur-md text-white/90 uppercase tracking-wider flex items-center gap-1 border border-white/15 shadow-2xs">
+              <Radio size={9} style={{ color: brand.accentColor }} />
+              <span>{brand.frequency || 'FM'}</span>
+            </div>
+
+            {/* Status / Genre Badge on top-right */}
+            {isPlaying ? (
+              <div className="absolute top-1.5 right-1.5 px-1.5 py-0.2 rounded text-[8px] font-bold bg-emerald-500 text-white uppercase tracking-wider flex items-center gap-0.5 shadow-2xs border border-emerald-400/30 animate-pulse">
+                <span className="w-1 h-1 rounded-full bg-white animate-ping" />
+                <span>YAYINDA</span>
+              </div>
+            ) : (
+              <div className="absolute top-1.5 right-1.5 px-1.5 py-0.2 rounded text-[8px] font-semibold bg-black/50 backdrop-blur-xs text-white/80 uppercase tracking-wider border border-white/10 truncate max-w-[85px]">
+                {brand.genreBadge || channel.category}
+              </div>
+            )}
+          </>
         )}
+
+        {/* Subtle Ambient Vignette Bottom Scrim */}
+        <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
       </div>
     );
   }
@@ -95,43 +170,27 @@ export const ChannelPreview: React.FC<ChannelPreviewProps> = ({
       className={`relative overflow-hidden flex items-center justify-center select-none ${className}`}
       style={{ background: brand.gradient }}
     >
-      {/* Background ambient lighting */}
-      <div 
-        className="absolute inset-0 opacity-35 pointer-events-none blur-2xl"
-        style={{ background: `radial-gradient(circle at 70% 30%, ${brand.accentColor} 0%, transparent 65%)` }}
-      />
-
-      {/* Subtle grid & broadcast texture pattern */}
-      <div 
-        className="absolute inset-0 opacity-10 pointer-events-none mix-blend-overlay"
-        style={{ 
-          backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px)',
-          backgroundSize: '16px 16px' 
-        }}
-      />
-
       {/* Main Logo & Insignia Centerpiece */}
-      <div className="relative z-10 w-full h-full flex flex-col items-center justify-center p-4">
+      <div className="relative z-10 w-full h-full flex flex-col items-center justify-center p-2.5">
         {hasValidLogo ? (
-          <div className="relative max-w-[70%] max-h-[55%] flex items-center justify-center transition-transform duration-500 group-hover:scale-105">
+          <div className="relative max-w-[65%] max-h-[60%] flex items-center justify-center">
             <img 
               src={channel.logo} 
               alt={channel.name} 
-              className="max-h-16 md:max-h-20 w-auto object-contain filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]"
+              className="max-h-10 sm:max-h-12 w-auto object-contain filter drop-shadow"
               onError={() => setImgError(true)}
             />
           </div>
         ) : (
-          /* Stylish vector insignia if logo isn't available or fails */
-          <div className="flex flex-col items-center justify-center transition-transform duration-500 group-hover:scale-105">
-            <div className="px-4 py-1.5 rounded-lg bg-black/40 backdrop-blur-md border border-white/20 shadow-xl flex items-center gap-2 mb-1">
-              <Tv size={18} className="text-white/90" />
-              <span className="font-extrabold text-white text-lg md:text-xl tracking-wider drop-shadow-md">
+          <div className="flex flex-col items-center justify-center">
+            <div className="px-2.5 py-0.5 rounded bg-black/40 border border-white/20 flex items-center gap-1.5 mb-0.5">
+              <Tv size={13} className="text-white/90" />
+              <span className="font-bold text-white text-xs sm:text-sm tracking-wide">
                 {brand.textLogo || channel.name}
               </span>
             </div>
             {brand.subtitle && (
-              <span className="text-[10px] text-white/70 font-semibold tracking-widest uppercase">
+              <span className="text-[9px] text-white/70 font-semibold tracking-widest uppercase">
                 {brand.subtitle}
               </span>
             )}
@@ -142,28 +201,25 @@ export const ChannelPreview: React.FC<ChannelPreviewProps> = ({
       {/* Top Badges */}
       {showBadges && (
         <>
-          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-20">
+          <div className="absolute top-1.5 left-1.5 flex items-center gap-1 z-20">
             {/* Live indicator badge */}
-            <div className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-red-600/90 text-white backdrop-blur-sm uppercase tracking-wider flex items-center gap-1 shadow-sm border border-red-400/30">
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+            <div className="px-1.5 py-0.2 rounded text-[8.5px] font-bold bg-red-600 text-white uppercase tracking-wider flex items-center gap-1 border border-red-400/30">
+              <span className="w-1 h-1 rounded-full bg-white" />
               <span>CANLI</span>
             </div>
 
             {/* Quality Tag */}
-            <div className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-black/50 text-white/90 backdrop-blur-sm uppercase tracking-wider border border-white/15">
+            <div className="px-1 py-0.2 rounded text-[8px] font-bold bg-black/60 text-white/90 uppercase tracking-wider border border-white/15">
               HD
             </div>
           </div>
 
           {/* Category Pill on bottom right */}
-          <div className="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-black/50 text-white/80 backdrop-blur-sm truncate max-w-[120px] border border-white/10">
+          <div className="absolute bottom-1.5 right-1.5 px-1.5 py-0.2 rounded text-[8.5px] font-semibold bg-black/60 text-white/80 truncate max-w-[95px] border border-white/10">
             {channel.category}
           </div>
         </>
       )}
-
-      {/* Glass gradient overlay at the bottom */}
-      <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
     </div>
   );
 };

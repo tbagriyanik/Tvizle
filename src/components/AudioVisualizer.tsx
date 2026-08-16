@@ -10,53 +10,7 @@ interface AudioVisualizerProps {
 export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({ isPlaying, volume, audioRef }) => {
   const { themeColor } = useAppContext();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  
-  // Create references for Audio API nodes to avoid re-creating them
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
-  const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
-  const isSetupRef = useRef<boolean>(false);
-
-  useEffect(() => {
-    // We only set this up once there's a valid audioRef and it is playing.
-    if (!audioRef || !audioRef.current) return;
-    
-    const audioElement = audioRef.current;
-    
-    const setupAudio = () => {
-      if (isSetupRef.current) return;
-      
-      try {
-        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-        if (!AudioContextClass) return;
-        
-        const audioCtx = new AudioContextClass();
-        const analyser = audioCtx.createAnalyser();
-        analyser.fftSize = 256;
-        
-        const source = audioCtx.createMediaElementSource(audioElement);
-        source.connect(analyser);
-        analyser.connect(audioCtx.destination);
-        
-        audioContextRef.current = audioCtx;
-        analyserRef.current = analyser;
-        sourceRef.current = source;
-        isSetupRef.current = true;
-      } catch (err) {
-        console.error("AudioContext setup failed:", err);
-      }
-    };
-
-    audioElement.addEventListener('play', setupAudio);
-    
-    if (isPlaying) {
-      setupAudio();
-    }
-    
-    return () => {
-      audioElement.removeEventListener('play', setupAudio);
-    };
-  }, [audioRef, isPlaying]);
+  const animationFrameIdRef = useRef<number | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -65,19 +19,19 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({ isPlaying, vol
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     
-    let animationFrameId: number;
     let time = 0;
-    
-    const numBars = 40;
-    const barWidth = 6;
+    const numBars = 42;
+    const barWidth = 5;
     const spacing = 3;
-    const dataArray = analyserRef.current 
-      ? new Uint8Array(analyserRef.current.frequencyBinCount) 
-      : new Uint8Array(numBars);
     
+    // Wave heights state for organic momentum
+    const heights = new Array(numBars).fill(4);
+    const targetHeights = new Array(numBars).fill(4);
+
     const resize = () => {
-      canvas.width = canvas.parentElement?.clientWidth || 300;
-      canvas.height = canvas.parentElement?.clientHeight || 80;
+      if (!canvas || !canvas.parentElement) return;
+      canvas.width = canvas.parentElement.clientWidth || 300;
+      canvas.height = canvas.parentElement.clientHeight || 80;
     };
     
     window.addEventListener('resize', resize);
@@ -93,63 +47,59 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({ isPlaying, vol
       const totalWidth = (numBars * barWidth) + ((numBars - 1) * spacing);
       const startX = Math.max(0, (width - totalWidth) / 2);
       
-      time += isPlaying ? 0.08 : 0.01;
+      time += isPlaying ? 0.06 : 0.01;
       
-      let color = 'rgba(59, 130, 246, 0.7)';
-      if (themeColor === 'red') color = 'rgba(239, 68, 68, 0.7)';
-      else if (themeColor === 'green') color = 'rgba(34, 197, 94, 0.7)';
-      else if (themeColor === 'purple') color = 'rgba(168, 85, 247, 0.7)';
-      else if (themeColor === 'orange') color = 'rgba(249, 115, 22, 0.7)';
+      let color = 'rgba(59, 130, 246, 0.75)';
+      if (themeColor === 'red') color = 'rgba(239, 68, 68, 0.75)';
+      else if (themeColor === 'green') color = 'rgba(34, 197, 94, 0.75)';
+      else if (themeColor === 'purple') color = 'rgba(168, 85, 247, 0.75)';
+      else if (themeColor === 'orange') color = 'rgba(249, 115, 22, 0.75)';
       
       ctx.fillStyle = color;
       
-      let useRealData = false;
-      if (analyserRef.current && isPlaying && volume > 0) {
-        analyserRef.current.getByteFrequencyData(dataArray);
-        const hasData = dataArray.some(val => val > 0);
-        useRealData = hasData;
-      }
-      
+      const effectiveVol = isPlaying ? Math.max(0.1, volume) : 0.05;
+
       for (let i = 0; i < numBars; i++) {
-        let normalizedHeight = 0;
+        // Multi-frequency harmonic wave algorithm
+        const wave1 = Math.sin(time * 2.2 + i * 0.28);
+        const wave2 = Math.cos(time * 1.4 + i * 0.45);
+        const wave3 = Math.sin(time * 3.8 + i * 0.15);
         
-        if (useRealData) {
-          const dataIndex = Math.floor(i * (128 / numBars) * 0.7); 
-          const value = dataArray[dataIndex] || 0;
-          normalizedHeight = (value / 255) * volume;
-          normalizedHeight = normalizedHeight * 0.9 + (Math.sin(time * 1.5 + i * 0.3) * 0.5 + 0.5) * 0.1 * volume;
+        let dynamicFactor = (wave1 * 0.45 + wave2 * 0.35 + wave3 * 0.2 + 1) / 2;
+        
+        if (isPlaying && volume > 0) {
+          const jitter = (Math.sin(time * 8 + i * 1.7) + 1) * 0.2;
+          targetHeights[i] = Math.min(1, Math.max(0.08, (dynamicFactor + jitter) * effectiveVol));
         } else {
-          let noise = Math.sin(time * 1.5 + i * 0.3) * 0.5 + 0.5;
-          if (isPlaying && volume > 0) {
-            noise += Math.random() * 0.8;
-          } else {
-            noise *= 0.1;
-          }
-          const targetVolume = isPlaying ? Math.max(0.05, volume) : 0.05;
-          normalizedHeight = Math.min(1, noise * targetVolume * 0.8);
+          targetHeights[i] = 0.04;
         }
+
+        // Smooth lerp
+        heights[i] += (targetHeights[i] - heights[i]) * 0.18;
         
-        const barHeight = Math.max(4, height * normalizedHeight);
+        const barHeight = Math.max(3, height * heights[i]);
         const x = startX + i * (barWidth + spacing);
         const y = height - barHeight;
         
         if (ctx.roundRect) {
-            ctx.beginPath();
-            ctx.roundRect(x, y, barWidth, barHeight, [3, 3, 0, 0]);
-            ctx.fill();
+          ctx.beginPath();
+          ctx.roundRect(x, y, barWidth, barHeight, [2, 2, 0, 0]);
+          ctx.fill();
         } else {
-            ctx.fillRect(x, y, barWidth, barHeight);
+          ctx.fillRect(x, y, barWidth, barHeight);
         }
       }
       
-      animationFrameId = requestAnimationFrame(draw);
+      animationFrameIdRef.current = requestAnimationFrame(draw);
     };
     
     draw();
     
     return () => {
       window.removeEventListener('resize', resize);
-      cancelAnimationFrame(animationFrameId);
+      if (animationFrameIdRef.current !== null) {
+        cancelAnimationFrame(animationFrameIdRef.current);
+      }
     };
   }, [isPlaying, volume, themeColor]);
 
@@ -157,7 +107,7 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({ isPlaying, vol
     <canvas 
       ref={canvasRef} 
       className="absolute bottom-0 left-0 w-full h-1/2 pointer-events-none transition-opacity duration-500"
-      style={{ opacity: isPlaying ? 0.6 : 0.2 }}
+      style={{ opacity: isPlaying ? 0.65 : 0.2 }}
     />
   );
 };

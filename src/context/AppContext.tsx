@@ -7,6 +7,7 @@ interface AppContextType extends AppState {
   setIsPlaying: (isPlaying: boolean) => void;
   toggleFavorite: (channelId: string) => void;
   clearHistory: () => void;
+  removeFromHistory: (channelId: string) => void;
   setThemeColor: (color: ThemeColor) => void;
   setThemeMode: (mode: ThemeMode) => void;
   setSidebarOpen: (isOpen: boolean) => void;
@@ -14,6 +15,8 @@ interface AppContextType extends AppState {
   setSearchQuery: (query: string) => void;
   setCustomChannels: (channels: Channel[]) => void;
   setActiveTab: (tab: string) => void;
+  setSelectedCategory: (category: string | undefined) => void;
+  setSleepTimer: (minutes: number | null) => void;
   goBack: () => void;
   goForward: () => void;
   canGoBack: boolean;
@@ -188,13 +191,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('broadcastAppState', JSON.stringify({
-      favorites: state.favorites,
-      history: state.history,
-      themeColor: state.themeColor,
-      themeMode: state.themeMode,
-      volume: state.volume,
-    }));
+    try {
+      localStorage.setItem('broadcastAppState', JSON.stringify({
+        favorites: state.favorites,
+        history: state.history,
+        themeColor: state.themeColor,
+        themeMode: state.themeMode,
+        volume: state.volume,
+      }));
+    } catch (e) {
+      console.warn('Failed to save state to localStorage:', e);
+    }
   }, [state.favorites, state.history, state.themeColor, state.themeMode, state.volume]);
 
   useEffect(() => {
@@ -226,6 +233,44 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       : [...s.favorites, channelId]
   }));
 
+  const removeFromHistory = (channelId: string) => {
+    setState(s => ({
+      ...s,
+      history: s.history.filter(h => h.channelId !== channelId)
+    }));
+  };
+
+  const setSelectedCategory = (category: string | undefined) => {
+    setState(s => ({ ...s, selectedCategory: category }));
+  };
+
+  const setSleepTimer = (minutes: number | null) => {
+    setState(s => ({
+      ...s,
+      sleepTimerMinutes: minutes,
+      sleepTimerEnd: minutes ? Date.now() + minutes * 60 * 1000 : null
+    }));
+  };
+
+  // Sleep timer interval effect
+  useEffect(() => {
+    if (!state.sleepTimerEnd) return;
+
+    const interval = setInterval(() => {
+      if (state.sleepTimerEnd && Date.now() >= state.sleepTimerEnd) {
+        setState(s => ({
+          ...s,
+          isPlaying: false,
+          sleepTimerMinutes: null,
+          sleepTimerEnd: null,
+        }));
+        clearInterval(interval);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [state.sleepTimerEnd]);
+
   const clearHistory = () => setState(s => ({ ...s, history: [] }));
 
   const setThemeColor = (themeColor: ThemeColor) => setState(s => ({ ...s, themeColor }));
@@ -246,6 +291,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setIsPlaying,
       toggleFavorite,
       clearHistory,
+      removeFromHistory,
       setThemeColor,
       setThemeMode,
       setSidebarOpen,
@@ -253,6 +299,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setSearchQuery,
       setCustomChannels,
       setActiveTab,
+      setSelectedCategory,
+      setSleepTimer,
       goBack,
       goForward,
       canGoBack,

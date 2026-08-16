@@ -1,27 +1,336 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { ChannelCard } from '../components/ChannelCard';
 import { Channel } from '../types';
+import { useAppContext } from '../context/AppContext';
+import { 
+  Filter, 
+  Grid, 
+  List as ListIcon, 
+  ArrowUpDown, 
+  Search, 
+  X, 
+  Radio, 
+  Tv, 
+  Heart,
+  Volume2,
+  Play
+} from 'lucide-react';
+import { getThemeBgClass, getThemeTextClass, getThemeRingClass } from '../utils/theme';
+import { getChannelBrand } from '../utils/channelLogos';
 
 interface ListViewProps {
   title: string;
   channels: Channel[];
   emptyMessage?: string;
+  type?: 'tv' | 'radio' | 'favorites' | 'm3u';
 }
 
-export const ListView: React.FC<ListViewProps> = ({ title, channels, emptyMessage = "Gösterilecek kanal bulunamadı." }) => {
+export const ListView: React.FC<ListViewProps> = ({ 
+  title, 
+  channels, 
+  emptyMessage = "Gösterilecek kanal bulunamadı."
+}) => {
+  const { 
+    themeColor, 
+    selectedCategory, 
+    setSelectedCategory,
+    currentChannel,
+    isPlaying,
+    setCurrentChannel,
+    favorites,
+    toggleFavorite
+  } = useAppContext();
+
+  const [filterQuery, setFilterQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState<string>(selectedCategory || 'all');
+  const [sortBy, setSortBy] = useState<'default' | 'name-asc' | 'name-desc'>('default');
+  const [viewMode, setViewMode] = useState<'grid' | 'compact'>('grid');
+
+  // Extract unique categories and their counts
+  const categoriesWithCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    channels.forEach(ch => {
+      counts[ch.category] = (counts[ch.category] || 0) + 1;
+    });
+    return counts;
+  }, [channels]);
+
+  const categoryList = useMemo(() => {
+    return Object.keys(categoriesWithCounts).sort();
+  }, [categoriesWithCounts]);
+
+  // Filter and sort channels
+  const filteredChannels = useMemo(() => {
+    let list = [...channels];
+
+    // 1. Category Filter
+    if (activeCategory !== 'all') {
+      list = list.filter(c => c.category === activeCategory);
+    }
+
+    // 2. In-page filter search
+    if (filterQuery.trim()) {
+      const q = filterQuery.toLowerCase().trim();
+      list = list.filter(c => 
+        c.name.toLowerCase().includes(q) || 
+        c.category.toLowerCase().includes(q)
+      );
+    }
+
+    // 3. Sorting
+    if (sortBy === 'name-asc') {
+      list.sort((a, b) => a.name.localeCompare(b.name, 'tr'));
+    } else if (sortBy === 'name-desc') {
+      list.sort((a, b) => b.name.localeCompare(a.name, 'tr'));
+    }
+
+    return list;
+  }, [channels, activeCategory, filterQuery, sortBy]);
+
+  const handleCategorySelect = (cat: string) => {
+    setActiveCategory(cat);
+    setSelectedCategory(cat === 'all' ? undefined : cat);
+  };
+
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-8">{title}</h2>
+    <div className="space-y-6 animate-in fade-in duration-300">
       
-      {channels.length === 0 ? (
-        <div className="p-12 text-center bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700">
-          <p className="text-gray-500 dark:text-gray-400 text-lg">{emptyMessage}</p>
+      {/* Header Bar with Title & Stats */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-4">
+        <div>
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+              {title}
+            </h1>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+              {filteredChannels.length} kanal
+            </span>
+          </div>
+          <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Yayınları kategoriye göre filtreleyin veya anında arayın
+          </p>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {channels.map(channel => (
+
+        {/* View Mode and Sorting Options */}
+        <div className="flex items-center gap-2">
+          {/* Sort Selector */}
+          <div className="relative">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="text-xs md:text-sm pl-3 pr-8 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-200 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-2xs"
+            >
+              <option value="default">Varsayılan Sıralama</option>
+              <option value="name-asc">Alfabetik (A → Z)</option>
+              <option value="name-desc">Alfabetik (Z → A)</option>
+            </select>
+            <ArrowUpDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" />
+          </div>
+
+          {/* Grid / Compact View Toggle */}
+          <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-1 shadow-2xs">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`p-1.5 rounded-lg ${viewMode === 'grid' ? `${getThemeBgClass(themeColor)} text-white` : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+              title="Kart Görünümü"
+            >
+              <Grid size={16} />
+            </button>
+            <button
+              onClick={() => setViewMode('compact')}
+              className={`p-1.5 rounded-lg ${viewMode === 'compact' ? `${getThemeBgClass(themeColor)} text-white` : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+              title="Liste Görünümü"
+            >
+              <ListIcon size={16} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Filter and Category Controls */}
+      {channels.length > 0 && (
+        <div className="space-y-3">
+          
+          {/* In-page quick filter search */}
+          <div className="relative max-w-md">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <input
+              type="text"
+              placeholder={`${title} içinde filtrele...`}
+              value={filterQuery}
+              onChange={(e) => setFilterQuery(e.target.value)}
+              className={`w-full pl-10 pr-9 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 ${getThemeRingClass(themeColor)} transition-all`}
+            />
+            {filterQuery && (
+              <button
+                onClick={() => setFilterQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+              >
+                <X size={15} />
+              </button>
+            )}
+          </div>
+
+          {/* Interactive Category Filter Chips (Horizontal Scrollable) */}
+          {categoryList.length > 1 && (
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+              <button
+                onClick={() => handleCategorySelect('all')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                  activeCategory === 'all'
+                    ? `${getThemeBgClass(themeColor)} text-white shadow-xs`
+                    : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                }`}
+              >
+                <span>Tümü</span>
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${activeCategory === 'all' ? 'bg-white/25 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}`}>
+                  {channels.length}
+                </span>
+              </button>
+
+              {categoryList.map(cat => {
+                const isSelected = activeCategory === cat;
+                const count = categoriesWithCounts[cat] || 0;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => handleCategorySelect(cat)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                      isSelected
+                        ? `${getThemeBgClass(themeColor)} text-white shadow-xs`
+                        : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    <span>{cat}</span>
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${isSelected ? 'bg-white/25 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}`}>
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Main Channels List Output */}
+      {filteredChannels.length === 0 ? (
+        <div className="p-12 text-center bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 space-y-3">
+          <p className="text-gray-500 dark:text-gray-400 text-base font-medium">{emptyMessage}</p>
+          {(filterQuery || activeCategory !== 'all') && (
+            <button
+              onClick={() => {
+                setFilterQuery('');
+                setActiveCategory('all');
+                setSelectedCategory(undefined);
+              }}
+              className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-white ${getThemeBgClass(themeColor)} hover:opacity-90`}
+            >
+              <X size={14} />
+              <span>Filtreleri Temizle</span>
+            </button>
+          )}
+        </div>
+      ) : viewMode === 'grid' ? (
+        /* Standard Grid View */
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {filteredChannels.map(channel => (
             <ChannelCard key={channel.id} channel={channel} />
           ))}
+        </div>
+      ) : (
+        /* Compact List View */
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700/60 overflow-hidden shadow-xs">
+          {filteredChannels.map(channel => {
+            const isCurrent = currentChannel?.id === channel.id;
+            const isFav = favorites.includes(channel.id);
+            const brand = getChannelBrand(channel.id, channel.name, channel.type);
+
+            return (
+              <div
+                key={channel.id}
+                onClick={() => setCurrentChannel(channel)}
+                className={`p-3.5 flex items-center justify-between gap-3 cursor-pointer transition-colors ${
+                  isCurrent 
+                    ? 'bg-blue-50/70 dark:bg-blue-900/20' 
+                    : 'hover:bg-gray-50 dark:hover:bg-gray-700/40'
+                }`}
+              >
+                {/* Channel Icon & Info */}
+                <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                  <div 
+                    className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 relative overflow-hidden border border-black/10 dark:border-white/10 shadow-xs ${
+                      channel.type === 'radio' && isCurrent && isPlaying ? 'ring-2 ring-emerald-500' : ''
+                    }`}
+                    style={{ background: brand.gradient }}
+                  >
+                    {channel.logo ? (
+                      <img 
+                        src={channel.logo} 
+                        alt={channel.name} 
+                        className="w-full h-full object-contain p-1 filter drop-shadow"
+                        onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
+                      />
+                    ) : (
+                      channel.type === 'tv' ? (
+                        <Tv size={18} className="text-white" />
+                      ) : (
+                        <Radio size={18} style={{ color: brand.accentColor }} />
+                      )
+                    )}
+                  </div>
+
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h4 className={`text-sm font-semibold truncate ${isCurrent ? getThemeTextClass(themeColor) : 'text-gray-900 dark:text-gray-100'}`}>
+                        {channel.name}
+                      </h4>
+                      {isCurrent && (
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0 animate-pulse" />
+                      )}
+                    </div>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 capitalize flex items-center gap-1.5 mt-0.5">
+                      <span>{brand.genreBadge || channel.category}</span>
+                      <span>•</span>
+                      <span>{channel.type === 'tv' ? 'HD TV' : (brand.frequency || 'Radyo')}</span>
+                    </span>
+                  </div>
+                </div>
+
+                {/* Right Action Buttons */}
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(channel.id);
+                    }}
+                    className={`p-2 rounded-lg ${
+                      isFav 
+                        ? 'text-red-500 bg-red-50 dark:bg-red-500/10' 
+                        : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
+                    title={isFav ? 'Favorilerden Çıkar' : 'Favorilere Ekle'}
+                  >
+                    <Heart size={16} fill={isFav ? 'currentColor' : 'none'} />
+                  </button>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCurrentChannel(channel);
+                    }}
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                      isCurrent
+                        ? `${getThemeBgClass(themeColor)} text-white`
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    }`}
+                  >
+                    {isCurrent && isPlaying ? <Volume2 size={15} /> : <Play size={15} className="ml-0.5" fill="currentColor" />}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

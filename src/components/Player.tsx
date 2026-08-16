@@ -1,6 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Hls from 'hls.js';
-import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, X, Tv, Radio, SkipBack, SkipForward, Settings, PictureInPicture, Loader2, AlertCircle, Heart } from 'lucide-react';
+import { 
+  Play, 
+  Pause, 
+  Volume2, 
+  VolumeX, 
+  Maximize, 
+  Minimize, 
+  X, 
+  Tv, 
+  Radio, 
+  SkipBack, 
+  SkipForward, 
+  Settings, 
+  PictureInPicture, 
+  Loader2, 
+  AlertCircle, 
+  Heart, 
+  RotateCcw, 
+  RotateCw, 
+  Moon, 
+  RefreshCw, 
+  Check 
+} from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { getThemeBgClass, getThemeTextClass } from '../utils/theme';
 import { mockChannels } from '../data';
@@ -8,7 +30,22 @@ import { AudioVisualizer } from './AudioVisualizer';
 import { getChannelBrand } from '../utils/channelLogos';
 
 export const Player: React.FC = () => {
-  const { currentChannel, isPlaying, setIsPlaying, volume, setVolume, setCurrentChannel, themeColor, customChannels, favorites, toggleFavorite } = useAppContext();
+  const { 
+    currentChannel, 
+    isPlaying, 
+    setIsPlaying, 
+    volume, 
+    setVolume, 
+    setCurrentChannel, 
+    themeColor, 
+    customChannels, 
+    favorites, 
+    toggleFavorite,
+    sleepTimerMinutes,
+    sleepTimerEnd,
+    setSleepTimer
+  } = useAppContext();
+
   const [expanded, setExpanded] = useState(false);
   const [isPip, setIsPip] = useState(true);
   const [isSwitching, setIsSwitching] = useState(false);
@@ -16,10 +53,21 @@ export const Player: React.FC = () => {
   const [hasError, setHasError] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   
+  // Time-shifting / DVR states
+  const [seekableRange, setSeekableRange] = useState<{ start: number; end: number; duration: number }>({ start: 0, end: 0, duration: 0 });
+  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [isLiveEdge, setIsLiveEdge] = useState<boolean>(true);
+  const [timeBehindLive, setTimeBehindLive] = useState<number>(0);
+  const [isScrubbing, setIsScrubbing] = useState<boolean>(false);
+
   // Fullscreen Auto-hide Controls State
   const [showFsControls, setShowFsControls] = useState(true);
   const [showFsVolumeSlider, setShowFsVolumeSlider] = useState(false);
   const fsControlsTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Sleep timer UI menu
+  const [showSleepTimerMenu, setShowSleepTimerMenu] = useState(false);
+  const [sleepRemainingText, setSleepRemainingText] = useState<string | null>(null);
 
   const tvContainerRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -33,16 +81,34 @@ export const Player: React.FC = () => {
   const allChannels = [...mockChannels, ...customChannels];
   const isFavorite = currentChannel ? favorites.includes(currentChannel.id) : false;
 
-  // Favorite-specific vs regular navigation list
+  // Active channel navigation list
   const favoriteChannelsOfType = allChannels.filter(c => favorites.includes(c.id) && c.type === currentChannel?.type);
   const allFavoriteChannels = allChannels.filter(c => favorites.includes(c.id));
 
-  // If current channel is favorited, navigation is strictly constrained within favorites
   const activeList = isFavorite
     ? (favoriteChannelsOfType.length > 0 ? favoriteChannelsOfType : (allFavoriteChannels.length > 0 ? allFavoriteChannels : allChannels.filter(c => c.type === currentChannel?.type)))
     : allChannels.filter(c => c.type === currentChannel?.type);
 
   const currentIndex = activeList.findIndex(c => c.id === currentChannel?.id);
+
+  // Sleep timer remaining text updater
+  useEffect(() => {
+    if (!sleepTimerEnd) {
+      setSleepRemainingText(null);
+      return;
+    }
+
+    const updateRemaining = () => {
+      const diff = Math.max(0, Math.floor((sleepTimerEnd - Date.now()) / 1000));
+      const mins = Math.floor(diff / 60);
+      const secs = diff % 60;
+      setSleepRemainingText(`${mins}:${secs.toString().padStart(2, '0')}`);
+    };
+
+    updateRemaining();
+    const interval = setInterval(updateRemaining, 1000);
+    return () => clearInterval(interval);
+  }, [sleepTimerEnd]);
 
   const resetFsControlsTimer = () => {
     setShowFsControls(true);
@@ -52,7 +118,7 @@ export const Player: React.FC = () => {
     fsControlsTimerRef.current = setTimeout(() => {
       setShowFsControls(false);
       setShowFsVolumeSlider(false);
-    }, 3500);
+    }, 4000);
   };
 
   const handlePlayerAreaClick = () => {
@@ -113,7 +179,6 @@ export const Player: React.FC = () => {
       if (tvContainerRef.current && tvContainerRef.current.requestFullscreen) {
         await tvContainerRef.current.requestFullscreen().catch(err => console.log(err));
       } else if (videoRef.current && (videoRef.current as any).webkitEnterFullscreen) {
-        // Fallback for iOS Safari which only allows fullscreen on the video element itself
         (videoRef.current as any).webkitEnterFullscreen();
       }
     } else {
@@ -138,14 +203,190 @@ export const Player: React.FC = () => {
       hlsRef.current.currentLevel = index;
       setSelectedQuality(index);
       
-      // Save resolution height or auto
-      if (index === -1) {
-        localStorage.setItem('tv_quality', 'auto');
-      } else if (qualities[index]) {
-        localStorage.setItem('tv_quality', qualities[index].height.toString());
+      try {
+        if (index === -1) {
+          localStorage.setItem('tv_quality', 'auto');
+        } else if (qualities[index]) {
+          localStorage.setItem('tv_quality', qualities[index].height.toString());
+        }
+      } catch (e) {
+        // Safe fallback if localStorage is disabled
       }
     }
     setShowQualityMenu(false);
+  };
+
+  // Time Shifting / Seek Handlers
+  const getMediaElement = (): HTMLVideoElement | HTMLAudioElement | null => {
+    return currentChannel?.type === 'tv' ? videoRef.current : audioRef.current;
+  };
+
+  const seekRelative = (seconds: number) => {
+    const media = getMediaElement();
+    if (!media) return;
+
+    try {
+      const current = media.currentTime;
+      let target = current + seconds;
+
+      if (media.seekable && media.seekable.length > 0) {
+        const start = media.seekable.start(0);
+        const end = media.seekable.end(media.seekable.length - 1);
+        target = Math.max(start, Math.min(target, end));
+      }
+
+      media.currentTime = target;
+      if (isFullscreen) resetFsControlsTimer();
+    } catch (e) {
+      console.warn("Seek operation failed:", e);
+    }
+  };
+
+  const jumpToLive = () => {
+    const media = getMediaElement();
+    if (!media) return;
+
+    try {
+      if (hlsRef.current && hlsRef.current.liveSyncPosition) {
+        media.currentTime = hlsRef.current.liveSyncPosition;
+      } else if (media.seekable && media.seekable.length > 0) {
+        media.currentTime = Math.max(0, media.seekable.end(media.seekable.length - 1) - 0.5);
+      }
+    } catch (e) {
+      console.warn("Jump to live failed:", e);
+    }
+
+    setIsLiveEdge(true);
+    setTimeBehindLive(0);
+    if (!isPlaying) {
+      setIsPlaying(true);
+      media.play().catch(e => console.log(e));
+    }
+    if (isFullscreen) resetFsControlsTimer();
+  };
+
+  const handleSeekChange = (newPos: number) => {
+    const media = getMediaElement();
+    if (!media) return;
+    try {
+      media.currentTime = newPos;
+      setCurrentTime(newPos);
+    } catch (e) {
+      console.warn("Seek change failed:", e);
+    }
+  };
+
+  // Global Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const activeEl = document.activeElement;
+      const isInput = activeEl instanceof HTMLInputElement || activeEl instanceof HTMLTextAreaElement || activeEl instanceof HTMLSelectElement;
+      if (isInput) return;
+
+      if (e.code === 'Space' || e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsPlaying(!isPlaying);
+      } else if (e.key.toLowerCase() === 'm') {
+        e.preventDefault();
+        setVolume(volume === 0 ? 0.8 : 0);
+      } else if (e.key.toLowerCase() === 'f' && currentChannel?.type === 'tv') {
+        e.preventDefault();
+        toggleFullscreen();
+      } else if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'j') {
+        e.preventDefault();
+        seekRelative(-10);
+      } else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'l') {
+        e.preventDefault();
+        seekRelative(10);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setVolume(Math.min(1, Math.round((volume + 0.05) * 100) / 100));
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setVolume(Math.max(0, Math.round((volume - 0.05) * 100) / 100));
+      } else if (e.key === '[') {
+        e.preventDefault();
+        handlePrev();
+      } else if (e.key === ']') {
+        e.preventDefault();
+        handleNext();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isPlaying, volume, currentChannel, currentIndex, activeList, isFullscreen]);
+
+  // Time update listener for DVR time shifting
+  useEffect(() => {
+    const media = currentChannel?.type === 'tv' ? videoRef.current : audioRef.current;
+    if (!media) return;
+
+    const updateTime = () => {
+      if (isScrubbing) return;
+      const cur = media.currentTime;
+      if (Number.isFinite(cur)) {
+        setCurrentTime(cur);
+      }
+
+      if (media.seekable && media.seekable.length > 0) {
+        try {
+          const start = media.seekable.start(0);
+          const end = media.seekable.end(media.seekable.length - 1);
+          if (Number.isFinite(start) && Number.isFinite(end) && end >= start && end > 0) {
+            const duration = end - start;
+            setSeekableRange({ start, end, duration });
+
+            if (Number.isFinite(cur)) {
+              const behind = Math.max(0, end - cur);
+              if (Number.isFinite(behind)) {
+                setTimeBehindLive(behind);
+                setIsLiveEdge(behind < 6);
+              } else {
+                setIsLiveEdge(true);
+                setTimeBehindLive(0);
+              }
+            }
+          } else {
+            setIsLiveEdge(true);
+            setTimeBehindLive(0);
+          }
+        } catch {
+          setIsLiveEdge(true);
+          setTimeBehindLive(0);
+        }
+      } else {
+        setIsLiveEdge(true);
+        setTimeBehindLive(0);
+      }
+    };
+
+    media.addEventListener('timeupdate', updateTime);
+    media.addEventListener('progress', updateTime);
+
+    return () => {
+      media.removeEventListener('timeupdate', updateTime);
+      media.removeEventListener('progress', updateTime);
+    };
+  }, [currentChannel, isScrubbing]);
+
+  const formatBehindTime = (seconds: number): string => {
+    if (!Number.isFinite(seconds) || isNaN(seconds) || seconds <= 5) return 'CANLI';
+    const safeSecs = Math.min(7200, Math.max(0, Math.floor(seconds)));
+    const mins = Math.floor(safeSecs / 60);
+    const secs = safeSecs % 60;
+    return `-${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Reload Stream / Retry
+  const reloadStream = () => {
+    if (!currentChannel) return;
+    const ch = currentChannel;
+    setCurrentChannel(null);
+    setTimeout(() => {
+      setCurrentChannel(ch);
+      setIsPlaying(true);
+    }, 150);
   };
 
   // HLS and Native Media Setup
@@ -155,6 +396,9 @@ export const Player: React.FC = () => {
     setIsSwitching(true);
     setIsLoading(true);
     setHasError(false);
+    setSeekableRange({ start: 0, end: 0, duration: 0 });
+    setIsLiveEdge(true);
+    setTimeBehindLive(0);
 
     const mediaElement = currentChannel.type === 'tv' ? videoRef.current : audioRef.current;
     if (!mediaElement) return;
@@ -166,7 +410,7 @@ export const Player: React.FC = () => {
     let loadTimeout = setTimeout(() => {
       setHasError(true);
       setIsLoading(false);
-    }, 15000); // 15 seconds timeout
+    }, 15000);
 
     const handleLoadedOrPlaying = () => {
       clearTimeout(loadTimeout);
@@ -193,9 +437,10 @@ export const Player: React.FC = () => {
       const hls = new Hls({
         autoStartLoad: true,
         lowLatencyMode: true,
-        backBufferLength: 90,
+        backBufferLength: 1200,
         liveSyncDurationCount: 3,
-        liveMaxLatencyDurationCount: 10,
+        maxBufferLength: 60,
+        maxMaxBufferLength: 600,
         enableWorker: true,
       });
       
@@ -251,7 +496,6 @@ export const Player: React.FC = () => {
 
       hlsRef.current = hls;
     } else {
-      // Native playback (Safari m3u8 or standard mp3/aac streams)
       if (hlsRef.current) {
         hlsRef.current.destroy();
         hlsRef.current = null;
@@ -303,6 +547,7 @@ export const Player: React.FC = () => {
     } else {
       let currentVol = mediaElement.volume;
       const targetVol = volume;
+      
       if (targetVol === 0) {
         mediaElement.volume = 0;
         mediaElement.muted = true;
@@ -318,9 +563,11 @@ export const Player: React.FC = () => {
           currentVol = Math.max(currentVol - step, targetVol);
         }
         
-        mediaElement.volume = currentVol;
+        // Strict boundary clamp to prevent DOMException / IndexSizeError
+        mediaElement.volume = Math.max(0, Math.min(1, currentVol));
         
-        if (currentVol === targetVol) {
+        if (Math.abs(currentVol - targetVol) < 0.01) {
+          mediaElement.volume = Math.max(0, Math.min(1, targetVol));
           clearInterval(ramp);
         }
       }, 50);
@@ -332,9 +579,10 @@ export const Player: React.FC = () => {
   if (!currentChannel) return null;
 
   const isTv = currentChannel.type === 'tv';
+  const hasTimeShift = seekableRange.duration > 15;
 
   return (
-    <div className={`fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 shadow-[0_-4px_10px_rgba(0,0,0,0.1)] transition-all duration-300 ${expanded && isTv ? 'h-full md:h-[60vh] md:bottom-4 md:left-auto md:right-4 md:w-[600px] md:rounded-xl md:border' : 'h-20'}`}>
+    <div className={`fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 shadow-xl ${expanded && isTv ? 'h-full md:h-[60vh] md:bottom-4 md:left-auto md:right-4 md:w-[600px] md:rounded-2xl md:border' : 'h-20 md:h-22'}`}>
       
       {!isTv && <AudioVisualizer isPlaying={isPlaying} volume={volume} audioRef={audioRef} />}
 
@@ -349,16 +597,16 @@ export const Player: React.FC = () => {
             isFullscreen 
               ? `fixed inset-0 z-[100] w-screen h-screen bg-black select-none ${showFsControls ? 'cursor-default' : 'cursor-none'}` 
               : expanded 
-                ? "relative w-full h-[calc(100%-80px)] bg-black group" 
+                ? "relative w-full h-[calc(100%-85px)] bg-black group" 
                 : (isPip 
-                    ? "absolute bottom-full right-4 mb-4 w-64 md:w-80 aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-700 z-50 group transition-all duration-300" 
+                    ? "absolute bottom-full right-4 mb-4 w-64 md:w-80 aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-700 z-50 group" 
                     : "absolute w-1 h-1 opacity-0 pointer-events-none overflow-hidden"
                   )
           }
         >
           <video
             ref={videoRef}
-            className={`w-full h-full object-contain bg-black transition-opacity duration-700 ${isSwitching ? 'opacity-0' : 'opacity-100'}`}
+            className={`w-full h-full object-contain bg-black ${isSwitching ? 'opacity-0' : 'opacity-100'}`}
             playsInline
             muted={volume === 0}
           />
@@ -372,95 +620,162 @@ export const Player: React.FC = () => {
           {hasError && (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 z-20 text-white p-4 text-center">
               <AlertCircle className="w-12 h-12 text-red-500 mb-2" />
-              <p className="text-sm md:text-base font-medium">Yayın Hatası</p>
-              <p className="text-xs text-gray-400 mt-1">Bu kanala şu an bağlanılamıyor.</p>
+              <p className="text-sm md:text-base font-bold">Yayın Bağlantısı Kurulamadı</p>
+              <p className="text-xs text-gray-400 mt-1 mb-3">Bu kanala şu an ulaşılamıyor veya yayın geçici olarak durdurulmuş.</p>
+              <button
+                onClick={reloadStream}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-xs font-semibold text-white"
+              >
+                <RefreshCw size={13} />
+                <span>Yeniden Dene</span>
+              </button>
             </div>
           )}
           
-          {/* Fullscreen Channel Info Header (Top Left - Fades with controls) */}
+          {/* Fullscreen Channel Info Header (Top Left) */}
           {isFullscreen && (
             <div 
               onClick={(e) => e.stopPropagation()}
-              className={`absolute top-6 left-6 md:top-8 md:left-8 z-40 flex items-center gap-3 bg-black/70 backdrop-blur-xl px-4 py-2.5 rounded-2xl border border-white/15 shadow-2xl transition-all duration-300 transform ${
-                showFsControls 
-                  ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto' 
-                  : 'opacity-0 -translate-y-4 scale-95 pointer-events-none'
+              className={`absolute top-6 left-6 md:top-8 md:left-8 z-40 flex items-center gap-2.5 bg-black/70 px-3.5 py-2 rounded-xl border border-white/15 shadow-xl ${
+                showFsControls ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
               }`}
             >
-              <div className="flex items-center gap-2">
-                <span className="flex h-2.5 w-2.5 relative">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
-                </span>
-                <span className="text-[11px] font-black uppercase tracking-wider text-red-400 bg-red-500/20 px-2 py-0.5 rounded border border-red-500/30">
-                  CANLI
-                </span>
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={jumpToLive}
+                  className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border flex items-center gap-1 cursor-pointer ${
+                    isLiveEdge 
+                      ? 'bg-red-500/20 text-red-400 border-red-500/30' 
+                      : 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-red-500/30'
+                  }`}
+                  title={isLiveEdge ? "Şu an Canlı Yayındasınız" : "Canlı Yayına Dön"}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${isLiveEdge ? 'bg-red-500' : 'bg-amber-400'}`} />
+                  <span>{isLiveEdge || !Number.isFinite(timeBehindLive) || timeBehindLive <= 5 ? 'CANLI' : `CANLIYA DÖN (${formatBehindTime(timeBehindLive)})`}</span>
+                </button>
+
                 {isFavorite && (
-                  <span className="text-[10px] font-bold text-amber-300 bg-amber-400/20 px-2 py-0.5 rounded border border-amber-400/30 flex items-center gap-1">
-                    <Heart size={10} fill="currentColor" className="text-red-400" />
+                  <span className="text-[9px] font-bold text-amber-300 bg-amber-400/20 px-1.5 py-0.5 rounded border border-amber-400/30 flex items-center gap-1">
+                    <Heart size={9} fill="currentColor" className="text-red-400" />
                     <span>Favori</span>
                   </span>
                 )}
               </div>
-              <div className="h-4 w-[1px] bg-white/20" />
-              <h3 className="font-bold text-white text-sm md:text-base tracking-wide drop-shadow truncate max-w-[200px] md:max-w-md">
+              <div className="h-3.5 w-[1px] bg-white/20" />
+              <h3 className="font-bold text-white text-xs md:text-sm tracking-wide truncate max-w-[180px] md:max-w-md">
                 {currentChannel.name}
               </h3>
-              <span className="text-xs text-white/60 font-medium hidden sm:inline-block">
+              <span className="text-[11px] text-white/60 font-medium hidden sm:inline-block">
                 • {currentChannel.category}
               </span>
             </div>
           )}
 
-          {/* Fullscreen Right-Side Controls Bar (Favori, Geri, Play/Pause, İleri, Ses, Exit) */}
+          {/* Fullscreen Bottom Time-Shift / DVR Bar */}
+          {isFullscreen && (
+            <div 
+              onClick={(e) => e.stopPropagation()}
+              className={`absolute bottom-6 left-6 right-24 md:left-12 md:right-28 z-40 bg-black/75 px-3.5 py-2.5 rounded-xl border border-white/15 backdrop-blur-md flex flex-col gap-2 ${
+                showFsControls ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+              }`}
+            >
+              <div className="flex items-center gap-2.5 w-full">
+                <button
+                  onClick={() => seekRelative(-10)}
+                  className="text-white/80 hover:text-white flex items-center gap-1 text-[11px] px-2 py-0.5 rounded bg-white/10 hover:bg-white/20"
+                  title="10 Saniye Geri Sar"
+                >
+                  <RotateCcw size={12} />
+                  <span>10s</span>
+                </button>
+
+                <div className="flex-1 flex items-center gap-2">
+                  <input
+                    type="range"
+                    min={Number.isFinite(seekableRange.start) ? seekableRange.start : 0}
+                    max={Number.isFinite(seekableRange.end) && seekableRange.end > (seekableRange.start || 0) ? seekableRange.end : 1}
+                    step={1}
+                    value={Number.isFinite(currentTime) ? currentTime : 0}
+                    onMouseDown={() => setIsScrubbing(true)}
+                    onMouseUp={() => setIsScrubbing(false)}
+                    onTouchStart={() => setIsScrubbing(true)}
+                    onTouchEnd={() => setIsScrubbing(false)}
+                    onChange={(e) => handleSeekChange(parseFloat(e.target.value))}
+                    className="w-full h-1.5 rounded-lg appearance-none bg-white/20 cursor-pointer accent-red-500"
+                  />
+                </div>
+
+                <button
+                  onClick={() => seekRelative(10)}
+                  disabled={isLiveEdge}
+                  className={`flex items-center gap-1 text-[11px] px-2 py-0.5 rounded ${
+                    isLiveEdge ? 'opacity-40 cursor-not-allowed bg-white/5 text-white/50' : 'text-white/80 hover:text-white bg-white/10 hover:bg-white/20'
+                  }`}
+                  title="10 Saniye İleri Sar"
+                >
+                  <span>10s</span>
+                  <RotateCw size={12} />
+                </button>
+
+                <button
+                  onClick={jumpToLive}
+                  className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 ${
+                    isLiveEdge 
+                      ? 'bg-red-600/30 text-red-400 border border-red-500/30' 
+                      : 'bg-red-600 hover:bg-red-500 text-white shadow-md animate-pulse'
+                  }`}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                  <span>{isLiveEdge ? 'CANLI' : 'CANLIYA DÖN'}</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Fullscreen Right-Side Controls Bar */}
           {isFullscreen && (
             <div 
               onClick={(e) => e.stopPropagation()}
               onMouseEnter={resetFsControlsTimer}
-              className={`absolute top-1/2 -translate-y-1/2 right-4 md:right-8 z-40 flex flex-col items-center gap-3 md:gap-3.5 bg-black/75 backdrop-blur-2xl p-2.5 md:p-3 rounded-2xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.7)] transition-all duration-300 transform ${
-                showFsControls 
-                  ? 'opacity-100 translate-x-0 scale-100 pointer-events-auto' 
-                  : 'opacity-0 translate-x-8 scale-90 pointer-events-none'
+              className={`absolute top-1/2 -translate-y-1/2 right-4 md:right-8 z-40 flex flex-col items-center gap-3 bg-black/75 p-2.5 md:p-3 rounded-2xl border border-white/20 shadow-2xl ${
+                showFsControls ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
               }`}
             >
-              {/* 1. Favori */}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   toggleFavorite(currentChannel.id);
                   resetFsControlsTimer();
                 }}
-                className={`w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-all duration-200 ${
+                className={`w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center ${
                   isFavorite 
-                    ? 'bg-red-500/25 text-red-500 border border-red-500/50 shadow-[0_0_16px_rgba(239,68,68,0.45)]' 
+                    ? 'bg-red-500/25 text-red-500 border border-red-500/50' 
                     : 'bg-white/10 text-white/80 hover:text-white hover:bg-white/20 border border-white/10'
                 }`}
                 title={isFavorite ? 'Favorilerden Çıkar' : 'Favorilere Ekle'}
               >
-                <Heart size={20} fill={isFavorite ? 'currentColor' : 'none'} className={isFavorite ? 'scale-110' : ''} />
+                <Heart size={20} fill={isFavorite ? 'currentColor' : 'none'} />
               </button>
 
-              {/* 2. Geri (Önceki Kanal) */}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   handlePrev();
                   resetFsControlsTimer();
                 }}
-                className="w-11 h-11 md:w-12 md:h-12 rounded-xl bg-white/10 text-white/80 hover:text-white hover:bg-white/20 border border-white/10 flex items-center justify-center transition-all duration-200 active:scale-95"
+                className="w-11 h-11 md:w-12 md:h-12 rounded-xl bg-white/10 text-white/80 hover:text-white hover:bg-white/20 border border-white/10 flex items-center justify-center"
                 title={isFavorite ? "Önceki Favori Kanal" : "Önceki Kanal"}
               >
                 <SkipBack size={20} fill="currentColor" />
               </button>
 
-              {/* 3. Play / Pause (Merkezi Oynatma) */}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsPlaying(!isPlaying);
                   resetFsControlsTimer();
                 }}
-                className={`w-13 h-13 md:w-14 md:h-14 rounded-2xl flex items-center justify-center text-white ${getThemeBgClass(themeColor)} shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 border border-white/30`}
+                className={`w-13 h-13 md:w-14 md:h-14 rounded-2xl flex items-center justify-center text-white ${getThemeBgClass(themeColor)} shadow-xl border border-white/30`}
                 title={isPlaying ? 'Durdur' : 'Oynat'}
               >
                 {isPlaying ? (
@@ -470,20 +785,18 @@ export const Player: React.FC = () => {
                 )}
               </button>
 
-              {/* 4. İleri (Sonraki Kanal) */}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   handleNext();
                   resetFsControlsTimer();
                 }}
-                className="w-11 h-11 md:w-12 md:h-12 rounded-xl bg-white/10 text-white/80 hover:text-white hover:bg-white/20 border border-white/10 flex items-center justify-center transition-all duration-200 active:scale-95"
+                className="w-11 h-11 md:w-12 md:h-12 rounded-xl bg-white/10 text-white/80 hover:text-white hover:bg-white/20 border border-white/10 flex items-center justify-center"
                 title={isFavorite ? "Sonraki Favori Kanal" : "Sonraki Kanal"}
               >
                 <SkipForward size={20} fill="currentColor" />
               </button>
 
-              {/* 5. Ses (Aç/Kapa & Açılır Slider) */}
               <div className="relative">
                 <button
                   onClick={(e) => {
@@ -491,7 +804,7 @@ export const Player: React.FC = () => {
                     setShowFsVolumeSlider(!showFsVolumeSlider);
                     resetFsControlsTimer();
                   }}
-                  className={`w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-all duration-200 ${
+                  className={`w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center ${
                     showFsVolumeSlider || volume === 0
                       ? 'bg-white/25 text-white border border-white/40'
                       : 'bg-white/10 text-white/80 hover:text-white hover:bg-white/20 border border-white/10'
@@ -501,19 +814,17 @@ export const Player: React.FC = () => {
                   {volume === 0 ? <VolumeX size={20} className="text-red-400" /> : <Volume2 size={20} />}
                 </button>
 
-                {/* Popout Volume Slider (Sol tarafa açılır) */}
                 {showFsVolumeSlider && (
                   <div 
                     onClick={(e) => e.stopPropagation()}
-                    className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-black/85 backdrop-blur-2xl px-4 py-3 rounded-xl border border-white/20 shadow-2xl flex items-center gap-3 min-w-[170px] animate-in fade-in zoom-in-95 duration-200 z-50"
+                    className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-black/85 px-4 py-3 rounded-xl border border-white/20 shadow-2xl flex items-center gap-3 min-w-[170px] z-50"
                   >
                     <button
                       onClick={() => {
                         setVolume(volume === 0 ? 0.8 : 0);
                         resetFsControlsTimer();
                       }}
-                      className="text-white/80 hover:text-white transition-colors"
-                      title={volume === 0 ? "Sesi Aç" : "Sesi Kapat"}
+                      className="text-white/80 hover:text-white"
                     >
                       {volume === 0 ? <VolumeX size={18} className="text-red-400" /> : <Volume2 size={18} />}
                     </button>
@@ -536,13 +847,12 @@ export const Player: React.FC = () => {
                 )}
               </div>
 
-              {/* 6. Exit (Tam Ekrandan Çıkış) */}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   toggleFullscreen();
                 }}
-                className="w-11 h-11 md:w-12 md:h-12 rounded-xl bg-white/10 hover:bg-red-500/30 text-white/80 hover:text-red-300 border border-white/10 hover:border-red-500/40 flex items-center justify-center transition-all duration-200 active:scale-95"
+                className="w-11 h-11 md:w-12 md:h-12 rounded-xl bg-white/10 hover:bg-red-500/30 text-white/80 hover:text-red-300 border border-white/10 flex items-center justify-center"
                 title="Tam Ekrandan Çık"
               >
                 <Minimize size={20} />
@@ -554,37 +864,37 @@ export const Player: React.FC = () => {
             <>
               <button 
                 onClick={() => setExpanded(false)}
-                className="absolute top-4 left-4 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 z-10"
+                className="absolute top-4 left-4 bg-black/50 text-white p-2 rounded-lg hover:bg-black/70 z-10"
               >
                 <X size={20} />
               </button>
               <button 
                 onClick={toggleFullscreen}
-                className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 z-10"
+                className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-lg hover:bg-black/70 z-10"
                 title="Tam Ekran"
               >
                 <Maximize size={20} />
               </button>
             </>
           ) : !isFullscreen ? (
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 z-10">
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-4 z-10 transition-opacity">
               <button 
                 onClick={toggleFullscreen}
-                className="bg-white/20 backdrop-blur text-white p-2 rounded-full hover:bg-white/30 transition-colors"
+                className="bg-white/20 text-white p-2 rounded-lg hover:bg-white/30"
                 title="Tam Ekran"
               >
                 <Maximize size={20} />
               </button>
               <button 
                 onClick={() => setExpanded(true)}
-                className={`bg-white/20 backdrop-blur text-white p-2 rounded-full hover:bg-white/30 transition-colors`}
+                className="bg-white/20 text-white p-2 rounded-lg hover:bg-white/30"
                 title="Genişlet"
               >
                 <Tv size={20} />
               </button>
               <button 
                 onClick={() => setIsPip(false)}
-                className="bg-white/20 backdrop-blur text-white p-2 rounded-full hover:bg-white/30 transition-colors"
+                className="bg-white/20 text-white p-2 rounded-lg hover:bg-white/30"
                 title="Mini Oynatıcıyı Kapat"
               >
                 <X size={20} />
@@ -594,21 +904,77 @@ export const Player: React.FC = () => {
         </div>
       )}
 
-      {/* Native audio element for Radio to prevent CORS and parsing issues */}
+      {/* Native audio element for Radio */}
       {!isTv && (
-        <audio ref={audioRef} src={currentChannel.url} className="hidden" crossOrigin="anonymous" />
+        <audio ref={audioRef} src={currentChannel.url} className="hidden" />
+      )}
+
+      {/* Top DVR / Time-Shifting Mini Bar for Bottom Player */}
+      {hasTimeShift && !isFullscreen && (
+        <div className="h-4 bg-gray-100 dark:bg-gray-800/80 px-4 md:px-6 flex items-center gap-2.5 border-b border-gray-200 dark:border-gray-700/50">
+          <button
+            onClick={() => seekRelative(-10)}
+            className="text-[9px] text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 flex items-center gap-0.5"
+            title="10s Geri Sar"
+          >
+            <RotateCcw size={9} />
+            <span>-10s</span>
+          </button>
+          
+          <input
+            type="range"
+            min={Number.isFinite(seekableRange.start) ? seekableRange.start : 0}
+            max={Number.isFinite(seekableRange.end) && seekableRange.end > (seekableRange.start || 0) ? seekableRange.end : 1}
+            step={1}
+            value={Number.isFinite(currentTime) ? currentTime : 0}
+            onMouseDown={() => setIsScrubbing(true)}
+            onMouseUp={() => setIsScrubbing(false)}
+            onTouchStart={() => setIsScrubbing(true)}
+            onTouchEnd={() => setIsScrubbing(false)}
+            onChange={(e) => handleSeekChange(parseFloat(e.target.value))}
+            className="flex-1 h-1 rounded appearance-none bg-gray-300 dark:bg-gray-700 cursor-pointer accent-red-500"
+          />
+
+          <button
+            onClick={() => seekRelative(10)}
+            disabled={isLiveEdge}
+            className={`text-[9px] flex items-center gap-0.5 ${
+              isLiveEdge ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed' : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-100'
+            }`}
+            title="10s İleri Sar"
+          >
+            <span>+10s</span>
+            <RotateCw size={9} />
+          </button>
+
+          <button
+            onClick={jumpToLive}
+            className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.2 rounded flex items-center gap-1 ${
+              isLiveEdge 
+                ? 'bg-red-500/10 text-red-600 dark:text-red-400' 
+                : 'bg-red-600 text-white animate-pulse'
+            }`}
+            title={isLiveEdge ? "Canlı Yayın" : "Canlı Yayına Dön"}
+          >
+            <span className="w-1 h-1 rounded-full bg-current" />
+            <span>{isLiveEdge || !Number.isFinite(timeBehindLive) || timeBehindLive <= 5 ? 'CANLI' : `CANLIYA DÖN (${formatBehindTime(timeBehindLive)})`}</span>
+          </button>
+        </div>
       )}
 
       {/* Bottom Bar Controls */}
-      <div className="h-16 md:h-20 px-3 md:px-6 flex items-center justify-between gap-2">
+      <div className={`h-16 md:h-18 px-3 md:px-6 flex items-center justify-between gap-2 ${hasTimeShift ? '' : 'pt-1'}`}>
+        
         {/* Info (Left) */}
-        <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0 md:w-1/3">
+        <div className="flex items-center gap-2.5 md:gap-4 flex-1 min-w-0 md:w-1/3">
           {(() => {
             const brand = getChannelBrand(currentChannel.id, currentChannel.name, currentChannel.type);
             return (
               <div 
-                className="w-10 h-10 md:w-12 md:h-12 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center relative shadow-sm border border-black/10 dark:border-white/10 p-1"
+                className="w-10 h-10 md:w-11 md:h-11 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative shadow-xs border border-black/10 dark:border-white/10 p-1 cursor-pointer"
                 style={{ background: brand.gradient }}
+                onClick={() => isTv && setExpanded(!expanded)}
+                title="Görünümü Değiştir"
               >
                 {currentChannel.logo ? (
                   <img 
@@ -616,140 +982,236 @@ export const Player: React.FC = () => {
                     alt={currentChannel.name} 
                     className={`w-full h-full object-contain filter drop-shadow ${hasError ? 'opacity-30 grayscale' : ''}`}
                     onError={(e) => {
-                      // fallback to hidden so the icon/text shows
                       (e.target as HTMLElement).style.display = 'none';
                     }}
                   />
                 ) : (
                   isTv ? (
-                    <Tv className={`w-5 h-5 md:w-6 md:h-6 text-white/90 ${hasError ? 'opacity-40' : ''}`} />
+                    <Tv className={`w-5 h-5 text-white/90 ${hasError ? 'opacity-40' : ''}`} />
                   ) : (
-                    <Radio className={`w-5 h-5 md:w-6 md:h-6 text-white/90 ${hasError ? 'opacity-40' : ''}`} />
+                    <Radio className={`w-5 h-5 text-white/90 ${hasError ? 'opacity-40' : ''}`} />
                   )
                 )}
                 
                 {isLoading && !hasError && (
-                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center backdrop-blur-[1px]">
-                    <Loader2 className="w-5 h-5 animate-spin text-white" />
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                    <Loader2 className="w-4 h-4 animate-spin text-white" />
                   </div>
                 )}
                 {hasError && (
-                  <div className="absolute inset-0 bg-red-600/60 flex items-center justify-center">
-                    <AlertCircle className="w-5 h-5 text-white" />
+                  <div className="absolute inset-0 bg-red-600/70 flex items-center justify-center">
+                    <AlertCircle className="w-4 h-4 text-white" />
                   </div>
                 )}
               </div>
             );
           })()}
-          <div className="overflow-hidden pr-2">
-            <h4 className={`font-semibold text-sm md:text-base truncate ${hasError ? 'text-red-500 dark:text-red-400' : 'text-gray-900 dark:text-white'}`}>
-              {hasError ? 'Yayın Hatası' : currentChannel.name}
-            </h4>
-            <p className="text-xs text-gray-500 dark:text-gray-400 capitalize truncate">
-              {hasError ? 'Bağlanılamadı' : `${currentChannel.type} • ${currentChannel.category}`}
-            </p>
+
+          <div className="overflow-hidden pr-2 min-w-0">
+            <div className="flex items-center gap-1.5">
+              <h4 className={`font-bold text-xs md:text-sm truncate ${hasError ? 'text-red-500 dark:text-red-400' : 'text-gray-900 dark:text-white'}`}>
+                {hasError ? 'Yayın Hatası' : currentChannel.name}
+              </h4>
+              <button
+                onClick={() => toggleFavorite(currentChannel.id)}
+                className={`p-1 rounded-md text-xs ${isFavorite ? 'text-red-500' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'}`}
+                title={isFavorite ? 'Favorilerden Çıkar' : 'Favorilere Ekle'}
+              >
+                <Heart size={14} fill={isFavorite ? 'currentColor' : 'none'} />
+              </button>
+            </div>
+            
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <span className={`w-1.5 h-1.5 rounded-full ${hasError ? 'bg-red-500' : isLiveEdge ? 'bg-emerald-500 animate-pulse' : 'bg-amber-400'}`} />
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 capitalize truncate">
+                {hasError ? (
+                  <span className="cursor-pointer underline text-red-400" onClick={reloadStream}>Yeniden Dene</span>
+                ) : isLiveEdge || !Number.isFinite(timeBehindLive) || timeBehindLive <= 5 ? (
+                  `${currentChannel.type === 'tv' ? 'Canlı TV' : 'Canlı Radyo'} • ${currentChannel.category}`
+                ) : (
+                  `Gecikme: ${formatBehindTime(timeBehindLive)}`
+                )}
+              </p>
+            </div>
           </div>
         </div>
 
         {/* Desktop Playback Controls (Center) */}
-        <div className="hidden md:flex flex-1 items-center justify-center gap-4">
+        <div className="hidden md:flex flex-1 items-center justify-center gap-2">
+          <button 
+            onClick={() => seekRelative(-10)}
+            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+            title="10 Saniye Geri Sar"
+          >
+            <RotateCcw size={17} />
+          </button>
+
           <button 
             onClick={handlePrev}
-            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-2"
+            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
             title={isFavorite ? "Önceki Favori Kanal" : "Önceki Kanal"}
           >
-            <SkipBack size={24} fill="currentColor" />
+            <SkipBack size={20} fill="currentColor" />
           </button>
+          
           <button 
             onClick={() => setIsPlaying(!isPlaying)}
-            className={`w-12 h-12 flex items-center justify-center rounded-full text-white ${getThemeBgClass(themeColor)} hover:opacity-90 transition-opacity`}
-            title={isPlaying ? "Durdur" : "Oynat"}
+            className={`w-10 h-10 flex items-center justify-center rounded-xl text-white ${getThemeBgClass(themeColor)} hover:opacity-90 shadow-sm`}
+            title={isPlaying ? "Durdur (Space)" : "Oynat (Space)"}
           >
-            {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" className="ml-1" />}
+            {isPlaying ? <Pause size={17} fill="currentColor" /> : <Play size={17} fill="currentColor" className="ml-0.5" />}
           </button>
+          
           <button 
             onClick={handleNext}
-            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-2"
+            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
             title={isFavorite ? "Sonraki Favori Kanal" : "Sonraki Kanal"}
           >
-            <SkipForward size={24} fill="currentColor" />
+            <SkipForward size={20} fill="currentColor" />
+          </button>
+
+          <button 
+            onClick={() => seekRelative(10)}
+            disabled={isLiveEdge}
+            className={`p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 ${isLiveEdge ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+            title="10 Saniye İleri Sar"
+          >
+            <RotateCw size={17} />
           </button>
         </div>
 
         {/* Actions (Right) & Mobile Playback */}
-        <div className="flex items-center justify-end gap-1 md:gap-4 flex-shrink-0 md:w-1/3">
+        <div className="flex items-center justify-end gap-1 md:gap-2 flex-shrink-0 md:w-1/3">
           
           {/* Mobile Playback Controls */}
           <div className="flex md:hidden items-center gap-1">
              <button 
               onClick={handlePrev}
               className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-1.5"
-              title={isFavorite ? "Önceki Favori Kanal" : "Önceki Kanal"}
+              title="Önceki Kanal"
             >
               <SkipBack size={18} fill="currentColor" />
             </button>
             <button 
               onClick={() => setIsPlaying(!isPlaying)}
-              className={`w-9 h-9 flex items-center justify-center rounded-full text-white ${getThemeBgClass(themeColor)} hover:opacity-90 transition-opacity`}
+              className={`w-8 h-8 flex items-center justify-center rounded-xl text-white ${getThemeBgClass(themeColor)} hover:opacity-90`}
               title={isPlaying ? "Durdur" : "Oynat"}
             >
-              {isPlaying ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" className="ml-0.5" />}
+              {isPlaying ? <Pause size={15} fill="currentColor" /> : <Play size={15} fill="currentColor" className="ml-0.5" />}
             </button>
             <button 
               onClick={handleNext}
               className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-1.5"
-              title={isFavorite ? "Sonraki Favori Kanal" : "Sonraki Kanal"}
+              title="Sonraki Kanal"
             >
               <SkipForward size={18} fill="currentColor" />
             </button>
           </div>
 
-          <div className="hidden md:flex items-center gap-2 group">
-            <button onClick={() => setVolume(volume === 0 ? 0.8 : 0)} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-2">
-              {volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}
+          {/* Volume Control */}
+          <div className="hidden md:flex items-center gap-1.5">
+            <button 
+              onClick={() => setVolume(volume === 0 ? 0.8 : 0)} 
+              className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              title={volume === 0 ? "Sesi Aç (M)" : "Sesi Kapat (M)"}
+            >
+              {volume === 0 ? <VolumeX size={18} className="text-red-500" /> : <Volume2 size={18} />}
             </button>
             <input 
               type="range" 
               min={0} max={1} step={0.01} 
               value={volume}
               onChange={(e) => setVolume(parseFloat(e.target.value))}
-              className={`hidden md:block w-20 h-1.5 rounded-lg appearance-none bg-gray-200 dark:bg-gray-700 cursor-pointer accent-current ${getThemeTextClass(themeColor)} opacity-0 group-hover:opacity-100 transition-opacity`}
+              className={`w-18 h-1.5 rounded-lg appearance-none bg-gray-200 dark:bg-gray-700 cursor-pointer accent-current ${getThemeTextClass(themeColor)}`}
             />
           </div>
+
+          {/* Sleep Timer Menu */}
+          <div className="relative">
+            <button
+              onClick={() => setShowSleepTimerMenu(!showSleepTimerMenu)}
+              className={`p-1.5 rounded-lg flex items-center gap-1 text-xs font-semibold ${
+                sleepTimerEnd 
+                  ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' 
+                  : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+              }`}
+              title="Otomatik Kapanma (Uyku Zamanlayıcısı)"
+            >
+              <Moon size={17} className={sleepTimerEnd ? 'text-blue-500 animate-pulse' : ''} />
+              {sleepRemainingText && (
+                <span className="hidden sm:inline font-mono text-[10px]">{sleepRemainingText}</span>
+              )}
+            </button>
+
+            {showSleepTimerMenu && (
+              <div className="absolute bottom-full right-0 mb-2 w-48 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden z-50 p-1.5 space-y-0.5">
+                <div className="px-3 py-1.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 dark:border-gray-700/50">
+                  Uyku Zamanlayıcısı
+                </div>
+                {[
+                  { label: 'Kapalı', val: null },
+                  { label: '15 Dakika', val: 15 },
+                  { label: '30 Dakika', val: 30 },
+                  { label: '45 Dakika', val: 45 },
+                  { label: '60 Dakika', val: 60 },
+                  { label: '90 Dakika', val: 90 },
+                ].map(opt => {
+                  const isCur = sleepTimerMinutes === opt.val;
+                  return (
+                    <button
+                      key={opt.label}
+                      onClick={() => {
+                        setSleepTimer(opt.val);
+                        setShowSleepTimerMenu(false);
+                      }}
+                      className={`w-full text-left px-3 py-1.5 rounded-lg text-xs flex items-center justify-between transition-colors ${
+                        isCur 
+                          ? `${getThemeTextClass(themeColor)} font-bold bg-gray-100 dark:bg-gray-700` 
+                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                      }`}
+                    >
+                      <span>{opt.label}</span>
+                      {isCur && <Check size={14} />}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
           
-          <div className="relative hidden md:block">
+          {/* Quality menu */}
+          <div className="relative hidden sm:block">
             <button 
               onClick={toggleQualityMenu}
-              className={`p-2 transition-colors ${qualities.length === 0 ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+              className={`p-1.5 rounded-lg ${qualities.length === 0 ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
               title="Kalite Ayarları"
               disabled={qualities.length === 0}
             >
-              <Settings size={20} />
+              <Settings size={18} />
             </button>
             
             {showQualityMenu && qualities.length > 0 && (
-              <div className="absolute bottom-full right-0 mb-2 w-32 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden z-50">
-                <div className="py-1">
+              <div className="absolute bottom-full right-0 mb-2 w-32 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden z-50 p-1">
+                <button
+                  onClick={() => changeQuality(-1)}
+                  className={`w-full text-left px-3 py-1.5 rounded-lg text-xs ${selectedQuality === -1 ? getThemeTextClass(themeColor) + ' font-bold bg-gray-100 dark:bg-gray-700' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                >
+                  Otomatik
+                </button>
+                {qualities.map((q, index) => (
                   <button
-                    onClick={() => changeQuality(-1)}
-                    className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${selectedQuality === -1 ? getThemeTextClass(themeColor) + ' font-bold' : 'text-gray-700 dark:text-gray-300'}`}
+                    key={index}
+                    onClick={() => changeQuality(index)}
+                    className={`w-full text-left px-3 py-1.5 rounded-lg text-xs ${selectedQuality === index ? getThemeTextClass(themeColor) + ' font-bold bg-gray-100 dark:bg-gray-700' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
                   >
-                    Otomatik
+                    {q.height ? `${q.height}p` : `Kalite ${index + 1}`}
                   </button>
-                  {qualities.map((q, index) => (
-                    <button
-                      key={index}
-                      onClick={() => changeQuality(index)}
-                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${selectedQuality === index ? getThemeTextClass(themeColor) + ' font-bold' : 'text-gray-700 dark:text-gray-300'}`}
-                    >
-                      {q.height ? `${q.height}p` : `Kalite ${index + 1}`}
-                    </button>
-                  ))}
-                </div>
+                ))}
               </div>
             )}
           </div>
 
+          {/* TV Specific buttons */}
           {isTv && (
             <>
               <button 
@@ -761,24 +1223,16 @@ export const Player: React.FC = () => {
                     setIsPip(!isPip);
                   }
                 }}
-                className={`p-2 transition-colors ${isPip && !expanded ? getThemeTextClass(themeColor) : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+                className={`p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 ${isPip && !expanded ? getThemeTextClass(themeColor) : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
                 title="Mini Oynatıcı (PiP)"
               >
-                <PictureInPicture size={20} />
+                <PictureInPicture size={18} />
               </button>
 
               <button 
                 onClick={toggleFullscreen}
-                className="hidden md:block text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-2"
-                title="Tam Ekran"
-              >
-                <Maximize size={20} />
-              </button>
-
-              <button 
-                onClick={toggleFullscreen}
-                className="md:hidden text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-2"
-                title="Tam Ekran"
+                className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                title="Tam Ekran (F)"
               >
                 <Maximize size={18} />
               </button>
@@ -787,20 +1241,13 @@ export const Player: React.FC = () => {
           
           <button 
             onClick={() => setCurrentChannel(null)}
-            className="hidden md:block text-gray-400 hover:text-red-500 p-2"
+            className="text-gray-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            title="Oynatıcıyı Kapat"
           >
-            <X size={20} />
-          </button>
-
-          <button 
-            onClick={() => expanded ? setExpanded(false) : setCurrentChannel(null)}
-            className="md:hidden text-gray-400 hover:text-red-500 p-2 ml-1"
-          >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
       </div>
     </div>
   );
 };
-
