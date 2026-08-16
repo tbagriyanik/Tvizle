@@ -1,0 +1,8 @@
+{
+  "name": "Tvizle",
+  "description": "TV ve radyo yayınlarını takip edebileceğiniz, YouTube benzeri kalıcı oynatıcısı, favoriler ve tema özelleştirmeleri olan kapsamlı bir platform.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
