@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import localforage from 'localforage';
-import { AppState, Channel, ThemeColor, ThemeMode, Country } from '../types';
+import { AppState, Channel, ThemeColor, ThemeMode, Country, Language } from '../types';
 
 interface AppContextType extends AppState {
   setCurrentChannel: (channel: Channel | null) => void;
@@ -10,6 +10,7 @@ interface AppContextType extends AppState {
   removeFromHistory: (channelId: string) => void;
   setThemeColor: (color: ThemeColor) => void;
   setThemeMode: (mode: ThemeMode) => void;
+  setLanguage: (language: Language) => void;
   setCountry: (country: Country) => void;
   setSidebarOpen: (isOpen: boolean) => void;
   setVolume: (volume: number) => void;
@@ -43,6 +44,7 @@ const defaultState: AppState = {
   history: [],
   themeColor: 'blue',
   themeMode: 'dark',
+  language: 'tr',
   country: 'all',
   sidebarOpen: false,
   volume: 0.8,
@@ -199,13 +201,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         history: state.history,
         themeColor: state.themeColor,
         themeMode: state.themeMode,
+        language: state.language,
         country: state.country,
         volume: state.volume,
       }));
     } catch (e) {
       console.warn('Failed to save state to localStorage:', e);
     }
-  }, [state.favorites, state.history, state.themeColor, state.themeMode, state.country, state.volume]);
+  }, [state.favorites, state.history, state.themeColor, state.themeMode, state.language, state.country, state.volume]);
 
   useEffect(() => {
     if (state.themeMode === 'dark') {
@@ -278,6 +281,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const setThemeColor = (themeColor: ThemeColor) => setState(s => ({ ...s, themeColor }));
   const setThemeMode = (themeMode: ThemeMode) => setState(s => ({ ...s, themeMode }));
+  const setLanguage = (language: Language) => setState(s => ({ ...s, language }));
   const setCountry = (country: Country) => setState(s => ({ ...s, country }));
   const setSidebarOpen = (sidebarOpen: boolean) => setState(s => ({ ...s, sidebarOpen }));
   const setVolume = (volume: number) => setState(s => ({ ...s, volume }));
@@ -298,6 +302,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       removeFromHistory,
       setThemeColor,
       setThemeMode,
+      setLanguage,
       setCountry,
       setSidebarOpen,
       setVolume,

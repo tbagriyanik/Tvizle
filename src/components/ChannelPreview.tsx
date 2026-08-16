@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Channel } from '../types';
 import { getChannelBrand } from '../utils/channelLogos';
 import { Tv, Radio, Disc, Music2, Waves, Sparkles, Activity } from 'lucide-react';
+import { useAppContext } from '../context/AppContext';
+import { t } from '../utils/i18n';
 
 interface ChannelPreviewProps {
   channel: Channel;
@@ -18,6 +20,7 @@ export const ChannelPreview: React.FC<ChannelPreviewProps> = ({
   isPlaying = false,
 }) => {
   const [imgError, setImgError] = useState(false);
+  const { language } = useAppContext();
   const brand = getChannelBrand(channel.id, channel.name, channel.type);
 
   const hasValidLogo = !!channel.logo && !imgError;
@@ -141,14 +144,14 @@ export const ChannelPreview: React.FC<ChannelPreviewProps> = ({
             {/* Frequency Badge on top-left */}
             <div className="absolute top-1.5 left-1.5 px-1.5 py-0.2 rounded text-[8.5px] font-bold bg-black/60 backdrop-blur-md text-white/90 uppercase tracking-wider flex items-center gap-1 border border-white/15 shadow-2xs">
               <Radio size={9} style={{ color: brand.accentColor }} />
-              <span>{brand.frequency || 'FM'}</span>
+              <span>{brand.frequency || t(language, 'channel.fm')}</span>
             </div>
 
             {/* Status / Genre Badge on top-right */}
             {isPlaying ? (
               <div className="absolute top-1.5 right-1.5 px-1.5 py-0.2 rounded text-[8px] font-bold bg-emerald-500 text-white uppercase tracking-wider flex items-center gap-0.5 shadow-2xs border border-emerald-400/30 animate-pulse">
                 <span className="w-1 h-1 rounded-full bg-white animate-ping" />
-                <span>YAYINDA</span>
+                <span>{t(language, 'channel.onAir')}</span>
               </div>
             ) : (
               <div className="absolute top-1.5 right-1.5 px-1.5 py-0.2 rounded text-[8px] font-semibold bg-black/50 backdrop-blur-xs text-white/80 uppercase tracking-wider border border-white/10 truncate max-w-[85px]">
@@ -205,7 +208,7 @@ export const ChannelPreview: React.FC<ChannelPreviewProps> = ({
             {/* Live indicator badge */}
             <div className="px-1.5 py-0.2 rounded text-[8.5px] font-bold bg-red-600 text-white uppercase tracking-wider flex items-center gap-1 border border-red-400/30">
               <span className="w-1 h-1 rounded-full bg-white" />
-              <span>CANLI</span>
+              <span>{t(language, 'channel.live')}</span>
             </div>
 
             {/* Quality Tag */}

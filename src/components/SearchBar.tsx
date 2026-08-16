@@ -2,9 +2,10 @@ import React, { useRef, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { getThemeRingClass } from '../utils/theme';
+import { t } from '../utils/i18n';
 
 export const SearchBar: React.FC = () => {
-  const { searchQuery, setSearchQuery, themeColor } = useAppContext();
+  const { searchQuery, setSearchQuery, themeColor, language } = useAppContext();
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -29,7 +30,7 @@ export const SearchBar: React.FC = () => {
       <input
         ref={inputRef}
         type="text"
-        placeholder="Kanal adı veya kategori ara... (örn: TRT 1, Haber, Kral Pop, Spor)"
+        placeholder={t(language, 'search.placeholder')}
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         className={`block w-full pl-11 pr-24 py-3 md:py-3.5 text-sm md:text-base border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all shadow-2xs ${getThemeRingClass(themeColor)}`}
@@ -40,7 +41,7 @@ export const SearchBar: React.FC = () => {
           <button
             onClick={() => setSearchQuery('')}
             className="p-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
-            title="Aramayı Temizle"
+            title={t(language, 'search.clear')}
           >
             <X className="h-4 w-4" />
           </button>

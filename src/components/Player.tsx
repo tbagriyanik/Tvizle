@@ -28,6 +28,7 @@ import { getThemeBgClass, getThemeTextClass } from '../utils/theme';
 import { mockChannels } from '../data';
 import { AudioVisualizer } from './AudioVisualizer';
 import { getChannelBrand } from '../utils/channelLogos';
+import { t } from '../utils/i18n';
 
 export const Player: React.FC = () => {
   const { 
@@ -43,7 +44,8 @@ export const Player: React.FC = () => {
     toggleFavorite,
     sleepTimerMinutes,
     sleepTimerEnd,
-    setSleepTimer
+    setSleepTimer,
+    language
   } = useAppContext();
 
   const [expanded, setExpanded] = useState(false);
@@ -620,14 +622,14 @@ export const Player: React.FC = () => {
           {hasError && (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 z-20 text-white p-4 text-center">
               <AlertCircle className="w-12 h-12 text-red-500 mb-2" />
-              <p className="text-sm md:text-base font-bold">Yayın Bağlantısı Kurulamadı</p>
-              <p className="text-xs text-gray-400 mt-1 mb-3">Bu kanala şu an ulaşılamıyor veya yayın geçici olarak durdurulmuş.</p>
+              <p className="text-sm md:text-base font-bold">{t(language, 'player.connectionError')}</p>
+              <p className="text-xs text-gray-400 mt-1 mb-3">{t(language, 'player.unavailable')}</p>
               <button
                 onClick={reloadStream}
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-xs font-semibold text-white"
               >
                 <RefreshCw size={13} />
-                <span>Yeniden Dene</span>
+                <span>{t(language, 'player.retry')}</span>
               </button>
             </div>
           )}
@@ -648,16 +650,16 @@ export const Player: React.FC = () => {
                       ? 'bg-red-500/20 text-red-400 border-red-500/30' 
                       : 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-red-500/30'
                   }`}
-                  title={isLiveEdge ? "Şu an Canlı Yayındasınız" : "Canlı Yayına Dön"}
+                  title={isLiveEdge ? t(language, 'player.liveNow') : t(language, 'player.backToLive')}
                 >
                   <span className={`w-1.5 h-1.5 rounded-full ${isLiveEdge ? 'bg-red-500' : 'bg-amber-400'}`} />
-                  <span>{isLiveEdge || !Number.isFinite(timeBehindLive) || timeBehindLive <= 5 ? 'CANLI' : `CANLIYA DÖN (${formatBehindTime(timeBehindLive)})`}</span>
+                  <span>{isLiveEdge || !Number.isFinite(timeBehindLive) || timeBehindLive <= 5 ? t(language, 'player.liveAbbrev') : `${t(language, 'player.backToLiveAbbrev')} (${formatBehindTime(timeBehindLive)})`}</span>
                 </button>
 
                 {isFavorite && (
                   <span className="text-[9px] font-bold text-amber-300 bg-amber-400/20 px-1.5 py-0.5 rounded border border-amber-400/30 flex items-center gap-1">
                     <Heart size={9} fill="currentColor" className="text-red-400" />
-                    <span>Favori</span>
+                    <span>{t(language, 'player.favorite')}</span>
                   </span>
                 )}
               </div>
@@ -683,7 +685,7 @@ export const Player: React.FC = () => {
                 <button
                   onClick={() => seekRelative(-10)}
                   className="text-white/80 hover:text-white flex items-center gap-1 text-[11px] px-2 py-0.5 rounded bg-white/10 hover:bg-white/20"
-                  title="10 Saniye Geri Sar"
+                  title={t(language, 'player.rewind10')}
                 >
                   <RotateCcw size={12} />
                   <span>10s</span>
@@ -711,7 +713,7 @@ export const Player: React.FC = () => {
                   className={`flex items-center gap-1 text-[11px] px-2 py-0.5 rounded ${
                     isLiveEdge ? 'opacity-40 cursor-not-allowed bg-white/5 text-white/50' : 'text-white/80 hover:text-white bg-white/10 hover:bg-white/20'
                   }`}
-                  title="10 Saniye İleri Sar"
+                  title={t(language, 'player.forward10')}
                 >
                   <span>10s</span>
                   <RotateCw size={12} />
@@ -726,7 +728,7 @@ export const Player: React.FC = () => {
                   }`}
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-white" />
-                  <span>{isLiveEdge ? 'CANLI' : 'CANLIYA DÖN'}</span>
+                  <span>{isLiveEdge ? t(language, 'player.liveAbbrev') : t(language, 'player.backToLiveAbbrev')}</span>
                 </button>
               </div>
             </div>
@@ -752,7 +754,7 @@ export const Player: React.FC = () => {
                     ? 'bg-red-500/25 text-red-500 border border-red-500/50' 
                     : 'bg-white/10 text-white/80 hover:text-white hover:bg-white/20 border border-white/10'
                 }`}
-                title={isFavorite ? 'Favorilerden Çıkar' : 'Favorilere Ekle'}
+                title={isFavorite ? t(language, 'list.removeFav') : t(language, 'list.addFav')}
               >
                 <Heart size={20} fill={isFavorite ? 'currentColor' : 'none'} />
               </button>
@@ -764,7 +766,7 @@ export const Player: React.FC = () => {
                   resetFsControlsTimer();
                 }}
                 className="w-11 h-11 md:w-12 md:h-12 rounded-xl bg-white/10 text-white/80 hover:text-white hover:bg-white/20 border border-white/10 flex items-center justify-center"
-                title={isFavorite ? "Önceki Favori Kanal" : "Önceki Kanal"}
+                title={isFavorite ? t(language, 'player.prevFav') : t(language, 'player.prev')}
               >
                 <SkipBack size={20} fill="currentColor" />
               </button>
@@ -776,7 +778,7 @@ export const Player: React.FC = () => {
                   resetFsControlsTimer();
                 }}
                 className={`w-13 h-13 md:w-14 md:h-14 rounded-2xl flex items-center justify-center text-white ${getThemeBgClass(themeColor)} shadow-xl border border-white/30`}
-                title={isPlaying ? 'Durdur' : 'Oynat'}
+                title={isPlaying ? t(language, 'player.stop') : t(language, 'player.play')}
               >
                 {isPlaying ? (
                   <Pause size={24} fill="currentColor" />
@@ -792,7 +794,7 @@ export const Player: React.FC = () => {
                   resetFsControlsTimer();
                 }}
                 className="w-11 h-11 md:w-12 md:h-12 rounded-xl bg-white/10 text-white/80 hover:text-white hover:bg-white/20 border border-white/10 flex items-center justify-center"
-                title={isFavorite ? "Sonraki Favori Kanal" : "Sonraki Kanal"}
+                title={isFavorite ? t(language, 'player.nextFav') : t(language, 'player.next')}
               >
                 <SkipForward size={20} fill="currentColor" />
               </button>
@@ -809,7 +811,7 @@ export const Player: React.FC = () => {
                       ? 'bg-white/25 text-white border border-white/40'
                       : 'bg-white/10 text-white/80 hover:text-white hover:bg-white/20 border border-white/10'
                   }`}
-                  title="Ses Kontrolü"
+                  title={t(language, 'player.volume')}
                 >
                   {volume === 0 ? <VolumeX size={20} className="text-red-400" /> : <Volume2 size={20} />}
                 </button>
@@ -853,7 +855,7 @@ export const Player: React.FC = () => {
                   toggleFullscreen();
                 }}
                 className="w-11 h-11 md:w-12 md:h-12 rounded-xl bg-white/10 hover:bg-red-500/30 text-white/80 hover:text-red-300 border border-white/10 flex items-center justify-center"
-                title="Tam Ekrandan Çık"
+                title={t(language, 'player.exitFullscreen')}
               >
                 <Minimize size={20} />
               </button>
@@ -871,7 +873,7 @@ export const Player: React.FC = () => {
               <button 
                 onClick={toggleFullscreen}
                 className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-lg hover:bg-black/70 z-10"
-                title="Tam Ekran"
+                title={t(language, 'player.fullscreen')}
               >
                 <Maximize size={20} />
               </button>
@@ -881,21 +883,21 @@ export const Player: React.FC = () => {
               <button 
                 onClick={toggleFullscreen}
                 className="bg-white/20 text-white p-2 rounded-lg hover:bg-white/30"
-                title="Tam Ekran"
+                title={t(language, 'player.fullscreen')}
               >
                 <Maximize size={20} />
               </button>
               <button 
                 onClick={() => setExpanded(true)}
                 className="bg-white/20 text-white p-2 rounded-lg hover:bg-white/30"
-                title="Genişlet"
+                title={t(language, 'player.expand')}
               >
                 <Tv size={20} />
               </button>
               <button 
                 onClick={() => setIsPip(false)}
                 className="bg-white/20 text-white p-2 rounded-lg hover:bg-white/30"
-                title="Mini Oynatıcıyı Kapat"
+                title={t(language, 'player.closeMini')}
               >
                 <X size={20} />
               </button>
@@ -915,7 +917,7 @@ export const Player: React.FC = () => {
           <button
             onClick={() => seekRelative(-10)}
             className="text-[9px] text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 flex items-center gap-0.5"
-            title="10s Geri Sar"
+            title={t(language, 'player.rewind10s')}
           >
             <RotateCcw size={9} />
             <span>-10s</span>
@@ -941,7 +943,7 @@ export const Player: React.FC = () => {
             className={`text-[9px] flex items-center gap-0.5 ${
               isLiveEdge ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed' : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-100'
             }`}
-            title="10s İleri Sar"
+            title={t(language, 'player.forward10s')}
           >
             <span>+10s</span>
             <RotateCw size={9} />
@@ -954,10 +956,10 @@ export const Player: React.FC = () => {
                 ? 'bg-red-500/10 text-red-600 dark:text-red-400' 
                 : 'bg-red-600 text-white animate-pulse'
             }`}
-            title={isLiveEdge ? "Canlı Yayın" : "Canlı Yayına Dön"}
+            title={isLiveEdge ? t(language, 'player.liveStream') : t(language, 'player.backToLive')}
           >
             <span className="w-1 h-1 rounded-full bg-current" />
-            <span>{isLiveEdge || !Number.isFinite(timeBehindLive) || timeBehindLive <= 5 ? 'CANLI' : `CANLIYA DÖN (${formatBehindTime(timeBehindLive)})`}</span>
+            <span>{isLiveEdge || !Number.isFinite(timeBehindLive) || timeBehindLive <= 5 ? t(language, 'player.liveAbbrev') : `${t(language, 'player.backToLiveAbbrev')} (${formatBehindTime(timeBehindLive)})`}</span>
           </button>
         </div>
       )}
@@ -974,7 +976,7 @@ export const Player: React.FC = () => {
                 className="w-10 h-10 md:w-11 md:h-11 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative shadow-xs border border-black/10 dark:border-white/10 p-1 cursor-pointer"
                 style={{ background: brand.gradient }}
                 onClick={() => isTv && setExpanded(!expanded)}
-                title="Görünümü Değiştir"
+                title={t(language, 'player.changeView')}
               >
                 {currentChannel.logo ? (
                   <img 
@@ -1010,12 +1012,12 @@ export const Player: React.FC = () => {
           <div className="overflow-hidden pr-2 min-w-0">
             <div className="flex items-center gap-1.5">
               <h4 className={`font-bold text-xs md:text-sm truncate ${hasError ? 'text-red-500 dark:text-red-400' : 'text-gray-900 dark:text-white'}`}>
-                {hasError ? 'Yayın Hatası' : currentChannel.name}
+                {hasError ? t(language, 'player.streamError') : currentChannel.name}
               </h4>
               <button
                 onClick={() => toggleFavorite(currentChannel.id)}
                 className={`p-1 rounded-md text-xs ${isFavorite ? 'text-red-500' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'}`}
-                title={isFavorite ? 'Favorilerden Çıkar' : 'Favorilere Ekle'}
+                title={isFavorite ? t(language, 'list.removeFav') : t(language, 'list.addFav')}
               >
                 <Heart size={14} fill={isFavorite ? 'currentColor' : 'none'} />
               </button>
@@ -1025,11 +1027,11 @@ export const Player: React.FC = () => {
               <span className={`w-1.5 h-1.5 rounded-full ${hasError ? 'bg-red-500' : isLiveEdge ? 'bg-emerald-500 animate-pulse' : 'bg-amber-400'}`} />
               <p className="text-[11px] text-gray-500 dark:text-gray-400 capitalize truncate">
                 {hasError ? (
-                  <span className="cursor-pointer underline text-red-400" onClick={reloadStream}>Yeniden Dene</span>
+                  <span className="cursor-pointer underline text-red-400" onClick={reloadStream}>{t(language, 'player.retry')}</span>
                 ) : isLiveEdge || !Number.isFinite(timeBehindLive) || timeBehindLive <= 5 ? (
-                  `${currentChannel.type === 'tv' ? 'Canlı TV' : 'Canlı Radyo'} • ${currentChannel.category}`
+                  `${currentChannel.type === 'tv' ? t(language, 'player.liveTv') : t(language, 'player.liveRadio')} • ${currentChannel.category}`
                 ) : (
-                  `Gecikme: ${formatBehindTime(timeBehindLive)}`
+                  `${t(language, 'player.delay')}: ${formatBehindTime(timeBehindLive)}`
                 )}
               </p>
             </div>
@@ -1041,7 +1043,7 @@ export const Player: React.FC = () => {
           <button 
             onClick={() => seekRelative(-10)}
             className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-            title="10 Saniye Geri Sar"
+            title={t(language, 'player.rewind10')}
           >
             <RotateCcw size={17} />
           </button>
@@ -1049,7 +1051,7 @@ export const Player: React.FC = () => {
           <button 
             onClick={handlePrev}
             className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-            title={isFavorite ? "Önceki Favori Kanal" : "Önceki Kanal"}
+            title={isFavorite ? t(language, 'player.prevFav') : t(language, 'player.prev')}
           >
             <SkipBack size={20} fill="currentColor" />
           </button>
@@ -1057,7 +1059,7 @@ export const Player: React.FC = () => {
           <button 
             onClick={() => setIsPlaying(!isPlaying)}
             className={`w-10 h-10 flex items-center justify-center rounded-xl text-white ${getThemeBgClass(themeColor)} hover:opacity-90 shadow-sm`}
-            title={isPlaying ? "Durdur (Space)" : "Oynat (Space)"}
+            title={isPlaying ? t(language, 'player.stopSpace') : t(language, 'player.playSpace')}
           >
             {isPlaying ? <Pause size={17} fill="currentColor" /> : <Play size={17} fill="currentColor" className="ml-0.5" />}
           </button>
@@ -1065,7 +1067,7 @@ export const Player: React.FC = () => {
           <button 
             onClick={handleNext}
             className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-            title={isFavorite ? "Sonraki Favori Kanal" : "Sonraki Kanal"}
+            title={isFavorite ? t(language, 'player.nextFav') : t(language, 'player.next')}
           >
             <SkipForward size={20} fill="currentColor" />
           </button>
@@ -1074,7 +1076,7 @@ export const Player: React.FC = () => {
             onClick={() => seekRelative(10)}
             disabled={isLiveEdge}
             className={`p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 ${isLiveEdge ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
-            title="10 Saniye İleri Sar"
+            title={t(language, 'player.forward10')}
           >
             <RotateCw size={17} />
           </button>
@@ -1088,7 +1090,7 @@ export const Player: React.FC = () => {
              <button 
               onClick={handlePrev}
               className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-1.5"
-              title="Önceki Kanal"
+              title={t(language, 'player.prev')}
             >
               <SkipBack size={18} fill="currentColor" />
             </button>
@@ -1102,7 +1104,7 @@ export const Player: React.FC = () => {
             <button 
               onClick={handleNext}
               className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-1.5"
-              title="Sonraki Kanal"
+              title={t(language, 'player.next')}
             >
               <SkipForward size={18} fill="currentColor" />
             </button>
@@ -1113,7 +1115,7 @@ export const Player: React.FC = () => {
             <button 
               onClick={() => setVolume(volume === 0 ? 0.8 : 0)} 
               className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-              title={volume === 0 ? "Sesi Aç (M)" : "Sesi Kapat (M)"}
+              title={volume === 0 ? t(language, 'player.unmuteM') : t(language, 'player.muteM')}
             >
               {volume === 0 ? <VolumeX size={18} className="text-red-500" /> : <Volume2 size={18} />}
             </button>
@@ -1135,7 +1137,7 @@ export const Player: React.FC = () => {
                   ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' 
                   : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
               }`}
-              title="Otomatik Kapanma (Uyku Zamanlayıcısı)"
+              title={t(language, 'player.sleepTimer')}
             >
               <Moon size={17} className={sleepTimerEnd ? 'text-blue-500 animate-pulse' : ''} />
               {sleepRemainingText && (
@@ -1146,15 +1148,15 @@ export const Player: React.FC = () => {
             {showSleepTimerMenu && (
               <div className="absolute bottom-full right-0 mb-2 w-48 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden z-50 p-1.5 space-y-0.5">
                 <div className="px-3 py-1.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 dark:border-gray-700/50">
-                  Uyku Zamanlayıcısı
+                  {t(language, 'player.sleepTimerTitle')}
                 </div>
                 {[
-                  { label: 'Kapalı', val: null },
-                  { label: '15 Dakika', val: 15 },
-                  { label: '30 Dakika', val: 30 },
-                  { label: '45 Dakika', val: 45 },
-                  { label: '60 Dakika', val: 60 },
-                  { label: '90 Dakika', val: 90 },
+                  { label: t(language, 'player.off'), val: null },
+                  { label: `15 ${t(language, 'player.minutes')}`, val: 15 },
+                  { label: `30 ${t(language, 'player.minutes')}`, val: 30 },
+                  { label: `45 ${t(language, 'player.minutes')}`, val: 45 },
+                  { label: `60 ${t(language, 'player.minutes')}`, val: 60 },
+                  { label: `90 ${t(language, 'player.minutes')}`, val: 90 },
                 ].map(opt => {
                   const isCur = sleepTimerMinutes === opt.val;
                   return (
@@ -1184,7 +1186,7 @@ export const Player: React.FC = () => {
             <button 
               onClick={toggleQualityMenu}
               className={`p-1.5 rounded-lg ${qualities.length === 0 ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
-              title="Kalite Ayarları"
+              title={t(language, 'player.quality')}
               disabled={qualities.length === 0}
             >
               <Settings size={18} />
@@ -1224,7 +1226,7 @@ export const Player: React.FC = () => {
                   }
                 }}
                 className={`p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 ${isPip && !expanded ? getThemeTextClass(themeColor) : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
-                title="Mini Oynatıcı (PiP)"
+                title={t(language, 'player.pip')}
               >
                 <PictureInPicture size={18} />
               </button>
@@ -1232,7 +1234,7 @@ export const Player: React.FC = () => {
               <button 
                 onClick={toggleFullscreen}
                 className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-                title="Tam Ekran (F)"
+                title={t(language, 'player.fullscreenF')}
               >
                 <Maximize size={18} />
               </button>
@@ -1242,7 +1244,7 @@ export const Player: React.FC = () => {
           <button 
             onClick={() => setCurrentChannel(null)}
             className="text-gray-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            title="Oynatıcıyı Kapat"
+            title={t(language, 'player.closePlayer')}
           >
             <X size={18} />
           </button>

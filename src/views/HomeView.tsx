@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { ChannelCard } from '../components/ChannelCard';
 import { mockChannels } from '../data';
 import { useAppContext } from '../context/AppContext';
-import { Play, Radio, Tv, Heart, Clock, ChevronRight, Sparkles } from 'lucide-react';
+import { Play, Radio, Tv, Heart, Clock, ChevronRight, Sparkles, Globe2 } from 'lucide-react';
 import { getThemeBgClass, getThemeTextClass } from '../utils/theme';
 import { getChannelBrand } from '../utils/channelLogos';
-import { Channel } from '../types';
+import { filterChannelsByCountry } from '../utils/country';
+import { t, COUNTRY_LABELS } from '../utils/i18n';
+import { Channel, Country } from '../types';
 
 const RecentChannelItem: React.FC<{ channel: Channel; onSelect: () => void }> = ({ channel, onSelect }) => {
   const [imgError, setImgError] = useState(false);
@@ -49,11 +51,14 @@ export const HomeView: React.FC = () => {
     setSelectedCategory,
     history,
     favorites,
-    customChannels
+    customChannels,
+    country,
+    setCountry,
+    language
   } = useAppContext();
 
-  const allChannels = [...mockChannels, ...customChannels];
-  const featured = mockChannels[0]; // Flagship featured channel (TRT 1)
+  const allChannels = filterChannelsByCountry([...mockChannels, ...customChannels], country);
+  const featured = allChannels[0]; // Flagship featured channel (TRT 1 or first of selected country)
   const featuredBrand = featured ? getChannelBrand(featured.id, featured.name, featured.type) : null;
 
   // Recent channels from history
@@ -75,6 +80,16 @@ export const HomeView: React.FC = () => {
     { label: 'Haber / Spor', type: 'radio', cat: 'Haber/Spor' },
   ];
 
+  const countryOptions: { id: Country; flag: string; label: string }[] = [
+    { id: 'all', flag: '🌍', label: COUNTRY_LABELS.all[language] },
+    { id: 'tr', flag: '🇹🇷', label: COUNTRY_LABELS.tr[language] },
+    { id: 'us', flag: '🇺🇸', label: COUNTRY_LABELS.us[language] },
+    { id: 'de', flag: '🇩🇪', label: COUNTRY_LABELS.de[language] },
+    { id: 'fr', flag: '🇫🇷', label: COUNTRY_LABELS.fr[language] },
+    { id: 'gb', flag: '🇬🇧', label: COUNTRY_LABELS.gb[language] },
+    { id: 'qa', flag: '🇶🇦', label: COUNTRY_LABELS.qa[language] },
+  ];
+
   const handleCategoryClick = (type: 'tv' | 'radio', cat: string) => {
     setActiveTab(type);
     setSelectedCategory(cat);
@@ -82,12 +97,34 @@ export const HomeView: React.FC = () => {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
-      
+
+      {/* Country Filter Bar */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+        <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-1 flex-shrink-0 mr-1">
+          <Globe2 size={14} className={getThemeTextClass(themeColor)} />
+          <span>{t(language, 'home.country')}</span>
+        </span>
+        {countryOptions.map(c => (
+          <button
+            key={c.id}
+            onClick={() => setCountry(c.id)}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap border transition-all cursor-pointer flex items-center gap-1.5 ${
+              country === c.id
+                ? `${getThemeBgClass(themeColor)} text-white border-transparent shadow-sm`
+                : 'bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-700 shadow-2xs'
+            }`}
+          >
+            <span>{c.flag}</span>
+            <span>{c.label}</span>
+          </button>
+        ))}
+      </div>
+
       {/* Quick Category Discovery Pills */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
         <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-1 flex-shrink-0 mr-1">
           <Sparkles size={14} className={getThemeTextClass(themeColor)} />
-          <span>Kategoriler:</span>
+          <span>{t(language, 'home.categories')}</span>
         </span>
         {quickCategories.map((item, idx) => (
           <button
@@ -111,7 +148,7 @@ export const HomeView: React.FC = () => {
             <div className="flex items-center gap-2 mb-2">
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-red-600 text-white text-xs font-bold uppercase tracking-wider">
                 <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                <span>Canlı Yayın</span>
+                <span>{t(language, 'home.live')}</span>
               </div>
               <span className="px-2 py-0.5 rounded-md bg-white/15 text-white/90 text-xs font-semibold backdrop-blur-xs">
                 HD 1080p
@@ -125,7 +162,7 @@ export const HomeView: React.FC = () => {
               {featured.name}
             </h2>
             <p className="text-gray-300 max-w-xl mb-4 text-sm hidden sm:block">
-              Ulusal yayınları, popüler dizileri, ana haber bültenlerini ve canlı spor karşılaşmalarını kesintisiz ve yüksek kalitede izleyin.
+              {t(language, 'home.featuredDesc')}
             </p>
 
             <div>
@@ -134,7 +171,7 @@ export const HomeView: React.FC = () => {
                 className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-semibold text-sm ${getThemeBgClass(themeColor)} hover:opacity-90 shadow-md`}
               >
                 <Play size={17} fill="currentColor" />
-                <span>Hemen Canlı İzle</span>
+                <span>{t(language, 'home.watchLive')}</span>
               </button>
             </div>
           </div>
@@ -147,13 +184,13 @@ export const HomeView: React.FC = () => {
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Clock size={16} className={getThemeTextClass(themeColor)} />
-              <h3 className="font-bold text-sm md:text-base text-gray-900 dark:text-white">Son İzlenenler</h3>
+              <h3 className="font-bold text-sm md:text-base text-gray-900 dark:text-white">{t(language, 'home.recentlyPlayed')}</h3>
             </div>
             <button
               onClick={() => setActiveTab('history')}
               className="text-xs font-semibold text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 flex items-center gap-0.5"
             >
-              <span>Geçmiş</span>
+              <span>{t(language, 'home.history')}</span>
               <ChevronRight size={14} />
             </button>
           </div>
@@ -175,15 +212,15 @@ export const HomeView: React.FC = () => {
                 <Heart size={18} fill="currentColor" />
               </div>
               <div>
-                <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">Favori Kanallarınız</h2>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Hızlı erişim için kaydettiğiniz kanallar</p>
+                <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">{t(language, 'home.favoriteChannels')}</h2>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{t(language, 'home.favDesc')}</p>
               </div>
             </div>
             <button
               onClick={() => setActiveTab('favorites')}
               className={`text-xs md:text-sm font-semibold flex items-center gap-1 ${getThemeTextClass(themeColor)} hover:underline`}
             >
-              <span>Tümünü Gör ({favorites.length})</span>
+              <span>{t(language, 'home.viewAll')} ({favorites.length})</span>
               <ChevronRight size={16} />
             </button>
           </div>
@@ -203,20 +240,20 @@ export const HomeView: React.FC = () => {
               <Tv size={18} />
             </div>
             <div>
-              <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">Popüler TV Kanalları</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400">En çok izlenen canlı televizyon kanalları</p>
+              <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">{t(language, 'home.popularTv')}</h2>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{t(language, 'home.popularTvDesc')}</p>
             </div>
           </div>
           <button
             onClick={() => { setActiveTab('tv'); setSelectedCategory(undefined); }}
             className={`text-xs md:text-sm font-semibold flex items-center gap-1 ${getThemeTextClass(themeColor)} hover:underline`}
           >
-            <span>Tüm TV Kanalları (65)</span>
+            <span>{t(language, 'home.allTv')} ({allChannels.filter(c => c.type === 'tv').length})</span>
             <ChevronRight size={16} />
           </button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {mockChannels.filter(c => c.type === 'tv').slice(0, 8).map(channel => (
+          {allChannels.filter(c => c.type === 'tv').slice(0, 8).map(channel => (
             <ChannelCard key={channel.id} channel={channel} />
           ))}
         </div>
@@ -230,20 +267,20 @@ export const HomeView: React.FC = () => {
               <Radio size={18} />
             </div>
             <div>
-              <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">Trend Radyolar</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Canlı radyo istasyonları ve kesintisiz müzik yayınları</p>
+              <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">{t(language, 'home.trendingRadios')}</h2>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{t(language, 'home.trendingRadiosDesc')}</p>
             </div>
           </div>
           <button
             onClick={() => { setActiveTab('radio'); setSelectedCategory(undefined); }}
             className={`text-xs md:text-sm font-semibold flex items-center gap-1 ${getThemeTextClass(themeColor)} hover:underline`}
           >
-            <span>Tüm Radyolar (65)</span>
+            <span>{t(language, 'home.allRadios')} ({allChannels.filter(c => c.type === 'radio').length})</span>
             <ChevronRight size={16} />
           </button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {mockChannels.filter(c => c.type === 'radio').slice(0, 8).map(channel => (
+          {allChannels.filter(c => c.type === 'radio').slice(0, 8).map(channel => (
             <ChannelCard key={channel.id} channel={channel} />
           ))}
         </div>

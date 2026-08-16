@@ -4,9 +4,10 @@ import { useAppContext } from '../context/AppContext';
 import { mockChannels } from '../data';
 import { Search, Tv, Radio, X, Sparkles } from 'lucide-react';
 import { getThemeBgClass, getThemeTextClass } from '../utils/theme';
+import { t } from '../utils/i18n';
 
 export const SearchView: React.FC = () => {
-  const { searchQuery, setSearchQuery, customChannels, themeColor } = useAppContext();
+  const { searchQuery, setSearchQuery, customChannels, themeColor, language } = useAppContext();
   const [filterType, setFilterType] = useState<'all' | 'tv' | 'radio'>('all');
 
   const query = searchQuery.toLowerCase().trim();
@@ -36,13 +37,13 @@ export const SearchView: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-4">
         <div>
           <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-            <span>"{searchQuery}" için sonuçlar</span>
+            <span>"{searchQuery}" {t(language, 'search.resultsFor')}</span>
             <span className="text-sm font-semibold px-2.5 py-0.5 rounded-full bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
               {results.length}
             </span>
           </h2>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            Kanal adlarına ve yayın kategorilerine göre filtrelenmiştir
+            {t(language, 'search.desc')}
           </p>
         </div>
 
@@ -56,7 +57,7 @@ export const SearchView: React.FC = () => {
                 : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'
             }`}
           >
-            Tümü ({tvCount + radioCount})
+            {t(language, 'search.all')} ({tvCount + radioCount})
           </button>
 
           <button
@@ -68,7 +69,7 @@ export const SearchView: React.FC = () => {
             }`}
           >
             <Tv size={13} />
-            <span>TV ({tvCount})</span>
+            <span>{t(language, 'search.tv')} ({tvCount})</span>
           </button>
 
           <button
@@ -80,7 +81,7 @@ export const SearchView: React.FC = () => {
             }`}
           >
             <Radio size={13} />
-            <span>Radyo ({radioCount})</span>
+            <span>{t(language, 'search.radio')} ({radioCount})</span>
           </button>
         </div>
       </div>
@@ -88,9 +89,9 @@ export const SearchView: React.FC = () => {
       {results.length === 0 ? (
         <div className="p-12 text-center bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 space-y-4">
           <Search className="w-12 h-12 mx-auto text-gray-400 opacity-50" />
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white">Sonuç Bulunamadı</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t(language, 'search.noResults')}</h3>
           <p className="text-gray-500 dark:text-gray-400 text-sm max-w-md mx-auto">
-            "<b>{searchQuery}</b>" aramasıyla eşleşen bir TV kanalı veya radyo bulunamadı. Yazımı kontrol edebilir veya aşağıdaki popüler kanalları deneyebilirsiniz:
+            "<b>{searchQuery}</b>" {t(language, 'search.noResultsDesc')}
           </p>
           
           <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
@@ -111,7 +112,7 @@ export const SearchView: React.FC = () => {
               className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-white ${getThemeBgClass(themeColor)} hover:opacity-90`}
             >
               <X size={14} />
-              <span>Aramayı Temizle</span>
+              <span>{t(language, 'search.clear')}</span>
             </button>
           </div>
         </div>

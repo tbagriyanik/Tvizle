@@ -13,14 +13,13 @@ import { HistoryView } from './views/HistoryView';
 import { SearchView } from './views/SearchView';
 import { M3UView } from './views/M3UView';
 import { mockChannels } from './data';
+import { filterChannelsByCountry } from './utils/country';
+import { t } from './utils/i18n';
 
 const AppContent: React.FC = () => {
-  const { favorites, searchQuery, customChannels, activeTab, country } = useAppContext();
+  const { favorites, searchQuery, customChannels, activeTab, country, language } = useAppContext();
 
-  const allChannels = [...mockChannels, ...customChannels].filter(c => {
-    if (country === 'all') return true;
-    return (c.country ?? 'tr') === country;
-  });
+  const allChannels = filterChannelsByCountry([...mockChannels, ...customChannels], country);
 
   const renderContent = () => {
     if (searchQuery.trim() !== '') {
@@ -31,12 +30,12 @@ const AppContent: React.FC = () => {
       case 'home':
         return <HomeView />;
       case 'tv':
-        return <ListView title="TV Kanalları" channels={allChannels.filter(c => c.type === 'tv')} />;
+        return <ListView title={t(language, 'nav.tv')} channels={allChannels.filter(c => c.type === 'tv')} />;
       case 'radio':
-        return <ListView title="Radyolar" channels={allChannels.filter(c => c.type === 'radio')} />;
+        return <ListView title={t(language, 'nav.radio')} channels={allChannels.filter(c => c.type === 'radio')} />;
       case 'favorites':
         const favoriteChannels = allChannels.filter(c => favorites.includes(c.id));
-        return <ListView title="Favoriler" channels={favoriteChannels} emptyMessage="Henüz favorilere kanal eklemediniz." />;
+        return <ListView title={t(language, 'nav.favorites')} channels={favoriteChannels} emptyMessage={t(language, 'list.emptyFav')} />;
       case 'history':
         return <HistoryView />;
       case 'm3u':

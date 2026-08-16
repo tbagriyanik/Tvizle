@@ -5,6 +5,7 @@ import { mockChannels } from '../data';
 import { Trash2, History, X, Tv, Radio, Clock, Play } from 'lucide-react';
 import { getThemeBgClass, getThemeTextClass } from '../utils/theme';
 import { getChannelBrand } from '../utils/channelLogos';
+import { t } from '../utils/i18n';
 
 export const HistoryView: React.FC = () => {
   const { 
@@ -14,7 +15,8 @@ export const HistoryView: React.FC = () => {
     themeColor, 
     customChannels,
     setActiveTab,
-    setCurrentChannel
+    setCurrentChannel,
+    language
   } = useAppContext();
   
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -30,10 +32,10 @@ export const HistoryView: React.FC = () => {
 
   const formatTimeAgo = (timestamp: number): string => {
     const diff = Math.floor((Date.now() - timestamp) / 1000);
-    if (diff < 60) return 'Az önce';
-    if (diff < 3600) return `${Math.floor(diff / 60)} dk önce`;
-    if (diff < 86400) return `${Math.floor(diff / 3600)} sa önce`;
-    return `${Math.floor(diff / 86400)} gün önce`;
+    if (diff < 60) return t(language, 'history.justNow');
+    if (diff < 3600) return `${Math.floor(diff / 60)} ${t(language, 'history.minutesAgo')}`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} ${t(language, 'history.hoursAgo')}`;
+    return `${Math.floor(diff / 86400)} ${t(language, 'history.daysAgo')}`;
   };
 
   return (
@@ -45,14 +47,14 @@ export const HistoryView: React.FC = () => {
           <div className="flex items-center gap-2.5">
             <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight flex items-center gap-2.5">
               <History className={getThemeTextClass(themeColor)} size={26} />
-              <span>İzleme Geçmişi</span>
+              <span>{t(language, 'history.title')}</span>
             </h1>
             <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
               {historyWithChannels.length}
             </span>
           </div>
           <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Son izlediğiniz TV kanalları ve dinlediğiniz radyo istasyonları
+            {t(language, 'history.desc')}
           </p>
         </div>
         
@@ -62,7 +64,7 @@ export const HistoryView: React.FC = () => {
             className="inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold text-red-600 bg-red-50 dark:bg-red-500/10 dark:text-red-400 rounded-xl hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors cursor-pointer self-start sm:self-auto"
           >
             <Trash2 size={15} />
-            <span>Geçmişi Temizle</span>
+            <span>{t(language, 'history.clear')}</span>
           </button>
         )}
       </div>
@@ -70,9 +72,9 @@ export const HistoryView: React.FC = () => {
       {historyWithChannels.length === 0 ? (
         <div className="p-12 text-center bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 space-y-4">
           <History className="w-12 h-12 mx-auto text-gray-400 opacity-40" />
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white">Geçmişiniz Boş</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t(language, 'history.emptyTitle')}</h3>
           <p className="text-gray-500 dark:text-gray-400 text-sm max-w-sm mx-auto">
-            Henüz bir kanal izlemediniz. Canlı yayınları keşfetmek için TV veya Radyo sayfasına göz atın.
+            {t(language, 'history.emptyDesc')}
           </p>
           <div className="flex items-center justify-center gap-3 pt-2">
             <button
@@ -80,14 +82,14 @@ export const HistoryView: React.FC = () => {
               className={`inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold text-white ${getThemeBgClass(themeColor)} hover:opacity-90`}
             >
               <Tv size={14} />
-              <span>TV Kanallarını Keşfet</span>
+              <span>{t(language, 'history.exploreTv')}</span>
             </button>
             <button
               onClick={() => setActiveTab('radio')}
               className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600"
             >
               <Radio size={14} />
-              <span>Radyoları Dinle</span>
+              <span>{t(language, 'history.listenRadio')}</span>
             </button>
           </div>
         </div>
@@ -109,7 +111,7 @@ export const HistoryView: React.FC = () => {
                   removeFromHistory(channel.id);
                 }}
                 className="absolute top-2 right-12 z-30 p-1.5 rounded-lg bg-black/60 hover:bg-red-600 text-white/80 hover:text-white transition-colors"
-                title="Geçmişten Kaldır"
+                title={t(language, 'history.removeHistory')}
               >
                 <X size={14} />
               </button>
@@ -132,9 +134,9 @@ export const HistoryView: React.FC = () => {
               <Trash2 size={24} />
             </div>
             <div className="text-center space-y-1">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Geçmişi Temizle</h3>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t(language, 'history.confirmTitle')}</h3>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                Tüm izleme ve dinleme geçmişinizi silmek istediğinize emin misiniz?
+                {t(language, 'history.confirmDesc')}
               </p>
             </div>
             <div className="flex gap-3 pt-2">
@@ -142,7 +144,7 @@ export const HistoryView: React.FC = () => {
                 onClick={() => setShowConfirmModal(false)}
                 className="flex-1 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
-                Vazgeç
+                {t(language, 'history.cancel')}
               </button>
               <button
                 onClick={() => {
@@ -151,7 +153,7 @@ export const HistoryView: React.FC = () => {
                 }}
                 className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-semibold shadow-md"
               >
-                Evet, Temizle
+                {t(language, 'history.confirmClear')}
               </button>
             </div>
           </div>
