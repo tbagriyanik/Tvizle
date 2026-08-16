@@ -28,6 +28,31 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({ isPlaying, vol
     const heights = new Array(numBars).fill(4);
     const targetHeights = new Array(numBars).fill(4);
 
+    // Real-time audio graph (drives the bars with the actual music)
+    let audioCtx: AudioContext | null = null;
+    let analyser: AnalyserNode | null = null;
+    let audioGraphReady = false;
+    const freqData = new Uint8Array(128);
+
+    const ensureAudioGraph = () => {
+      const el = audioRef?.current;
+      if (!el || audioGraphReady) return;
+      try {
+        const AC: typeof AudioContext =
+          window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        audioCtx = new AC();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        analyser.smoothingTimeConstant = 0.7;
+        const source = audioCtx.createMediaElementSource(el);
+        source.connect(analyser);
+        analyser.connect(audioCtx.destination);
+        audioGraphReady = true;
+      } catch (_) {
+        audioGraphReady = false;
+      }
+    };
+
     const resize = () => {
       if (!canvas || !canvas.parentElement) return;
       canvas.width = canvas.parentElement.clientWidth || 300;
@@ -39,7 +64,15 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({ isPlaying, vol
     
     const draw = () => {
       if (!ctx || !canvas) return;
-      
+
+      // Ensure the audio graph is connected and running (retry/resume each frame)
+      if (!audioGraphReady) {
+        ensureAudioGraph();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+      }
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       const width = canvas.width;
@@ -48,30 +81,45 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({ isPlaying, vol
       const startX = Math.max(0, (width - totalWidth) / 2);
       
       time += isPlaying ? 0.06 : 0.01;
-      
-      let color = 'rgba(59, 130, 246, 0.75)';
-      if (themeColor === 'red') color = 'rgba(239, 68, 68, 0.75)';
-      else if (themeColor === 'green') color = 'rgba(34, 197, 94, 0.75)';
-      else if (themeColor === 'purple') color = 'rgba(168, 85, 247, 0.75)';
-      else if (themeColor === 'orange') color = 'rgba(249, 115, 22, 0.75)';
-      
-      ctx.fillStyle = color;
-      
+
+      const hueBases: Record<string, number> = {
+        red: 0,
+        green: 142,
+        blue: 217,
+        purple: 271,
+        orange: 25,
+      };
+      const baseHue = hueBases[themeColor] ?? 217;
+
       const effectiveVol = isPlaying ? Math.max(0.1, volume) : 0.05;
 
+      // Try to react to the real music; fall back to a synthetic wave otherwise
+      const useRealData = isPlaying && audioGraphReady && analyser && audioCtx && audioCtx.state === 'running';
+
+      if (useRealData) {
+        analyser!.getByteFrequencyData(freqData);
+      }
+
       for (let i = 0; i < numBars; i++) {
-        // Multi-frequency harmonic wave algorithm
-        const wave1 = Math.sin(time * 2.2 + i * 0.28);
-        const wave2 = Math.cos(time * 1.4 + i * 0.45);
-        const wave3 = Math.sin(time * 3.8 + i * 0.15);
-        
-        let dynamicFactor = (wave1 * 0.45 + wave2 * 0.35 + wave3 * 0.2 + 1) / 2;
-        
-        if (isPlaying && volume > 0) {
-          const jitter = (Math.sin(time * 8 + i * 1.7) + 1) * 0.2;
-          targetHeights[i] = Math.min(1, Math.max(0.08, (dynamicFactor + jitter) * effectiveVol));
+        if (useRealData) {
+          // Map bars across the frequency bins, skewing toward lows for a music feel
+          const idx = Math.min(freqData.length - 1, Math.floor(Math.pow(i / numBars, 1.4) * (freqData.length * 0.85)));
+          const val = freqData[idx] / 255;
+          targetHeights[i] = Math.min(1, Math.max(0.05, val * effectiveVol * 1.3));
         } else {
-          targetHeights[i] = 0.04;
+          // Multi-frequency harmonic wave algorithm
+          const wave1 = Math.sin(time * 2.2 + i * 0.28);
+          const wave2 = Math.cos(time * 1.4 + i * 0.45);
+          const wave3 = Math.sin(time * 3.8 + i * 0.15);
+          
+          const dynamicFactor = (wave1 * 0.45 + wave2 * 0.35 + wave3 * 0.2 + 1) / 2;
+          
+          if (isPlaying && volume > 0) {
+            const jitter = (Math.sin(time * 8 + i * 1.7) + 1) * 0.2;
+            targetHeights[i] = Math.min(1, Math.max(0.08, (dynamicFactor + jitter) * effectiveVol));
+          } else {
+            targetHeights[i] = 0.04;
+          }
         }
 
         // Smooth lerp
@@ -80,10 +128,16 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({ isPlaying, vol
         const barHeight = Math.max(3, height * heights[i]);
         const x = startX + i * (barWidth + spacing);
         const y = height - barHeight;
-        
+
+        // Multicolor sweep anchored on the theme hue
+        const hue = (baseHue + i * 3.2) % 360;
+        ctx.fillStyle = `hsla(${hue}, 85%, 62%, 0.85)`;
+
+        // Soft pill-shaped caps
+        const radius = barWidth / 2;
         if (ctx.roundRect) {
           ctx.beginPath();
-          ctx.roundRect(x, y, barWidth, barHeight, [2, 2, 0, 0]);
+          ctx.roundRect(x, y, barWidth, barHeight, radius);
           ctx.fill();
         } else {
           ctx.fillRect(x, y, barWidth, barHeight);
@@ -93,6 +147,7 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({ isPlaying, vol
       animationFrameIdRef.current = requestAnimationFrame(draw);
     };
     
+    ensureAudioGraph();
     draw();
     
     return () => {
@@ -100,8 +155,14 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({ isPlaying, vol
       if (animationFrameIdRef.current !== null) {
         cancelAnimationFrame(animationFrameIdRef.current);
       }
+      if (audioCtx) {
+        audioCtx.close().catch(() => {});
+        audioCtx = null;
+        analyser = null;
+        audioGraphReady = false;
+      }
     };
-  }, [isPlaying, volume, themeColor]);
+  }, [isPlaying, volume, themeColor, audioRef]);
 
   return (
     <canvas 

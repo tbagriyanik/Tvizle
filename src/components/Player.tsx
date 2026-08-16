@@ -633,7 +633,7 @@ export const Player: React.FC = () => {
     const mediaElement = currentChannel?.type === 'tv' ? videoRef.current : audioRef.current;
     if (!mediaElement) return;
 
-    if (isSwitching) {
+    if (isSwitching || isLoading) {
       mediaElement.volume = 0;
     } else {
       let currentVol = mediaElement.volume;
@@ -665,7 +665,7 @@ export const Player: React.FC = () => {
       
       return () => clearInterval(ramp);
     }
-  }, [volume, currentChannel, isSwitching]);
+  }, [volume, currentChannel, isSwitching, isLoading]);
 
   if (!currentChannel) return null;
 

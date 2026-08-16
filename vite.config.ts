@@ -5,7 +5,8 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
-    base: '/Tvizle/',
+    // GitHub Pages serves the app from /Tvizle/; Vercel serves from root.
+    base: process.env.VERCEL ? '/' : '/Tvizle/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
