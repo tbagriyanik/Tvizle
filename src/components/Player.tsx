@@ -30,6 +30,7 @@ import { AudioVisualizer } from './AudioVisualizer';
 import { getChannelBrand } from '../utils/channelLogos';
 import { t } from '../utils/i18n';
 import { Channel } from '../types';
+import { getYouTubeVideoId } from '../utils/youtube';
 
 export const Player: React.FC = () => {
   const { 
@@ -77,6 +78,9 @@ export const Player: React.FC = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
+  const ytContainerRef = useRef<HTMLDivElement>(null);
+  const ytPlayerRef = useRef<any>(null);
+
 
   // Draggable mini player & expand panel positions
   const [miniPos, setMiniPos] = useState<{ x: number; y: number } | null>(null);
@@ -530,12 +534,118 @@ export const Player: React.FC = () => {
     setIsLiveEdge(true);
     setTimeBehindLive(0);
 
-    const mediaElement = currentChannel.type === 'tv' ? videoRef.current : audioRef.current;
-    if (!mediaElement) return;
-
     setQualities([]);
     setSelectedQuality(-1);
     setShowQualityMenu(false);
+
+    const ytId = getYouTubeVideoId(currentChannel.url);
+    if (ytId) {
+      let cancelled = false;
+      const loadTimeout = setTimeout(() => {
+        if (!cancelled) {
+          setHasError(true);
+          setIsLoading(false);
+        }
+      }, 15000);
+
+      const createPlayer = () => {
+        if (cancelled || !ytContainerRef.current) return;
+        if (ytPlayerRef.current) {
+          try { ytPlayerRef.current.destroy(); } catch (_) {}
+          ytPlayerRef.current = null;
+        }
+        ytContainerRef.current.innerHTML = '';
+        const placeholder = document.createElement('div');
+        placeholder.style.width = '100%';
+        placeholder.style.height = '100%';
+        ytContainerRef.current.appendChild(placeholder);
+        try {
+          ytPlayerRef.current = new (window as any).YT.Player(placeholder, {
+            videoId: ytId,
+            width: '100%',
+            height: '100%',
+            playerVars: {
+              autoplay: 1,
+              playsinline: 1,
+              controls: 0,
+              rel: 0,
+              iv_load_policy: 3,
+              disablekb: 1,
+              fs: 0,
+              modestbranding: 1,
+              mute: 1,
+            },
+            events: {
+              onReady: (e: any) => {
+                if (cancelled) return;
+                clearTimeout(loadTimeout);
+                setIsSwitching(false);
+                setIsLoading(false);
+                setHasError(false);
+                try {
+                  if (e.target && typeof e.target.setVolume === 'function') {
+                    e.target.setVolume(Math.round((isPlaying ? volume : 0) * 100));
+                  }
+                  if (e.target && typeof e.target.unMute === 'function') e.target.unMute();
+                  if (isPlaying && e.target && typeof e.target.playVideo === 'function') e.target.playVideo();
+                } catch (_) {}
+              },
+              onError: () => {
+                if (cancelled) return;
+                clearTimeout(loadTimeout);
+                setHasError(true);
+                setIsLoading(false);
+              },
+              onStateChange: (e: any) => {
+                if (cancelled) return;
+                if (e.data === 1) {
+                  clearTimeout(loadTimeout);
+                  setIsLoading(false);
+                  setHasError(false);
+                }
+              },
+            },
+          });
+        } catch (err) {
+          if (!cancelled) {
+            setHasError(true);
+            setIsLoading(false);
+          }
+        }
+      };
+
+      const ensureApiReady = () => {
+        if ((window as any).YT && (window as any).YT.Player) {
+          createPlayer();
+        } else {
+          (window as any).__ytPendingCreate = createPlayer;
+          if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
+            (window as any).onYouTubeIframeAPIReady = () => {
+              if (typeof (window as any).__ytPendingCreate === 'function') {
+                (window as any).__ytPendingCreate();
+              }
+            };
+            const tag = document.createElement('script');
+            tag.src = 'https://www.youtube.com/iframe_api';
+            document.head.appendChild(tag);
+          }
+        }
+      };
+
+      ensureApiReady();
+
+      return () => {
+        cancelled = true;
+        clearTimeout(loadTimeout);
+        if (ytPlayerRef.current) {
+          try { ytPlayerRef.current.destroy(); } catch (_) {}
+          ytPlayerRef.current = null;
+        }
+      };
+    }
+
+    const mediaElement = currentChannel.type === 'tv' ? videoRef.current : audioRef.current;
+    if (!mediaElement) return;
 
     let loadTimeout = setTimeout(() => {
       setHasError(true);
@@ -657,6 +767,17 @@ export const Player: React.FC = () => {
 
   // Play/Pause sync
   useEffect(() => {
+    const ytId = currentChannel ? getYouTubeVideoId(currentChannel.url) : null;
+    if (ytId) {
+      const p = ytPlayerRef.current;
+      if (p) {
+        try {
+          if (isPlaying) p.playVideo();
+          else p.pauseVideo();
+        } catch (_) {}
+      }
+      return;
+    }
     const mediaElement = currentChannel?.type === 'tv' ? videoRef.current : audioRef.current;
     if (mediaElement) {
       if (isPlaying) {
@@ -669,6 +790,17 @@ export const Player: React.FC = () => {
 
   // Volume sync
   useEffect(() => {
+    const ytId = currentChannel ? getYouTubeVideoId(currentChannel.url) : null;
+    if (ytId) {
+      const p = ytPlayerRef.current;
+      if (p && typeof p.setVolume === 'function') {
+        try {
+          p.setVolume(Math.round(volume * 100));
+          if (volume > 0 && typeof p.unMute === 'function') p.unMute();
+        } catch (_) {}
+      }
+      return;
+    }
     const mediaElement = currentChannel?.type === 'tv' ? videoRef.current : audioRef.current;
     if (!mediaElement) return;
 
@@ -709,12 +841,14 @@ export const Player: React.FC = () => {
   if (!currentChannel) return null;
 
   const isTv = currentChannel.type === 'tv';
+  const ytVideoId = getYouTubeVideoId(currentChannel.url);
+  const isVideo = isTv || !!ytVideoId;
   const hasTimeShift = seekableRange.duration > 15;
   const isDesktopView = typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches;
 
   return (
-    <div className={`fixed bottom-0 left-0 right-0 z-50 flex flex-col bg-white/90 dark:bg-gray-900/90 border-t border-gray-200 dark:border-gray-800 shadow-xl ${expanded && isTv ? 'h-full md:h-[60vh] md:rounded-2xl md:border' : 'h-20 md:h-22'}`}
-      style={expanded && isTv ? {
+    <div className={`fixed bottom-0 left-0 right-0 z-50 flex flex-col bg-white/90 dark:bg-gray-900/90 border-t border-gray-200 dark:border-gray-800 shadow-xl ${expanded && isVideo ? 'h-full md:h-[60vh] md:rounded-2xl md:border' : 'h-20 md:h-22'}`}
+      style={expanded && isVideo ? {
         top: expandedPos?.y,
         left: expandedPos?.x,
         bottom: expandedPos ? 'auto' : undefined,
@@ -723,7 +857,7 @@ export const Player: React.FC = () => {
       } : undefined}
     >
       {/* Resize handle for the expand panel */}
-      {expanded && isTv && !isFullscreen && isDesktopView && (
+      {expanded && isVideo && !isFullscreen && isDesktopView && (
         <div
           onPointerDown={(e) => { e.stopPropagation(); startResize(e, 'expanded'); }}
           className="absolute bottom-0 right-0 w-5 h-5 cursor-se-resize z-[60] touch-none"
@@ -733,10 +867,10 @@ export const Player: React.FC = () => {
         </div>
       )}
       
-      {!isTv && !hasError && <AudioVisualizer isPlaying={isPlaying} volume={volume} audioRef={audioRef} />}
+      {!isVideo && !hasError && <AudioVisualizer isPlaying={isPlaying} volume={volume} audioRef={audioRef} />}
 
       {/* TV Player Container */}
-      {isTv && (
+      {isVideo && (
         <div 
           ref={tvContainerRef}
           onMouseMove={isFullscreen ? resetFsControlsTimer : undefined}
@@ -744,7 +878,7 @@ export const Player: React.FC = () => {
           onClick={isFullscreen ? handlePlayerAreaClick : undefined}
           onPointerDown={(e) => {
             if (isFullscreen) return;
-            if (expanded && isTv) startDrag(e, 'expanded');
+            if (expanded && isVideo) startDrag(e, 'expanded');
             else if (isPip) startDrag(e, 'mini');
           }}
           style={isPip && !expanded ? { top: miniPos?.y, left: miniPos?.x, width: miniSize.w, height: miniSize.h } : undefined}
@@ -768,13 +902,21 @@ export const Player: React.FC = () => {
               <div className="absolute bottom-1 right-1 w-2.5 h-2.5 border-b-2 border-r-2 border-white/60 rounded-br" />
             </div>
           )}
-          <video
-            ref={videoRef}
-            className={`w-full h-full object-contain bg-black ${isSwitching ? 'opacity-0' : 'opacity-100'}`}
-            playsInline
-            muted={volume === 0}
-            onClick={(e) => { e.stopPropagation(); setIsPlaying(!isPlaying); }}
-          />
+          {ytVideoId ? (
+            <div
+              ref={ytContainerRef}
+              key={currentChannel.id}
+              className="w-full h-full bg-black"
+            />
+          ) : (
+            <video
+              ref={videoRef}
+              className={`w-full h-full object-contain bg-black ${isSwitching ? 'opacity-0' : 'opacity-100'}`}
+              playsInline
+              muted={volume === 0}
+              onClick={(e) => { e.stopPropagation(); setIsPlaying(!isPlaying); }}
+            />
+          )}
           
           {isLoading && !hasError && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-20 pointer-events-none">
@@ -1122,7 +1264,7 @@ export const Player: React.FC = () => {
       )}
 
       {/* Native audio element for Radio */}
-      {!isTv && (
+      {!isVideo && (
         <audio ref={audioRef} src={currentChannel.url} className="hidden" />
       )}
 
@@ -1190,7 +1332,7 @@ export const Player: React.FC = () => {
               <div 
                 className="w-10 h-10 md:w-11 md:h-11 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative shadow-xs border border-black/10 dark:border-white/10 p-1 cursor-pointer"
                 style={{ background: brand.gradient }}
-                onClick={() => isTv && setExpanded(!expanded)}
+                onClick={() => isVideo && setExpanded(!expanded)}
                 title={t(language, 'player.changeView')}
               >
                 {currentChannel.logo ? (
@@ -1429,7 +1571,7 @@ export const Player: React.FC = () => {
           </div>
 
           {/* TV Specific buttons */}
-          {isTv && (
+          {isVideo && (
             <>
               <button 
                 onClick={() => {

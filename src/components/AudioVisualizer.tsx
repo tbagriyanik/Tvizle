@@ -91,6 +91,12 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({ isPlaying, vol
 
     const freqData = new Uint8Array(128);
 
+    // Tracks whether the captured stream is actually producing audio. A
+    // captureStream() tap of cross-origin media that is not CORS-enabled is
+    // muted by the browser, so we fall back to a synthetic wave in that case.
+    let silentFrames = 0;
+    let lastConnectedElement: HTMLMediaElement | null = null;
+
     const resize = () => {
       if (!canvas || !canvas.parentElement) return;
       canvas.width = canvas.parentElement.clientWidth || 300;
@@ -146,9 +152,9 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({ isPlaying, vol
 
       const effectiveVol = isPlaying ? Math.max(0.1, volume) : 0.05;
 
-      // Use real frequency data only when the shared graph is live and routed
-      // to the current element; otherwise fall back to a calm synthetic wave.
-      const useRealData = !!(
+      // Use real frequency data only when the shared graph is live, routed to
+      // the current element, AND actually delivering non-silent samples.
+      const captureActive = !!(
         isPlaying &&
         analyser &&
         sharedCtx &&
@@ -156,18 +162,34 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({ isPlaying, vol
         sharedCtx.state === 'running'
       );
 
-      if (useRealData) {
+      if (lastConnectedElement !== connectedElement) {
+        silentFrames = 0;
+        lastConnectedElement = connectedElement;
+      }
+
+      let realActive = false;
+      if (captureActive) {
         analyser!.getByteFrequencyData(freqData);
+        let sum = 0;
+        for (let k = 0; k < freqData.length; k++) sum += freqData[k];
+        const level = sum / freqData.length;
+        if (level > 2) {
+          silentFrames = 0;
+        } else {
+          silentFrames++;
+        }
+        realActive = silentFrames < 18;
       }
 
       for (let i = 0; i < numBars; i++) {
-        if (useRealData) {
+        if (realActive) {
           // Map bars across the frequency bins, skewing toward lows for a music feel
           const idx = Math.min(freqData.length - 1, Math.floor(Math.pow(i / numBars, 1.4) * (freqData.length * 0.85)));
           const val = freqData[idx] / 255;
           targetHeights[i] = Math.min(1, Math.max(0.05, val * effectiveVol * 1.3));
         } else {
-          // Multi-frequency harmonic wave algorithm
+          // Multi-frequency harmonic wave algorithm with a beat pulse
+          const beat = Math.pow(0.5 + 0.5 * Math.sin(time * 6.0), 2);
           const wave1 = Math.sin(time * 2.2 + i * 0.28);
           const wave2 = Math.cos(time * 1.4 + i * 0.45);
           const wave3 = Math.sin(time * 3.8 + i * 0.15);
@@ -176,7 +198,7 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({ isPlaying, vol
           
           if (isPlaying && volume > 0) {
             const jitter = (Math.sin(time * 8 + i * 1.7) + 1) * 0.2;
-            targetHeights[i] = Math.min(1, Math.max(0.08, (dynamicFactor + jitter) * effectiveVol));
+            targetHeights[i] = Math.min(1, Math.max(0.08, (dynamicFactor * 0.6 + beat * 0.4 + jitter * 0.4) * effectiveVol));
           } else {
             targetHeights[i] = 0.04;
           }
