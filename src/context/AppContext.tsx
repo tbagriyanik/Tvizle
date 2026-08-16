@@ -13,7 +13,24 @@ interface AppContextType extends AppState {
   setVolume: (volume: number) => void;
   setSearchQuery: (query: string) => void;
   setCustomChannels: (channels: Channel[]) => void;
+  setActiveTab: (tab: string) => void;
+  goBack: () => void;
+  goForward: () => void;
+  canGoBack: boolean;
+  canGoForward: boolean;
 }
+
+const getInitialTab = (): string => {
+  if (typeof window !== 'undefined' && window.location.hash) {
+    const hash = window.location.hash.replace('#/', '').replace('#', '').trim();
+    if (['home', 'tv', 'radio', 'm3u', 'favorites', 'history', 'settings'].includes(hash)) {
+      return hash;
+    }
+  }
+  return 'home';
+};
+
+const initialTab = getInitialTab();
 
 const defaultState: AppState = {
   currentChannel: null,
@@ -26,6 +43,9 @@ const defaultState: AppState = {
   volume: 0.8,
   searchQuery: '',
   customChannels: [],
+  activeTab: initialTab,
+  navHistory: [initialTab],
+  historyIndex: 0,
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -36,13 +56,127 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        return { ...defaultState, ...parsed, isPlaying: false, customChannels: [] }; // Don't auto-play on load, load custom channels async
+        return { 
+          ...defaultState, 
+          ...parsed, 
+          isPlaying: false, 
+          customChannels: [],
+          activeTab: initialTab,
+          navHistory: [initialTab],
+          historyIndex: 0
+        };
       } catch (e) {
         return defaultState;
       }
     }
     return defaultState;
   });
+
+  // Sync hash and browser history popstate
+  useEffect(() => {
+    const handlePopState = (e: PopStateEvent) => {
+      const stateTab = e.state?.tab || getInitialTab();
+      setState(s => {
+        const indexInNav = s.navHistory.lastIndexOf(stateTab);
+        return {
+          ...s,
+          activeTab: stateTab,
+          historyIndex: indexInNav !== -1 ? indexInNav : s.historyIndex,
+          searchQuery: '',
+        };
+      });
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const setActiveTab = (tab: string) => {
+    setState(s => {
+      if (s.activeTab === tab && s.searchQuery === '') return s;
+      
+      const newHistory = s.navHistory.slice(0, s.historyIndex + 1);
+      newHistory.push(tab);
+      const newIndex = newHistory.length - 1;
+
+      try {
+        window.history.pushState({ tab, index: newIndex }, '', `#/${tab}`);
+      } catch (e) {
+        // ignore
+      }
+
+      return {
+        ...s,
+        activeTab: tab,
+        navHistory: newHistory,
+        historyIndex: newIndex,
+        searchQuery: '',
+      };
+    });
+  };
+
+  const goBack = () => {
+    setState(s => {
+      if (s.searchQuery.trim() !== '') {
+        return { ...s, searchQuery: '' };
+      }
+      if (s.historyIndex > 0) {
+        const newIndex = s.historyIndex - 1;
+        const targetTab = s.navHistory[newIndex];
+        try {
+          window.history.pushState({ tab: targetTab, index: newIndex }, '', `#/${targetTab}`);
+        } catch (e) {}
+        return {
+          ...s,
+          activeTab: targetTab,
+          historyIndex: newIndex,
+          searchQuery: '',
+        };
+      }
+      return s;
+    });
+  };
+
+  const goForward = () => {
+    setState(s => {
+      if (s.historyIndex < s.navHistory.length - 1) {
+        const newIndex = s.historyIndex + 1;
+        const targetTab = s.navHistory[newIndex];
+        try {
+          window.history.pushState({ tab: targetTab, index: newIndex }, '', `#/${targetTab}`);
+        } catch (e) {}
+        return {
+          ...s,
+          activeTab: targetTab,
+          historyIndex: newIndex,
+          searchQuery: '',
+        };
+      }
+      return s;
+    });
+  };
+
+  const canGoBack = state.historyIndex > 0 || state.searchQuery.trim() !== '';
+  const canGoForward = state.historyIndex < state.navHistory.length - 1;
+
+  // Keyboard navigation for history (Alt + ArrowLeft / Alt + ArrowRight)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const activeEl = document.activeElement;
+      const isInput = activeEl instanceof HTMLInputElement || activeEl instanceof HTMLTextAreaElement;
+      
+      if (e.altKey && e.key === 'ArrowLeft' && !isInput) {
+        e.preventDefault();
+        goBack();
+      } else if (e.altKey && e.key === 'ArrowRight' && !isInput) {
+        e.preventDefault();
+        goForward();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [state.historyIndex, state.navHistory, state.searchQuery]);
 
   // Load custom channels from localforage on mount
   useEffect(() => {
@@ -118,6 +252,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setVolume,
       setSearchQuery,
       setCustomChannels,
+      setActiveTab,
+      goBack,
+      goForward,
+      canGoBack,
+      canGoForward,
     }}>
       {children}
     </AppContext.Provider>

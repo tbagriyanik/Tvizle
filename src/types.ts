@@ -28,4 +28,7 @@ export interface AppState {
   volume: number;
   searchQuery: string;
   customChannels: Channel[];
+  activeTab: string;
+  navHistory: string[];
+  historyIndex: number;
 }

@@ -6,11 +6,13 @@ import { Trash2, History } from 'lucide-react';
 import { getThemeTextClass } from '../utils/theme';
 
 export const HistoryView: React.FC = () => {
-  const { history, clearHistory, themeColor } = useAppContext();
+  const { history, clearHistory, themeColor, customChannels } = useAppContext();
   
+  const allChannels = [...mockChannels, ...customChannels];
+
   // Map history items to full channel objects, preserving history order
   const historyChannels = history
-    .map(item => mockChannels.find(c => c.id === item.channelId))
+    .map(item => allChannels.find(c => c.id === item.channelId))
     .filter((c): c is NonNullable<typeof c> => c !== undefined);
 
   return (

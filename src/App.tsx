@@ -15,8 +15,7 @@ import { M3UView } from './views/M3UView';
 import { mockChannels } from './data';
 
 const AppContent: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('home');
-  const { favorites, searchQuery, customChannels } = useAppContext();
+  const { favorites, searchQuery, customChannels, activeTab } = useAppContext();
 
   const allChannels = [...mockChannels, ...customChannels];
 
@@ -47,7 +46,7 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <Layout activeTab={activeTab} setActiveTab={setActiveTab}>
+    <Layout>
       {renderContent()}
     </Layout>
   );
