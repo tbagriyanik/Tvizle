@@ -43,9 +43,7 @@ export const ChannelPreview: React.FC<ChannelPreviewProps> = ({
       >
         {/* Vinyl Record Visual Disc Background */}
         <div 
-          className={`absolute w-28 h-28 sm:w-32 sm:h-32 rounded-full pointer-events-none flex items-center justify-center opacity-85 transition-transform duration-700 ${
-            isPlaying ? 'animate-[spin_8s_linear_infinite]' : 'group-hover/radio:scale-105'
-          }`}
+          className={`absolute w-28 h-28 sm:w-32 sm:h-32 rounded-full pointer-events-none flex items-center justify-center opacity-85 transition-transform duration-700 group-hover/radio:scale-105`}
           style={{
             background: 'radial-gradient(circle, #18181b 0%, #09090b 45%, #18181b 70%, #000000 100%)',
             boxShadow: `0 0 20px rgba(0,0,0,0.6), inset 0 0 10px rgba(255,255,255,0.08), 0 0 12px ${brand.accentColor}33`,
@@ -67,16 +65,6 @@ export const ChannelPreview: React.FC<ChannelPreviewProps> = ({
             }}
           />
         </div>
-
-        {/* Dynamic Pulse Glow when playing */}
-        {isPlaying && (
-          <div 
-            className="absolute inset-0 pointer-events-none animate-pulse opacity-30"
-            style={{
-              background: `radial-gradient(circle at center, ${brand.accentColor} 0%, transparent 70%)`
-            }}
-          />
-        )}
 
         {/* Center Artwork / Logo Spindle Label */}
         <div className="relative z-10 flex flex-col items-center justify-center p-1.5 text-center max-w-[85%]">
@@ -126,14 +114,10 @@ export const ChannelPreview: React.FC<ChannelPreviewProps> = ({
             {brand.subtitle || channel.category}
           </div>
 
-          {/* Mini Playing Soundwave Visualizer Bars */}
+          {/* Mini Playing Indicator */}
           {isPlaying && (
-            <div className="flex items-end gap-0.5 mt-1 h-2.5 px-1.5 py-0.5 rounded-full bg-black/60 backdrop-blur-xs border border-white/10">
-              <span className="w-0.5 bg-emerald-400 rounded-full animate-[bounce_0.8s_infinite] h-2" style={{ animationDelay: '0ms' }} />
-              <span className="w-0.5 bg-emerald-400 rounded-full animate-[bounce_0.6s_infinite] h-2.5" style={{ animationDelay: '150ms' }} />
-              <span className="w-0.5 bg-emerald-400 rounded-full animate-[bounce_0.9s_infinite] h-1" style={{ animationDelay: '300ms' }} />
-              <span className="w-0.5 bg-emerald-400 rounded-full animate-[bounce_0.7s_infinite] h-2" style={{ animationDelay: '200ms' }} />
-              <span className="w-0.5 bg-emerald-400 rounded-full animate-[bounce_0.85s_infinite] h-1.5" style={{ animationDelay: '100ms' }} />
+            <div className="mt-1 flex items-center gap-1 rounded-full bg-black/60 backdrop-blur-xs border border-white/10 px-1.5 py-0.5">
+              <span className="w-1 h-1 rounded-full bg-emerald-400" />
             </div>
           )}
         </div>
@@ -149,8 +133,8 @@ export const ChannelPreview: React.FC<ChannelPreviewProps> = ({
 
             {/* Status / Genre Badge on top-right */}
             {isPlaying ? (
-              <div className="absolute top-1.5 right-1.5 px-1.5 py-0.2 rounded text-[8px] font-bold bg-emerald-500 text-white uppercase tracking-wider flex items-center gap-0.5 shadow-2xs border border-emerald-400/30 animate-pulse">
-                <span className="w-1 h-1 rounded-full bg-white animate-ping" />
+              <div className="absolute top-1.5 right-1.5 px-1.5 py-0.2 rounded text-[8px] font-bold bg-emerald-500 text-white uppercase tracking-wider flex items-center gap-0.5 shadow-2xs border border-emerald-400/30">
+                <span className="w-1 h-1 rounded-full bg-white" />
                 <span>{t(language, 'channel.onAir')}</span>
               </div>
             ) : (
@@ -203,25 +187,13 @@ export const ChannelPreview: React.FC<ChannelPreviewProps> = ({
 
       {/* Top Badges */}
       {showBadges && (
-        <>
-          <div className="absolute top-1.5 left-1.5 flex items-center gap-1 z-20">
-            {/* Live indicator badge */}
-            <div className="px-1.5 py-0.2 rounded text-[8.5px] font-bold bg-red-600 text-white uppercase tracking-wider flex items-center gap-1 border border-red-400/30">
-              <span className="w-1 h-1 rounded-full bg-white" />
-              <span>{t(language, 'channel.live')}</span>
-            </div>
-
-            {/* Quality Tag */}
-            <div className="px-1 py-0.2 rounded text-[8px] font-bold bg-black/60 text-white/90 uppercase tracking-wider border border-white/15">
-              HD
-            </div>
+        <div className="absolute top-1.5 left-1.5 flex items-center gap-1 z-20">
+          {/* Live indicator badge */}
+          <div className="px-1.5 py-0.2 rounded text-[8.5px] font-bold bg-red-600 text-white uppercase tracking-wider flex items-center gap-1 border border-red-400/30">
+            <span className="w-1 h-1 rounded-full bg-white" />
+            <span>{t(language, 'channel.live')}</span>
           </div>
-
-          {/* Category Pill on bottom right */}
-          <div className="absolute bottom-1.5 right-1.5 px-1.5 py-0.2 rounded text-[8.5px] font-semibold bg-black/60 text-white/80 truncate max-w-[95px] border border-white/10">
-            {channel.category}
-          </div>
-        </>
+        </div>
       )}
     </div>
   );

@@ -337,6 +337,10 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <span className="text-gray-600 dark:text-gray-300">{t(language, 'shortcuts.channelNav')}</span>
                 <kbd className="px-2.5 py-1 bg-gray-100 dark:bg-gray-700 rounded-lg text-xs font-mono font-bold text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-600">[ / ]</kbd>
               </div>
+              <div className="flex items-center justify-between py-1.5 border-b border-gray-100 dark:border-gray-700/50">
+                <span className="text-gray-600 dark:text-gray-300">{t(language, 'shortcuts.channelPage')}</span>
+                <kbd className="px-2.5 py-1 bg-gray-100 dark:bg-gray-700 rounded-lg text-xs font-mono font-bold text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-600">PgUp / PgDn</kbd>
+              </div>
               <div className="flex items-center justify-between py-1.5">
                 <span className="text-gray-600 dark:text-gray-300">{t(language, 'shortcuts.quickSearch')}</span>
                 <kbd className="px-2.5 py-1 bg-gray-100 dark:bg-gray-700 rounded-lg text-xs font-mono font-bold text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-600">Ctrl + K</kbd>

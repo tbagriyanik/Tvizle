@@ -18,7 +18,7 @@ export interface HistoryItem {
 export type ThemeColor = 'blue' | 'red' | 'green' | 'purple' | 'orange';
 export type ThemeMode = 'light' | 'dark';
 export type Language = 'tr' | 'en';
-export type Country = 'all' | 'tr' | 'us' | 'de' | 'fr' | 'gb' | 'qa';
+export type Country = 'all' | 'tr' | 'us' | 'de' | 'fr' | 'gb' | 'qa' | 'it' | 'es' | 'nl' | 'au' | 'ca' | 'jp';
 
 export interface AppState {
   currentChannel: Channel | null;

@@ -75,6 +75,89 @@ export const Player: React.FC = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
+
+  // Draggable mini player & expand panel positions
+  const [miniPos, setMiniPos] = useState<{ x: number; y: number } | null>(null);
+  const [expandedPos, setExpandedPos] = useState<{ x: number; y: number } | null>(null);
+  const dragRef = useRef<{ type: 'mini' | 'expanded'; startX: number; startY: number; startPos: { x: number; y: number } } | null>(null);
+
+  const startDrag = (e: React.PointerEvent<HTMLDivElement>, type: 'mini' | 'expanded') => {
+    if (isFullscreen) return;
+    if (type === 'expanded' && !window.matchMedia('(min-width: 768px)').matches) return;
+    const rect = tvContainerRef.current?.getBoundingClientRect();
+    const currentPos = type === 'mini'
+      ? (miniPos ?? { x: rect?.left ?? 0, y: rect?.top ?? 0 })
+      : (expandedPos ?? { x: rect?.left ?? 0, y: rect?.top ?? 0 });
+    dragRef.current = { type, startX: e.clientX, startY: e.clientY, startPos: currentPos };
+
+    const onMove = (ev: PointerEvent) => {
+      const d = dragRef.current;
+      if (!d) return;
+      const np = { x: d.startPos.x + (ev.clientX - d.startX), y: d.startPos.y + (ev.clientY - d.startY) };
+      if (d.type === 'mini') setMiniPos(np);
+      else setExpandedPos(np);
+    };
+    const onUp = () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      dragRef.current = null;
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+  };
+
+  // Resizable mini player & expand panel sizes
+  const [miniSize, setMiniSize] = useState<{ w: number; h: number }>({ w: 256, h: 144 });
+  const [expandedSize, setExpandedSize] = useState<{ w: number; h: number }>({ w: 600, h: 0 });
+  const resizeRef = useRef<{ type: 'mini' | 'expanded'; startX: number; startY: number; startSize: { w: number; h: number } } | null>(null);
+
+  const startResize = (e: React.PointerEvent<HTMLDivElement>, type: 'mini' | 'expanded') => {
+    if (isFullscreen) return;
+    if (type === 'expanded' && !window.matchMedia('(min-width: 768px)').matches) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const startSize = type === 'mini' ? miniSize : expandedSize;
+    resizeRef.current = { type, startX: e.clientX, startY: e.clientY, startSize };
+
+    const onMove = (ev: PointerEvent) => {
+      const r = resizeRef.current;
+      if (!r) return;
+      const minW = r.type === 'mini' ? 160 : 320;
+      const minH = r.type === 'mini' ? 90 : 200;
+      const nw = Math.max(minW, r.startSize.w + (ev.clientX - r.startX));
+      const nh = Math.max(minH, r.startSize.h + (ev.clientY - r.startY));
+      if (r.type === 'mini') setMiniSize({ w: nw, h: nh });
+      else setExpandedSize({ w: nw, h: nh });
+    };
+    const onUp = () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      resizeRef.current = null;
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+  };
+
+  // Persist mini/expand panel position & size
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('playerLayout');
+      if (raw) {
+        const p = JSON.parse(raw);
+        if (p.miniPos) setMiniPos(p.miniPos);
+        if (p.miniSize) setMiniSize(p.miniSize);
+        if (p.expandedPos) setExpandedPos(p.expandedPos);
+        if (p.expandedSize) setExpandedSize(p.expandedSize);
+      }
+    } catch (_) {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('playerLayout', JSON.stringify({ miniPos, miniSize, expandedPos, expandedSize }));
+    } catch (_) {}
+  }, [miniPos, miniSize, expandedPos, expandedSize]);
   
   const [qualities, setQualities] = useState<any[]>([]);
   const [selectedQuality, setSelectedQuality] = useState<number>(-1);
@@ -310,6 +393,12 @@ export const Player: React.FC = () => {
         e.preventDefault();
         handlePrev();
       } else if (e.key === ']') {
+        e.preventDefault();
+        handleNext();
+      } else if (e.key === 'PageUp') {
+        e.preventDefault();
+        handlePrev();
+      } else if (e.key === 'PageDown') {
         e.preventDefault();
         handleNext();
       }
@@ -582,9 +671,28 @@ export const Player: React.FC = () => {
 
   const isTv = currentChannel.type === 'tv';
   const hasTimeShift = seekableRange.duration > 15;
+  const isDesktopView = typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches;
 
   return (
-    <div className={`fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 shadow-xl ${expanded && isTv ? 'h-full md:h-[60vh] md:bottom-4 md:left-auto md:right-4 md:w-[600px] md:rounded-2xl md:border' : 'h-20 md:h-22'}`}>
+    <div className={`fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 shadow-xl ${expanded && isTv ? 'h-full md:h-[60vh] md:rounded-2xl md:border' : 'h-20 md:h-22'}`}
+      style={expanded && isTv ? {
+        top: expandedPos?.y,
+        left: expandedPos?.x,
+        bottom: expandedPos ? 'auto' : undefined,
+        right: expandedPos ? 'auto' : undefined,
+        ...(isDesktopView ? { width: expandedSize.w, height: expandedSize.h > 0 ? expandedSize.h : undefined } : {}),
+      } : undefined}
+    >
+      {/* Resize handle for the expand panel */}
+      {expanded && isTv && !isFullscreen && isDesktopView && (
+        <div
+          onPointerDown={(e) => { e.stopPropagation(); startResize(e, 'expanded'); }}
+          className="absolute bottom-0 right-0 w-5 h-5 cursor-se-resize z-[60] touch-none"
+          title="Resize"
+        >
+          <div className="absolute bottom-1 right-1 w-3 h-3 border-b-2 border-r-2 border-gray-400 dark:border-gray-500 rounded-br" />
+        </div>
+      )}
       
       {!isTv && <AudioVisualizer isPlaying={isPlaying} volume={volume} audioRef={audioRef} />}
 
@@ -595,17 +703,32 @@ export const Player: React.FC = () => {
           onMouseMove={isFullscreen ? resetFsControlsTimer : undefined}
           onTouchStart={isFullscreen ? resetFsControlsTimer : undefined}
           onClick={isFullscreen ? handlePlayerAreaClick : undefined}
+          onPointerDown={(e) => {
+            if (isFullscreen) return;
+            if (expanded && isTv) startDrag(e, 'expanded');
+            else if (isPip) startDrag(e, 'mini');
+          }}
+          style={isPip && !expanded ? { top: miniPos?.y, left: miniPos?.x, width: miniSize.w, height: miniSize.h } : undefined}
           className={
             isFullscreen 
               ? `fixed inset-0 z-[100] w-screen h-screen bg-black select-none ${showFsControls ? 'cursor-default' : 'cursor-none'}` 
               : expanded 
                 ? "relative w-full h-[calc(100%-85px)] bg-black group" 
                 : (isPip 
-                    ? "absolute bottom-full right-4 mb-4 w-64 md:w-80 aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-700 z-50 group" 
+                    ? `${miniPos ? 'fixed' : 'absolute bottom-full right-4 mb-4'} bg-black rounded-xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-700 z-50 group cursor-grab active:cursor-grabbing touch-none` 
                     : "absolute w-1 h-1 opacity-0 pointer-events-none overflow-hidden"
                   )
           }
         >
+          {/* Resize handle for the mini player */}
+          {isPip && !expanded && (
+            <div
+              onPointerDown={(e) => { e.stopPropagation(); startResize(e, 'mini'); }}
+              className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize z-30 touch-none"
+            >
+              <div className="absolute bottom-1 right-1 w-2.5 h-2.5 border-b-2 border-r-2 border-white/60 rounded-br" />
+            </div>
+          )}
           <video
             ref={videoRef}
             className={`w-full h-full object-contain bg-black ${isSwitching ? 'opacity-0' : 'opacity-100'}`}
@@ -849,6 +972,58 @@ export const Player: React.FC = () => {
                 )}
               </div>
 
+              <div className="relative">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleQualityMenu();
+                    resetFsControlsTimer();
+                  }}
+                  className={`w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center ${
+                    showQualityMenu
+                      ? 'bg-white/25 text-white border border-white/40'
+                      : 'bg-white/10 text-white/80 hover:text-white hover:bg-white/20 border border-white/10'
+                  } ${qualities.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  title={t(language, 'player.quality')}
+                  disabled={qualities.length === 0}
+                >
+                  <Settings size={20} />
+                </button>
+
+                {showQualityMenu && qualities.length > 0 && (
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-black/85 px-1 py-2 rounded-xl border border-white/20 shadow-2xl flex flex-col gap-0.5 w-40 z-50"
+                  >
+                    <button
+                      onClick={() => {
+                        changeQuality(-1);
+                        resetFsControlsTimer();
+                      }}
+                      className={`w-full text-left px-3 py-1.5 rounded-lg text-xs text-white/80 hover:bg-white/10 ${
+                        selectedQuality === -1 ? getThemeTextClass(themeColor) + ' font-bold' : ''
+                      }`}
+                    >
+                      {t(language, 'player.autoQuality')}
+                    </button>
+                    {qualities.map((q, index) => (
+                      <button
+                        key={index}
+                        onClick={() => {
+                          changeQuality(index);
+                          resetFsControlsTimer();
+                        }}
+                        className={`w-full text-left px-3 py-1.5 rounded-lg text-xs text-white/80 hover:bg-white/10 ${
+                          selectedQuality === index ? getThemeTextClass(themeColor) + ' font-bold' : ''
+                        }`}
+                      >
+                        {q.height ? `${q.height}p` : `${t(language, 'player.quality')} ${index + 1}`}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -1083,7 +1258,7 @@ export const Player: React.FC = () => {
         </div>
 
         {/* Actions (Right) & Mobile Playback */}
-        <div className="flex items-center justify-end gap-1 md:gap-2 flex-shrink-0 md:w-1/3">
+        <div className="flex items-center justify-end gap-1 md:gap-2 flex-shrink-0">
           
           {/* Mobile Playback Controls */}
           <div className="flex md:hidden items-center gap-1">
@@ -1198,7 +1373,7 @@ export const Player: React.FC = () => {
                   onClick={() => changeQuality(-1)}
                   className={`w-full text-left px-3 py-1.5 rounded-lg text-xs ${selectedQuality === -1 ? getThemeTextClass(themeColor) + ' font-bold bg-gray-100 dark:bg-gray-700' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
                 >
-                  Otomatik
+                  {t(language, 'player.autoQuality')}
                 </button>
                 {qualities.map((q, index) => (
                   <button
@@ -1206,7 +1381,7 @@ export const Player: React.FC = () => {
                     onClick={() => changeQuality(index)}
                     className={`w-full text-left px-3 py-1.5 rounded-lg text-xs ${selectedQuality === index ? getThemeTextClass(themeColor) + ' font-bold bg-gray-100 dark:bg-gray-700' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
                   >
-                    {q.height ? `${q.height}p` : `Kalite ${index + 1}`}
+                    {q.height ? `${q.height}p` : `${t(language, 'player.quality')} ${index + 1}`}
                   </button>
                 ))}
               </div>
