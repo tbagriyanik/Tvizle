@@ -47,15 +47,6 @@ export const mockChannels: Channel[] = [
     "country": "gb"
   },
   {
-    "id": "tv-nasatv",
-    "name": "NASA TV",
-    "type": "tv",
-    "url": "https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8",
-    "logo": "https://www.nasa.gov/apple-touch-icon.png",
-    "category": "Dünya / Belgesel",
-    "country": "us"
-  },
-  {
     "id": "radio-kexp",
     "name": "KEXP 90.3",
     "type": "radio",
@@ -63,42 +54,6 @@ export const mockChannels: Channel[] = [
     "logo": "https://www.kexp.org/apple-touch-icon.png",
     "category": "Yabancı Müzik",
     "country": "us"
-  },
-  {
-    "id": "tv-bloombergus",
-    "name": "Bloomberg TV+",
-    "type": "tv",
-    "url": "https://bloomberg.com/media-manifest/streams/us.m3u8",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Bloomberg_logo.svg/512px-Bloomberg_logo.svg.png",
-    "category": "Dünya / Ekonomi",
-    "country": "us"
-  },
-  {
-    "id": "radio-bbcradio1",
-    "name": "BBC Radio 1",
-    "type": "radio",
-    "url": "https://stream.live.vc.bbcmedia.co.uk/bbc_radio_one",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/BBC_Radio_1_logo.svg/512px-BBC_Radio_1_logo.svg.png",
-    "category": "Yabancı Pop",
-    "country": "gb"
-  },
-  {
-    "id": "radio-bbcmusic",
-    "name": "BBC Radio 2",
-    "type": "radio",
-    "url": "https://stream.live.vc.bbcmedia.co.uk/bbc_radio_two",
-    "logo": "https://www.bbc.co.uk/apple-touch-icon.png",
-    "category": "Yabancı Pop",
-    "country": "gb"
-  },
-  {
-    "id": "radio-antennede",
-    "name": "Antenne Bayern",
-    "type": "radio",
-    "url": "https://stream.antenne.de/antenne/stream/mp3",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Antenne_Bayern_Logo.svg/512px-Antenne_Bayern_Logo.svg.png",
-    "category": "Yabancı Pop",
-    "country": "de"
   },
   {
     "id": "tv-aljazeera-eng",
@@ -146,15 +101,6 @@ export const mockChannels: Channel[] = [
     "country": "gb"
   },
   {
-    "id": "radio-1live",
-    "name": "1LIVE",
-    "type": "radio",
-    "url": "https://wdr-1live-live.icecastssl.wdr.de/wdr/1live/live/mp3/128/stream.mp3",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/1LIVE_logo.svg/512px-1LIVE_logo.svg.png",
-    "category": "Yabancı Pop",
-    "country": "de"
-  },
-  {
     "id": "radio-rfi",
     "name": "RFI Monde",
     "type": "radio",
@@ -191,60 +137,6 @@ export const mockChannels: Channel[] = [
     "country": "it"
   },
   {
-    "id": "radio-rai2",
-    "name": "Rai Radio 2",
-    "type": "radio",
-    "url": "https://icestreaming.rai.it/2.mp3",
-    "logo": "https://www.raiplayradio.it/apple-touch-icon.png",
-    "category": "Yabancı Müzik",
-    "country": "it"
-  },
-  {
-    "id": "radio-los40",
-    "name": "LOS40",
-    "type": "radio",
-    "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40.mp3",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/LOS40_logo.svg/512px-LOS40_logo.svg.png",
-    "category": "Yabancı Hit",
-    "country": "es"
-  },
-  {
-    "id": "radio-538",
-    "name": "Radio 538",
-    "type": "radio",
-    "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/RADIO538.mp3",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Radio_538_logo.svg/512px-Radio_538_logo.svg.png",
-    "category": "Yabancı Hit",
-    "country": "nl"
-  },
-  {
-    "id": "radio-qmusic",
-    "name": "Qmusic",
-    "type": "radio",
-    "url": "https://stream.qmusic.nl/qmusic/mp3",
-    "logo": "https://qmusic.nl/favicon.ico",
-    "category": "Yabancı Hit",
-    "country": "nl"
-  },
-  {
-    "id": "radio-triplej",
-    "name": "triple j",
-    "type": "radio",
-    "url": "https://live-radio01.mediahubaustralia.com/2TRI/aac/",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Triple_J_logo.svg/512px-Triple_J_logo.svg.png",
-    "category": "Yabancı Müzik",
-    "country": "au"
-  },
-  {
-    "id": "radio-abcfm",
-    "name": "ABC Sydney",
-    "type": "radio",
-    "url": "https://live-radio01.mediahubaustralia.com/2FMW/mp3/",
-    "logo": "https://www.abc.net.au/apple-touch-icon.png",
-    "category": "Yabancı Haber",
-    "country": "au"
-  },
-  {
     "id": "radio-somafm",
     "name": "SomaFM Groove Salad",
     "type": "radio",
@@ -252,24 +144,6 @@ export const mockChannels: Channel[] = [
     "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/SomaFM_logo.svg/512px-SomaFM_logo.svg.png",
     "category": "Yabancı Müzik",
     "country": "us"
-  },
-  {
-    "id": "radio-bbcradio3",
-    "name": "BBC Radio 3",
-    "type": "radio",
-    "url": "https://stream.live.vc.bbcmedia.co.uk/bbc_radio_three",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/BBC_Radio_3_logo.svg/512px-BBC_Radio_3_logo.svg.png",
-    "category": "Yabancı Klasik",
-    "country": "gb"
-  },
-  {
-    "id": "radio-bbcradio4",
-    "name": "BBC Radio 4",
-    "type": "radio",
-    "url": "https://stream.live.vc.bbcmedia.co.uk/bbc_radio_fourfm",
-    "logo": "https://www.bbc.co.uk/apple-touch-icon.png",
-    "category": "Yabancı Haber",
-    "country": "gb"
   },
   {
     "id": "radio-lbc",
@@ -281,42 +155,6 @@ export const mockChannels: Channel[] = [
     "country": "gb"
   },
   {
-    "id": "radio-europe1",
-    "name": "Europe 1",
-    "type": "radio",
-    "url": "https://stream.europe1.fr/europe1.mp3",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Europe_1_logo_2019.svg/512px-Europe_1_logo_2019.svg.png",
-    "category": "Yabancı Haber",
-    "country": "fr"
-  },
-  {
-    "id": "radio-rai3",
-    "name": "Rai Radio 3",
-    "type": "radio",
-    "url": "https://icestreaming.rai.it/3.mp3",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Rai_Radio_3_logo_2022.svg/512px-Rai_Radio_3_logo_2022.svg.png",
-    "category": "Yabancı Klasik",
-    "country": "it"
-  },
-  {
-    "id": "radio-cadenaser",
-    "name": "Cadena SER",
-    "type": "radio",
-    "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/CADENASER.mp3",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Cadena_SER_logo_2023.svg/512px-Cadena_SER_logo_2023.svg.png",
-    "category": "Yabancı Haber",
-    "country": "es"
-  },
-  {
-    "id": "radio-radiole",
-    "name": "Radiolé",
-    "type": "radio",
-    "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/RADIOLE.mp3",
-    "logo": "https://www.google.com/s2/favicons?domain=www.radiole.com&sz=128",
-    "category": "Yabancı Müzik",
-    "country": "es"
-  },
-  {
     "id": "radio-nporadio2",
     "name": "NPO Radio 2",
     "type": "radio",
@@ -326,57 +164,12 @@ export const mockChannels: Channel[] = [
     "country": "nl"
   },
   {
-    "id": "radio-skyradio",
-    "name": "Sky Radio",
-    "type": "radio",
-    "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/SKYRADIO.mp3",
-    "logo": "https://www.skyradio.nl/favicon.ico",
-    "category": "Yabancı Hit",
-    "country": "nl"
-  },
-  {
-    "id": "radio-doublej",
-    "name": "Double J",
-    "type": "radio",
-    "url": "https://live-radio01.mediahubaustralia.com/2DJJ/aac/",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Double_J_logo.svg/512px-Double_J_logo.svg.png",
-    "category": "Yabancı Müzik",
-    "country": "au"
-  },
-  {
-    "id": "radio-abcnewsradio",
-    "name": "ABC NewsRadio",
-    "type": "radio",
-    "url": "https://live-radio02.mediahubaustralia.com/2PBW/aac/",
-    "logo": "https://www.abc.net.au/apple-touch-icon.png",
-    "category": "Yabancı Haber",
-    "country": "au"
-  },
-  {
     "id": "tv-cnn",
     "name": "CNN International",
     "type": "tv",
     "url": "https://turnerlive.warnermediacdn.com/hls/live/586495/cnngo/cnn_slate/VIDEO_0_3564000.m3u8",
     "logo": "https://raw.githubusercontent.com/tv-logo/tv-logos/main/countries/united-states/cnn-us.png",
     "category": "Dünya / Haber",
-    "country": "us"
-  },
-  {
-    "id": "tv-cbsnews",
-    "name": "CBS News",
-    "type": "tv",
-    "url": "https://dai.google.com/linear/hls/event/Sid4xiTQTkCT1SLu6rjUSQ/master.m3u8",
-    "logo": "https://raw.githubusercontent.com/tv-logo/tv-logos/main/countries/united-states/cbs-news-us.png",
-    "category": "Dünya / Haber",
-    "country": "us"
-  },
-  {
-    "id": "tv-bloombergeu",
-    "name": "Bloomberg TV Europe",
-    "type": "tv",
-    "url": "https://bloomberg.com/media-manifest/streams/eu.m3u8",
-    "logo": "https://i.imgur.com/OuogLHx.png",
-    "category": "Dünya / Ekonomi",
     "country": "us"
   },
   {
@@ -414,15 +207,6 @@ export const mockChannels: Channel[] = [
     "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Russia-today-logo.svg/500px-Russia-today-logo.svg.png",
     "category": "Dünya / Haber",
     "country": "ru"
-  },
-  {
-    "id": "tv-daserste",
-    "name": "Das Erste (ARD)",
-    "type": "tv",
-    "url": "https://daserste-live.ard-mcdn.de/daserste/live/hls/de/master.m3u8",
-    "logo": "https://www.google.com/s2/favicons?domain=www.daserste.de&sz=128",
-    "category": "Ulusal",
-    "country": "de"
   },
   {
     "id": "tv-rtp1",
@@ -486,15 +270,6 @@ export const mockChannels: Channel[] = [
     "logo": "https://commons.wikimedia.org/wiki/Special:FilePath/WFMU.gif",
     "category": "Yabancı Müzik",
     "country": "us"
-  },
-  {
-    "id": "radio-abcclassic",
-    "name": "ABC Classic",
-    "type": "radio",
-    "url": "https://live-radio01.mediahubaustralia.com/2FMA/aac/",
-    "logo": "https://www.abc.net.au/apple-touch-icon.png",
-    "category": "Yabancı Klasik",
-    "country": "au"
   },
   {
     "id": "yt-tv-aljazeera",
@@ -735,15 +510,6 @@ export const mockChannels: Channel[] = [
     "country": "tr"
   },
   {
-    "id": "alrafidaintv-tr-sd",
-    "name": "Al Rafidain",
-    "type": "tv",
-    "url": "https://arrafidain.tvplayer.online/arrafidaintv/source/playlist.m3u8",
-    "logo": "https://i.imgur.com/rjXDCN5.png",
-    "category": "Religious",
-    "country": "tr"
-  },
-  {
     "id": "alzahratvturkic-tr-sd",
     "name": "Al-Zahra TV Turkic",
     "type": "tv",
@@ -768,15 +534,6 @@ export const mockChannels: Channel[] = [
     "url": "https://starmenajo.com/hls/almahriah/index.m3u8",
     "logo": "https://i.imgur.com/GgEeTNr.png",
     "category": "News",
-    "country": "tr"
-  },
-  {
-    "id": "altastv-tr-sd",
-    "name": "Altas TV",
-    "type": "tv",
-    "url": "https://edge1.socialsmart.tv/altastv/bant1/playlist.m3u8",
-    "logo": "https://i.imgur.com/XaJ7fp6.png",
-    "category": "General",
     "country": "tr"
   },
   {
@@ -826,39 +583,12 @@ export const mockChannels: Channel[] = [
     "country": "tr"
   },
   {
-    "id": "benguturktv-tr-sd",
-    "name": "Benguturk TV",
-    "type": "tv",
-    "url": "http://185.234.111.229:8000/play/a05u",
-    "logo": "https://i.imgur.com/p3ON1oX.png",
-    "category": "General",
-    "country": "tr"
-  },
-  {
-    "id": "beyaztv-tr-sd",
-    "name": "Beyaz TV",
-    "type": "tv",
-    "url": "https://mn-nl.mncdn.com/blutv_beyaztv2/live.m3u8",
-    "logo": "https://i.imgur.com/uykIdML.png",
-    "category": "Undefined",
-    "country": "tr"
-  },
-  {
     "id": "birtv-tr-sd",
     "name": "Bir TV",
     "type": "tv",
     "url": "https://edge.taksimbilisim.com/birtv/bant1/playlist.m3u8",
     "logo": "https://birtv.tv/assets/upload/637f83951df60.png",
     "category": "Undefined",
-    "country": "tr"
-  },
-  {
-    "id": "bloomberght-tr-sd",
-    "name": "BloombergHT",
-    "type": "tv",
-    "url": "https://ciner-live.daioncdn.net/bloomberght/bloomberght.m3u8",
-    "logo": "https://i.imgur.com/bmkXfIE.png",
-    "category": "Business",
     "country": "tr"
   },
   {
@@ -878,34 +608,6 @@ export const mockChannels: Channel[] = [
     "logo": "https://asset.artidijitalmedya.com/image/188x188/channels/v1/logo_13.png",
     "category": "News",
     "country": "tr"
-  },
-  {
-    "id": "bursatv-tr-sd",
-    "name": "Bursa TV",
-    "type": "tv",
-    "url": "https://win1.yayin.com.tr/bursatv/bursatv/playlist.m3u8",
-    "logo": "https://i.imgur.com/9cl1MR8.png",
-    "category": "Undefined",
-    "country": "tr"
-  },
-  {
-    "id": "caytv-tr-sd",
-    "name": "Cay TV",
-    "type": "tv",
-    "url": "https://edge1.socialsmart.tv/caytv/bant1/playlist.m3u8",
-    "logo": "https://i.imgur.com/ndupxwu.png",
-    "category": "General",
-    "country": "tr"
-  },
-  {
-    "id": "cekmekoytv-tr-sd",
-    "name": "Cekmeköy TV",
-    "type": "tv",
-    "url": "https://cdn-cekmekoybeltv.yayin.com.tr/cekmekoybeltv/cekmekoybeltv_1080p/playlist.m3u8",
-    "logo": "https://i.imgur.com/sjAGFWu.png",
-    "category": "General",
-    "country": "tr",
-    "resolution": "1080p"
   },
   {
     "id": "cnbce-tr-sd",
@@ -1043,15 +745,6 @@ export const mockChannels: Channel[] = [
     "country": "tr"
   },
   {
-    "id": "etvmanisa-tr-sd",
-    "name": "ETV Manisa",
-    "type": "tv",
-    "url": "https://edge1.socialsmart.tv/manisaetv/bant1/playlist.m3u8",
-    "logo": "https://i.ibb.co/QKXtdkz/sOd3INg.png",
-    "category": "Undefined",
-    "country": "tr"
-  },
-  {
     "id": "eurod-tr-sd",
     "name": "Euro D",
     "type": "tv",
@@ -1076,42 +769,6 @@ export const mockChannels: Channel[] = [
     "url": "http://46.149.191.219:9100/play/a015",
     "logo": "https://i.imgur.com/VyaslIY.png",
     "category": "Movies",
-    "country": "tr"
-  },
-  {
-    "id": "finansturktv-tr-sd",
-    "name": "Finans Turk TV",
-    "type": "tv",
-    "url": "https://yayin30.haber100.com/live/finansturk/playlist.m3u8",
-    "logo": "https://i.ibb.co/wBwmB1T/iY0osc7.png",
-    "category": "News",
-    "country": "tr"
-  },
-  {
-    "id": "flashhabertv-tr-sd",
-    "name": "Flash Haber TV",
-    "type": "tv",
-    "url": "https://b01c02nl.mediatriple.net/videoonlylive/mtyycglqauzjhlive/broadcast_67c053c48829f.smil/playlist.m3u8",
-    "logo": "",
-    "category": "News",
-    "country": "tr"
-  },
-  {
-    "id": "fortunatv-tr-sd",
-    "name": "Fortuna TV",
-    "type": "tv",
-    "url": "https://edge1.socialsmart.tv/ftvturk/bant1/playlist.m3u8",
-    "logo": "https://i.imgur.com/ZbUSlOC.png",
-    "category": "Lifestyle",
-    "country": "tr"
-  },
-  {
-    "id": "guneydogutv-tr-sd",
-    "name": "Guneydogu TV",
-    "type": "tv",
-    "url": "https://edge1.socialsmart.tv/gtv/bant1/playlist.m3u8",
-    "logo": "https://i.imgur.com/JT5pp3Y.png",
-    "category": "News",
     "country": "tr"
   },
   {
@@ -1178,15 +835,6 @@ export const mockChannels: Channel[] = [
     "country": "tr"
   },
   {
-    "id": "iceltv-tr-sd",
-    "name": "Icel TV",
-    "type": "tv",
-    "url": "https://edge1.socialsmart.tv/iceltv/bant1/playlist.m3u8",
-    "logo": "https://i.imgur.com/CGwImKv.png",
-    "category": "Undefined",
-    "country": "tr"
-  },
-  {
     "id": "ilketv-tr-hd",
     "name": "Ilke TV",
     "type": "tv",
@@ -1237,33 +885,6 @@ export const mockChannels: Channel[] = [
     "type": "tv",
     "url": "https://live.artidijitalmedya.com/artidijital_kanal3/kanal3/playlist.m3u8",
     "logo": "https://i.imgur.com/eXErSv0.png",
-    "category": "General",
-    "country": "tr"
-  },
-  {
-    "id": "kanal32-tr-sd",
-    "name": "Kanal 32",
-    "type": "tv",
-    "url": "https://edge1.socialsmart.tv/kanal32/bant1/playlist.m3u8",
-    "logo": "",
-    "category": "General",
-    "country": "tr"
-  },
-  {
-    "id": "kanal33-tr-sd",
-    "name": "Kanal 33",
-    "type": "tv",
-    "url": "https://edge1.socialsmart.tv/kanal33/bant1/playlist.m3u8",
-    "logo": "https://i.imgur.com/5WYaoFZ.png",
-    "category": "General",
-    "country": "tr"
-  },
-  {
-    "id": "kanal34-tr-sd",
-    "name": "Kanal 34",
-    "type": "tv",
-    "url": "https://vdo.digitalbox.xyz:3266/live/kanal34tvlive.m3u8",
-    "logo": "https://i.imgur.com/SIaI6Sj.png",
     "category": "General",
     "country": "tr"
   },
@@ -1403,15 +1024,6 @@ export const mockChannels: Channel[] = [
     "country": "tr"
   },
   {
-    "id": "linetv-tr-sd",
-    "name": "Line TV",
-    "type": "tv",
-    "url": "https://edge1.socialsmart.tv/linetv/bant1/playlist.m3u8",
-    "logo": "https://i.imgur.com/6GNp7f8.png",
-    "category": "General",
-    "country": "tr"
-  },
-  {
     "id": "luystv-tr-sd",
     "name": "Luys TV",
     "type": "tv",
@@ -1484,24 +1096,6 @@ export const mockChannels: Channel[] = [
     "country": "tr"
   },
   {
-    "id": "moviesmartturk-tr-sd",
-    "name": "MovieSmart Turk",
-    "type": "tv",
-    "url": "http://playhdnewjj.xyz:8080/recc121412/KVqfhtdJ2nQ7/174",
-    "logo": "https://i.imgur.com/DWN9ulT.png",
-    "category": "Movies",
-    "country": "tr"
-  },
-  {
-    "id": "mturktv-tr-sd",
-    "name": "MTürk TV",
-    "type": "tv",
-    "url": "https://edge1.socialsmart.tv/muglaturk/bant1/playlist.m3u8",
-    "logo": "https://i.imgur.com/xj1gvrq.png",
-    "category": "General",
-    "country": "tr"
-  },
-  {
     "id": "nationalgeographic-tr-sd",
     "name": "National Geographic",
     "type": "tv",
@@ -1517,15 +1111,6 @@ export const mockChannels: Channel[] = [
     "url": "https://saran-live.ercdn.net/natgeowild/index.m3u8",
     "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/National_Geographic_Wild_logo.svg/960px-National_Geographic_Wild_logo.svg.png",
     "category": "Documentary",
-    "country": "tr"
-  },
-  {
-    "id": "naturaltv-tr-sd",
-    "name": "Natural TV",
-    "type": "tv",
-    "url": "http://broadcasttr.com:1935/naturaltv/bant1/playlist.m3u8",
-    "logo": "https://i.imgur.com/rfcJ674.png",
-    "category": "Culture",
     "country": "tr"
   },
   {
@@ -1589,15 +1174,6 @@ export const mockChannels: Channel[] = [
     "url": "https://live.artidijitalmedya.com/artidijital_olayturk/olayturk/playlist.m3u8",
     "logo": "https://i.imgur.com/e9ca6gc.png",
     "category": "News",
-    "country": "tr"
-  },
-  {
-    "id": "on4tv-tr-sd",
-    "name": "On4 TV",
-    "type": "tv",
-    "url": "https://edge1.socialsmart.tv/on4/bant1/playlist.m3u8",
-    "logo": "https://i.imgur.com/qGRa1KI.png",
-    "category": "General",
     "country": "tr"
   },
   {
@@ -1989,24 +1565,6 @@ export const mockChannels: Channel[] = [
     "country": "tr"
   },
   {
-    "id": "turkhabertv-tr-sd",
-    "name": "TürkHaber",
-    "type": "tv",
-    "url": "https://edge1.socialsmart.tv/turkhaber/bant1/playlist.m3u8",
-    "logo": "https://i.imgur.com/2AcRKdL.png",
-    "category": "News",
-    "country": "tr"
-  },
-  {
-    "id": "tv1-tr-sd",
-    "name": "TV 1",
-    "type": "tv",
-    "url": "https://edge1.socialsmart.tv/tv1/bant1/playlist.m3u8",
-    "logo": "https://i.imgur.com/8CtrYVb.png",
-    "category": "Undefined",
-    "country": "tr"
-  },
-  {
     "id": "24tv-tr-sd",
     "name": "TV 24",
     "type": "tv",
@@ -2025,48 +1583,12 @@ export const mockChannels: Channel[] = [
     "country": "tr"
   },
   {
-    "id": "tv41-tr-sd",
-    "name": "TV 41",
-    "type": "tv",
-    "url": "http://stream.taksimbilisim.com:1935/tv41/bant1/TV41.m3u8",
-    "logo": "https://i.imgur.com/6T472LM.png",
-    "category": "Undefined",
-    "country": "tr"
-  },
-  {
-    "id": "tv42-tr-sd",
-    "name": "TV 42",
-    "type": "tv",
-    "url": "https://canli.tv42.com.tr/memfs/d936e417-c4bd-4d42-89a2-02f289892d1d.m3u8",
-    "logo": "https://www.tv42.com.tr/logo.png",
-    "category": "Undefined",
-    "country": "tr"
-  },
-  {
-    "id": "tv52-tr-sd",
-    "name": "TV 52",
-    "type": "tv",
-    "url": "https://edge1.socialsmart.tv/tv52/bant1/playlist.m3u8",
-    "logo": "https://i.imgur.com/k4R5CzO.png",
-    "category": "Undefined",
-    "country": "tr"
-  },
-  {
     "id": "tv8-tr-sd",
     "name": "TV 8",
     "type": "tv",
     "url": "https://tv8.daioncdn.net/tv8/tv8.m3u8?app=7ddc255a-ef47-4e81-ab14-c0e5f2949788&ce=3",
     "logo": "https://upload.wikimedia.org/wikipedia/tr/thumb/6/68/Tv8_Yeni_Logo.png/960px-Tv8_Yeni_Logo.png",
     "category": "General",
-    "country": "tr"
-  },
-  {
-    "id": "tvden-tr-sd",
-    "name": "TV Den",
-    "type": "tv",
-    "url": "http://canli.tvden.com.tr/hls/live.m3u8",
-    "logo": "https://i.imgur.com/Uhg95Ze.png",
-    "category": "Undefined",
     "country": "tr"
   },
   {
@@ -2084,15 +1606,6 @@ export const mockChannels: Channel[] = [
     "type": "tv",
     "url": "https://tvnet-live.lg.mncdn.com/tvnet/tvnet/playlist.m3u8",
     "logo": "https://i.imgur.com/mQo8yWQ.png",
-    "category": "Undefined",
-    "country": "tr"
-  },
-  {
-    "id": "ulketv-tr-sd",
-    "name": "Ulke TV",
-    "type": "tv",
-    "url": "http://217.174.229.138:8000/play/a0el",
-    "logo": "https://i.imgur.com/wdWR7Qk.png",
     "category": "Undefined",
     "country": "tr"
   },
@@ -2140,16 +1653,6 @@ export const mockChannels: Channel[] = [
     "logo": "https://i.imgur.com/o0eevnb.png",
     "category": "Undefined",
     "country": "tr"
-  },
-  {
-    "id": "f3dfbec0-8ddb-457c-94cd-368631337c0f",
-    "name": "DAMAR TURK FM",
-    "type": "radio",
-    "url": "https://live.radyositesihazir.com:10997/",
-    "logo": "https://www.damarturkfm.com/favicon.ico",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 192
   },
   {
     "id": "1e0dcee9-bfb6-41a4-8356-e8c4540dfcf0",
@@ -2241,15 +1744,6 @@ export const mockChannels: Channel[] = [
     "bitrate": 64
   },
   {
-    "id": "97f3bb39-24a0-461d-b282-b0ccae5a12c4",
-    "name": "Slow Turk",
-    "type": "radio",
-    "url": "https://radyo.duhnet.tv/ak_dtvh_slowturk",
-    "logo": "https://www.slowturk.com.tr/_next/image?url=https%3A%2F%2Fassets.blupoint.io%2Fimg%2F85%2F330x175%2F6410d8c4310c17000763c62b&w=256&q=75",
-    "category": "Slow",
-    "country": "tr"
-  },
-  {
     "id": "948408f4-0060-44fa-a26c-bf313f6c774d",
     "name": "KRAL FM",
     "type": "radio",
@@ -2268,16 +1762,6 @@ export const mockChannels: Channel[] = [
     "category": "Karma",
     "country": "tr",
     "bitrate": 140
-  },
-  {
-    "id": "5509836d-9ca5-4584-bd61-86298fa725b4",
-    "name": "Number one",
-    "type": "radio",
-    "url": "https://n10101m.mediatriple.net/numberone",
-    "logo": "",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 47
   },
   {
     "id": "585600d9-bdc4-4a2e-93c5-2421041cc55c",
@@ -2327,16 +1811,6 @@ export const mockChannels: Channel[] = [
     "category": "Türkçe Pop",
     "country": "tr",
     "bitrate": 127
-  },
-  {
-    "id": "4bead555-fefa-401b-b9e1-e5f525c714b8",
-    "name": "Numberone Turk",
-    "type": "radio",
-    "url": "https://n10101m.mediatriple.net/numberoneturk",
-    "logo": "",
-    "category": "Türkçe Pop",
-    "country": "tr",
-    "bitrate": 128
   },
   {
     "id": "f17523b9-2e77-46f3-8851-cdd842ca5b8f",
@@ -2749,579 +2223,5 @@ export const mockChannels: Channel[] = [
     "category": "Haber",
     "country": "tr",
     "bitrate": 128
-  },
-  {
-    "id": "088c2b87-4c3d-4fb0-ba51-f80690de89b0",
-    "name": "Azadi Fm",
-    "type": "radio",
-    "url": "https://amed.ozelip.com/8040/;",
-    "logo": "",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 64
-  },
-  {
-    "id": "54202ae3-a9b5-4eb0-8ebc-a0585a092256",
-    "name": "POWERTÜRK FM TURKEY 2",
-    "type": "radio",
-    "url": "https://live.powerapp.com.tr/powerturk/abr/powerturk/128/playlist.m3u8",
-    "logo": "",
-    "category": "Türkçe Pop",
-    "country": "tr",
-    "bitrate": 149
-  },
-  {
-    "id": "4d13d500-fb68-4d6f-ab81-fa0ce325702a",
-    "name": "HAYATMİX",
-    "type": "radio",
-    "url": "https://hayatmix.yayin.com.tr/mp3",
-    "logo": "",
-    "category": "Klasik",
-    "country": "tr",
-    "bitrate": 192
-  },
-  {
-    "id": "0352d949-cfe9-4c89-8540-00069791b5d6",
-    "name": "Karadeniz FM",
-    "type": "radio",
-    "url": "https://moondigitaledge.radyotvonline.net/karadenizfm/playlist.m3u8",
-    "logo": "https://static.wixstatic.com/media/9477e9_88c8630d8926464eac285c1df9d8ce54~mv2.png/v1/fill/w_350,h_350,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/karadeniz-fm-logopng.png",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 64
-  },
-  {
-    "id": "0934aa26-d212-441c-a47e-474c3f289bab",
-    "name": "Number One Türk",
-    "type": "radio",
-    "url": "https://n10101m.mediatriple.net/numberoneturk",
-    "logo": "",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "3cb7e617-ead1-4a88-9239-802050b33a13",
-    "name": "Turkuvaz Musiki",
-    "type": "radio",
-    "url": "https://trkvz-radyolar.ercdn.net/turkuvazmusiki/playlist.m3u8",
-    "logo": "",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 64
-  },
-  {
-    "id": "12151b64-b476-4516-b7db-c1263ae422db",
-    "name": "Danceland turkey",
-    "type": "radio",
-    "url": "https://moondigitaledge.radyotvonline.net/danceland/playlist.m3u8",
-    "logo": "",
-    "category": "Türkçe Pop",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "4702e20b-cd47-4148-a452-8309081b6d81",
-    "name": "Risalet Radyo",
-    "type": "radio",
-    "url": "https://eustr73.mediatriple.net/videoonlylive/mtikoimxnztxlive/broadcast_5e3c1520b2626.smil/playlist.m3u8",
-    "logo": "",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 140
-  },
-  {
-    "id": "f9fe2c7e-6f2f-4780-a682-8317604fe0ce",
-    "name": "KRAL POP",
-    "type": "radio",
-    "url": "https://dygedge2.radyotvonline.net/kralfm/playlist.m3u8",
-    "logo": "https://cdn1.kralmuzik.com.tr/media/content/19-05/20/kralpop.png",
-    "category": "Türkçe Pop",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "c1e42f7b-b285-477f-b225-0b070b561822",
-    "name": "Radyo Spor",
-    "type": "radio",
-    "url": "https://moondigitaledge.radyotvonline.net/radyospor/playlist.m3u8",
-    "logo": "",
-    "category": "Spor",
-    "country": "tr",
-    "bitrate": 63
-  },
-  {
-    "id": "e053f98a-e195-48f0-b07b-b2143c6e0964",
-    "name": "Cnn Türk Radyo",
-    "type": "radio",
-    "url": "https://moondigitaledge2.radyotvonline.net/cnnturk/playlist.m3u8?listeningSessionID=669e367246737fe5_6249184_Zq120UIn__0000001w2Bs&downloadSessionID=0",
-    "logo": "",
-    "category": "Karma",
-    "country": "tr"
-  },
-  {
-    "id": "c143d7ad-2cc0-4a9d-8a1c-d16a3c7f5a86",
-    "name": "powerturk",
-    "type": "radio",
-    "url": "https://live.powerapp.com.tr/powerturk/abr/playlist.m3u8",
-    "logo": "",
-    "category": "Türkçe Pop",
-    "country": "tr",
-    "bitrate": 277
-  },
-  {
-    "id": "525136b0-b913-42c6-9e28-e3c332cbaaa8",
-    "name": "Türkiyem FM",
-    "type": "radio",
-    "url": "https://server7.streamserver24.com/proxy/turkiyemfm?mp=/stream",
-    "logo": "https://turkiyemfm.com",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "d6a8ae1d-75fc-490f-a9fe-4fcaacaf9ba6",
-    "name": "LALEGÜL FM",
-    "type": "radio",
-    "url": "https://icecast.netmedya.net/lalegulfm",
-    "logo": "",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "3dfe8d72-9ba4-47f2-9f57-a16cd5b273df",
-    "name": "Radyo Alaturka",
-    "type": "radio",
-    "url": "https://yayin.jumboserver.net:9100/stream",
-    "logo": "https://radyoalaturka.com.tr/site/assets/img/alaturkaLogo.png",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "2484f562-2a83-4c6d-9f91-038644ceb11e",
-    "name": "Radyo Trio",
-    "type": "radio",
-    "url": "https://radyotrio.radyotvonline.net/radyotrio",
-    "logo": "",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 64
-  },
-  {
-    "id": "ff3b8372-1f59-4b18-a4fc-2240b8ab5417",
-    "name": "TGRT FM",
-    "type": "radio",
-    "url": "https://icecasttgrt.ihlasdigitalassets.com/tgrtfm",
-    "logo": "",
-    "category": "Haber",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "f34bebba-3a9e-4636-a593-d29538d7ed76",
-    "name": "radyo mezopotamya",
-    "type": "radio",
-    "url": "https://anadolu.liderhost.com.tr/9404/stream",
-    "logo": "",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "1c4363ac-c53f-43a9-8378-aab79be08aca",
-    "name": "HOME KLASİK TURKEY",
-    "type": "radio",
-    "url": "https://ssl4.radyotvonline.com/radyohome/klasikhome.stream_aac/playlist.m3u8",
-    "logo": "",
-    "category": "Türkçe Pop",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "97519d7f-a93d-49ef-aa6f-47f8cb2e772c",
-    "name": "Powerturk R&B Hip Hop",
-    "type": "radio",
-    "url": "https://listen.powerapp.com.tr/powerrbhiphop/abr/playlist.m3u8",
-    "logo": "https://www.powerapp.com.tr/i/favicov2/apple-icon-120x120.png?v=843",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 278
-  },
-  {
-    "id": "749c02c5-e596-4651-8e15-cfaec2d7680b",
-    "name": "Power love",
-    "type": "radio",
-    "url": "https://listen.powerapp.com.tr/powerlove/abr/powerlove/128/playlist.m3u8",
-    "logo": "",
-    "category": "Slow",
-    "country": "tr",
-    "bitrate": 150
-  },
-  {
-    "id": "429d64ec-d941-4b51-ac44-5f20e95f2f79",
-    "name": "KLAS RADİO TURKEY",
-    "type": "radio",
-    "url": "https://anadolu.liderhost.com.tr:10929/",
-    "logo": "",
-    "category": "Türkçe Pop",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "9ea7ed4e-d777-4e94-bd45-23abfaeaf2d6",
-    "name": "Kiss Türk",
-    "type": "radio",
-    "url": "https://kiss.radyotvonline.net/kissturk",
-    "logo": "https://kissapp.com.tr/content/files/IIMG_BE9E7FDE-27B7-466A-BE72-C344A3DCCD4C.jpg",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "4650ba79-390b-4251-bce8-058eb3f39094",
-    "name": "S1lhoutte Arabesk FM",
-    "type": "radio",
-    "url": "https://yayin.radyoarabesk.com.tr:8000/stream",
-    "logo": "",
-    "category": "Arabesk",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "2e29c25c-0ec4-42a4-be7f-6fe22911cf31",
-    "name": "CLASSICLAND TURKEY",
-    "type": "radio",
-    "url": "https://moondigitaledge.radyotvonline.net/classicland/playlist.m3u8",
-    "logo": "",
-    "category": "Türkçe Pop",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "97ecadc0-c92e-44c1-ae8a-f7b6f34a9c8b",
-    "name": "RADYO FENOMEN 2010 LAR",
-    "type": "radio",
-    "url": "https://live.radyofenomen.com/fenomen2010/abr/playlist.m3u8",
-    "logo": "",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 149
-  },
-  {
-    "id": "2b54052e-d57b-4131-a072-a36bf7829965",
-    "name": "Süper Fm",
-    "type": "radio",
-    "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/SUPER2_SC",
-    "logo": "",
-    "category": "Türkçe Pop",
-    "country": "tr",
-    "bitrate": 64
-  },
-  {
-    "id": "dad93bd8-632a-4a5f-b174-2ffcef7b4b65",
-    "name": "Axa Rojava",
-    "type": "radio",
-    "url": "https://stream.zeno.fm/h6mn2c8ha8zuv",
-    "logo": "",
-    "category": "Karma",
-    "country": "tr"
-  },
-  {
-    "id": "2ca9849a-ddde-411a-a79c-2a0ac728a4b9",
-    "name": "A spor",
-    "type": "radio",
-    "url": "https://trkvz-radyolar.ercdn.net/asporradyo/chunklist.m3u8",
-    "logo": "",
-    "category": "Spor",
-    "country": "tr"
-  },
-  {
-    "id": "926a0629-3096-4755-a3b3-031e78bef5c1",
-    "name": "Radio Mydonose",
-    "type": "radio",
-    "url": "https://29083.live.streamtheworld.com/RADIO_MYDONOSE128AAC.aac?/;stream.mp3",
-    "logo": "",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "dcdcc68c-5116-48f3-a70b-7c923233d27c",
-    "name": "ALTIN ŞARKILAR",
-    "type": "radio",
-    "url": "https://moondigitalmaster.radyotvonline.net/altinsarkilar/playlist.m3u8",
-    "logo": "",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "87c44288-3030-4e9f-b5af-62fc254fa3f9",
-    "name": "Radyo Gol",
-    "type": "radio",
-    "url": "https://edge1.radyotvonline.net/shoutcast/play/radyogol",
-    "logo": "",
-    "category": "Spor",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "6ba9a7e3-fec1-4d8e-9e58-a363fcccef86",
-    "name": "BABYLAND TURKEY",
-    "type": "radio",
-    "url": "https://moondigitaledge.radyotvonline.net/babyland/playlist.m3u8",
-    "logo": "",
-    "category": "Türkçe Pop",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "08b82bc9-67a0-49c8-a059-24c3d8948a90",
-    "name": "BloombergHTradyo",
-    "type": "radio",
-    "url": "https://ciner-live.ercdn.net/bloombergradyo/bloombergradyo_1.m3u8",
-    "logo": "",
-    "category": "Haber",
-    "country": "tr"
-  },
-  {
-    "id": "d220e7fc-cfc3-48c0-895a-ec109709936d",
-    "name": "Lig Radyo",
-    "type": "radio",
-    "url": "https://turkmedya.radyotvonline.com/turkmedya/ligradyo.stream/playlist.m3u8",
-    "logo": "https://www.ligradyo.com.tr/assets/img/ligradyo-apple-touch-icon.png",
-    "category": "Spor",
-    "country": "tr",
-    "bitrate": 141
-  },
-  {
-    "id": "b5981132-7fdd-43cf-9433-eaa712b8ee21",
-    "name": "Radyo Taksi",
-    "type": "radio",
-    "url": "https://live.radyo.in/8006/stream",
-    "logo": "",
-    "category": "Türkçe Pop",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "23fb9ea6-caa7-4fc0-9cf5-85531d1e0391",
-    "name": "RADYO 42 FM MEDYA KONYA PR MUSIC TURKIYE",
-    "type": "radio",
-    "url": "https://a8.asurahosting.com/hls/radyo_42_fm_medya_konya_pr_music/live.m3u8",
-    "logo": "https://www.radio.net/300/radio-42-fm-medya-konya-pr-music.png",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 52
-  },
-  {
-    "id": "6f239590-bf73-4c14-ba9c-ccedb73fd4d0",
-    "name": "PowerTürk Dans",
-    "type": "radio",
-    "url": "https://listen.powerapp.com.tr/powerturkdans/abr/playlist.m3u8",
-    "logo": "",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 277
-  },
-  {
-    "id": "2ddf08ec-21fb-4613-9cd4-ec11a9e47f90",
-    "name": "Kent FM",
-    "type": "radio",
-    "url": "https://moondigitalmaster.radyotvonline.net/kentfm/playlist.m3u8",
-    "logo": "https://static.wixstatic.com/media/9477e9_5d00a2e59e4d4bada251627401f75c91~mv2.png/v1/fill/w_150,h_114,al_c,q_85,usm_0.66_1.00_0.01/KENT_FM_LOGO.webp",
-    "category": "Karma",
-    "country": "tr"
-  },
-  {
-    "id": "c9e14543-dbaf-4173-9d3a-68344f1a1776",
-    "name": "AÇS Radyo",
-    "type": "radio",
-    "url": "https://ip169.ozelip.com:10838/",
-    "logo": "",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 64
-  },
-  {
-    "id": "81510d4f-cd42-433e-b1ef-77d2b309fa5a",
-    "name": "Hemdem Radyo",
-    "type": "radio",
-    "url": "https://radyoserver3.okeylisans.com:8040/stream",
-    "logo": "https://hemdemradyo.com/favicon.ico",
-    "category": "Türkü",
-    "country": "tr",
-    "bitrate": 104
-  },
-  {
-    "id": "ce6b6ddb-db52-4dfe-ab54-23bee667744e",
-    "name": "NUMBERONE WORLD TURKEY",
-    "type": "radio",
-    "url": "https://n10101m.mediatriple.net/videoonlylive/mtkgeuihrlfwlive/u_stream_5c9e2f95dcb16_1/playlist.m3u8",
-    "logo": "",
-    "category": "Türkçe Pop",
-    "country": "tr",
-    "bitrate": 48
-  },
-  {
-    "id": "c3cf5a4e-6673-42d8-9fb6-e7635ec69f64",
-    "name": "Radyo 45lik Canlı Yayın - En İyi Türkçe Nostalji Şarkılar | 70ler 80ler ve 90lar",
-    "type": "radio",
-    "url": "https://stream.radyo45lik.com:4545/",
-    "logo": "",
-    "category": "Slow",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "f297888e-220b-4345-bf03-8cb094e78ce0",
-    "name": "90 lar Pop",
-    "type": "radio",
-    "url": "https://moondigitaledge.radyotvonline.net/radyolanddoksanlar/playlist.m3u8",
-    "logo": "",
-    "category": "Türkçe Pop",
-    "country": "tr",
-    "bitrate": 127
-  },
-  {
-    "id": "5a6e8de5-c9fc-4182-b651-32ad40c2e1dc",
-    "name": "Fenomen Türk 256",
-    "type": "radio",
-    "url": "https://live.radyofenomen.com/fenomenturk/256/chunks.m3u8",
-    "logo": "",
-    "category": "Karma",
-    "country": "tr"
-  },
-  {
-    "id": "f0be7682-2aab-45b6-b66a-d4380897a6bc",
-    "name": "FG 93.8 (Future Generation) mp3 128k",
-    "type": "radio",
-    "url": "https://edge1.radyotvonline.net/shoutcast/play/fg",
-    "logo": "https://i1.sndcdn.com/avatars-6lAdUGxB5DjlvwWt-6IBY7g-t200x200.jpg",
-    "category": "Dans / Club",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "28b60579-045a-4e06-89b6-e85bee30c228",
-    "name": "TürküRadyo",
-    "type": "radio",
-    "url": "https://yayin.turkhosted.com/4591/stream",
-    "logo": "https://turkuradyo.net/wp-content/themes/TurkuRadyo/images/logo.png",
-    "category": "Türkü",
-    "country": "tr",
-    "bitrate": 64
-  },
-  {
-    "id": "4ee9a854-2f52-43d7-8707-31bed53cb19a",
-    "name": "NUMBER ONE WORLD",
-    "type": "radio",
-    "url": "https://n10101m.mediatriple.net/videoonlylive/mtkgeuihrlfwlive/u_stream_5c9e2f95dcb16_1/playlist.m3u8",
-    "logo": "",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 47
-  },
-  {
-    "id": "d3bd3543-c2af-444f-9c73-b8d3bba6e740",
-    "name": "HOS MİX",
-    "type": "radio",
-    "url": "https://anadolu.liderhost.com.tr:10871/",
-    "logo": "",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "f4b4718c-aca0-45dd-bdce-b104dbc0b657",
-    "name": "Radyo Ekin",
-    "type": "radio",
-    "url": "https://yayin.turkhosted.com/6006/stream",
-    "logo": "https://www.radyoekin.net/favicon.ico",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "9950412a-7c6f-4107-a284-3411877f5c7c",
-    "name": "Radyo Arkadaş",
-    "type": "radio",
-    "url": "https://ssl120.radyotelekom.com.tr/9998/stream",
-    "logo": "",
-    "category": "Klasik",
-    "country": "tr",
-    "bitrate": 64
-  },
-  {
-    "id": "bcf1eca1-d197-451b-bdd0-dde1e4bcaae1",
-    "name": "Radyo D",
-    "type": "radio",
-    "url": "https://moondigitaledge2.radyotvonline.net/radyod/playlist.m3u8",
-    "logo": "https://cdn-radiotime-logos.tunein.com/s14264d.png",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 130
-  },
-  {
-    "id": "bef9a5a3-997a-42ed-a480-f0302253b7d5",
-    "name": "HaYaTMiX Slow",
-    "type": "radio",
-    "url": "https://radyo.yayin.com.tr:4090/mp3",
-    "logo": "",
-    "category": "Slow",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "2dea3c87-e0b1-47ad-8fcc-530bd3402010",
-    "name": "PowerTürk Akustik",
-    "type": "radio",
-    "url": "https://listen.powerapp.com.tr/powerturkakustik/abr/playlist.m3u8",
-    "logo": "",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 277
-  },
-  {
-    "id": "2724a1ac-9f70-40b7-bba9-f75325e56faf",
-    "name": "Radyo Yalova",
-    "type": "radio",
-    "url": "https://studio25.radiolize.com/radio/8200/radio.mp3",
-    "logo": "",
-    "category": "Türkü",
-    "country": "tr",
-    "bitrate": 48
-  },
-  {
-    "id": "7ee088e7-375f-4f1f-bd60-55a3606e9d3f",
-    "name": "Mydonose Türk",
-    "type": "radio",
-    "url": "https://27913.live.streamtheworld.com/MYDONOSE_TURK128AAC.aac?/;stream.mp3",
-    "logo": "",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "14797ffb-2fdd-4a54-9748-e96486914dd2",
-    "name": "RADYO AKDENIZ",
-    "type": "radio",
-    "url": "https://yayin.radyoakdeniz.com/9470/stream",
-    "logo": "https://www.radyoakdeniz.com/wp-content/uploads/2024/03/cropped-radyoakdeniz-180x180.png",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 128
-  },
-  {
-    "id": "728789a2-8938-4c40-890e-768208376fc0",
-    "name": "a PARA",
-    "type": "radio",
-    "url": "https://trkvz-radyolar.ercdn.net/apararadyo/playlist.m3u8",
-    "logo": "https://i.tmgrup.com.tr/apara/site/v1/i/favicon.png",
-    "category": "Karma",
-    "country": "tr",
-    "bitrate": 64
   }
 ];

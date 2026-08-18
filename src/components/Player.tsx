@@ -31,6 +31,7 @@ import { getChannelBrand } from '../utils/channelLogos';
 import { t } from '../utils/i18n';
 import { Channel } from '../types';
 import { getYouTubeVideoId } from '../utils/youtube';
+import { isEditableTarget } from '../utils/keys';
 
 export const Player: React.FC = () => {
   const { 
@@ -215,7 +216,12 @@ export const Player: React.FC = () => {
     if (sortBy === 'name-desc') {
       return [...list].sort((a, b) => b.name.localeCompare(a.name, 'tr'));
     }
-    return list;
+    // Default order: bring national (Ulusal) TV channels to the front.
+    return [...list].sort((a, b) => {
+      const aNat = a.type === 'tv' && a.category === 'Ulusal' ? 0 : 1;
+      const bNat = b.type === 'tv' && b.category === 'Ulusal' ? 0 : 1;
+      return aNat - bNat;
+    });
   };
 
   // Build the active navigation list using the SAME filters/sort as the list
@@ -438,9 +444,7 @@ export const Player: React.FC = () => {
   // Global Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const activeEl = document.activeElement;
-      const isInput = activeEl instanceof HTMLInputElement || activeEl instanceof HTMLTextAreaElement || activeEl instanceof HTMLSelectElement;
-      if (isInput) return;
+      if (isEditableTarget(e)) return;
 
       if (e.code === 'Space' || e.key.toLowerCase() === 'k') {
         e.preventDefault();

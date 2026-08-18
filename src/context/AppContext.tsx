@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import localforage from 'localforage';
 import { AppState, Channel, ThemeColor, ThemeMode, Country, Language, SortOrder } from '../types';
+import { isEditableTarget } from '../utils/keys';
 
 interface AppContextType extends AppState {
   setCurrentChannel: (channel: Channel | null) => void;
@@ -181,13 +182,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Keyboard navigation for history (Alt + ArrowLeft / Alt + ArrowRight)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const activeEl = document.activeElement;
-      const isInput = activeEl instanceof HTMLInputElement || activeEl instanceof HTMLTextAreaElement;
-      
-      if (e.altKey && e.key === 'ArrowLeft' && !isInput) {
+      if (isEditableTarget(e)) return;
+
+      if (e.altKey && e.key === 'ArrowLeft') {
         e.preventDefault();
         goBack();
-      } else if (e.altKey && e.key === 'ArrowRight' && !isInput) {
+      } else if (e.altKey && e.key === 'ArrowRight') {
         e.preventDefault();
         goForward();
       }

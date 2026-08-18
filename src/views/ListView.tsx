@@ -118,6 +118,13 @@ export const ListView: React.FC<ListViewProps> = ({
       list.sort((a, b) => a.name.localeCompare(b.name, 'tr'));
     } else if (sortBy === 'name-desc') {
       list.sort((a, b) => b.name.localeCompare(a.name, 'tr'));
+    } else {
+      // Default order: bring national (Ulusal) TV channels to the front.
+      list.sort((a, b) => {
+        const aNat = a.type === 'tv' && a.category === 'Ulusal' ? 0 : 1;
+        const bNat = b.type === 'tv' && b.category === 'Ulusal' ? 0 : 1;
+        return aNat - bNat;
+      });
     }
 
     return list;
