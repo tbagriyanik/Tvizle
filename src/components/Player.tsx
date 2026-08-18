@@ -48,7 +48,10 @@ export const Player: React.FC = () => {
     sleepTimerEnd,
     setSleepTimer,
     language,
-    sortBy
+    sortBy,
+    selectedCategory,
+    filterQuery,
+    activeBitrate
   } = useAppContext();
 
   const [expanded, setExpanded] = useState(false);
@@ -201,7 +204,11 @@ export const Player: React.FC = () => {
   const favoriteChannelsOfType = allChannels.filter(c => favorites.includes(c.id) && c.type === currentChannel?.type);
   const allFavoriteChannels = allChannels.filter(c => favorites.includes(c.id));
 
-  const sortChannels = (list: Channel[]): Channel[] => {
+  const sortChannels = (list: Channel[], activeBitrate: number | 'all'): Channel[] => {
+    // Mirrors ListView sorting: bitrate filter sorts low -> high, otherwise name sort.
+    if (activeBitrate !== 'all') {
+      return [...list].sort((a, b) => (a.bitrate ?? 0) - (b.bitrate ?? 0));
+    }
     if (sortBy === 'name-asc') {
       return [...list].sort((a, b) => a.name.localeCompare(b.name, 'tr'));
     }
@@ -211,10 +218,34 @@ export const Player: React.FC = () => {
     return list;
   };
 
+  // Build the active navigation list using the SAME filters/sort as the list
+  // view, so prev/next matches what the user currently sees.
   const activeList = sortChannels(
-    isFavorite
-      ? (favoriteChannelsOfType.length > 0 ? favoriteChannelsOfType : (allFavoriteChannels.length > 0 ? allFavoriteChannels : allChannels.filter(c => c.type === currentChannel?.type)))
-      : allChannels.filter(c => c.type === currentChannel?.type)
+    (() => {
+      let list = isFavorite
+        ? (favoriteChannelsOfType.length > 0 ? favoriteChannelsOfType : (allFavoriteChannels.length > 0 ? allFavoriteChannels : allChannels.filter(c => c.type === currentChannel?.type)))
+        : allChannels.filter(c => c.type === currentChannel?.type);
+
+      if (selectedCategory) {
+        if (Array.isArray(selectedCategory)) {
+          list = list.filter(c => selectedCategory.includes(c.category));
+        } else {
+          list = list.filter(c => c.category === selectedCategory);
+        }
+      }
+      if (activeBitrate !== 'all') {
+        list = list.filter(c => c.type === 'radio' && c.bitrate === activeBitrate);
+      }
+      const q = filterQuery.trim().toLowerCase();
+      if (q) {
+        list = list.filter(c =>
+          c.name.toLowerCase().includes(q) ||
+          c.category.toLowerCase().includes(q)
+        );
+      }
+      return list;
+    })(),
+    activeBitrate
   );
 
   const currentIndex = activeList.findIndex(c => c.id === currentChannel?.id);

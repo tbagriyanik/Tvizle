@@ -17,7 +17,9 @@ interface AppContextType extends AppState {
   setSearchQuery: (query: string) => void;
   setCustomChannels: (channels: Channel[]) => void;
   setActiveTab: (tab: string) => void;
-  setSelectedCategory: (category: string | undefined) => void;
+  setSelectedCategory: (category: string | string[] | undefined) => void;
+  setFilterQuery: (query: string) => void;
+  setActiveBitrate: (bitrate: number | 'all') => void;
   setSleepTimer: (minutes: number | null) => void;
   setSortBy: (sort: SortOrder) => void;
   goBack: () => void;
@@ -61,6 +63,8 @@ const defaultState: AppState = {
   navHistory: [initialTab],
   historyIndex: 0,
   sortBy: 'default',
+  filterQuery: '',
+  activeBitrate: 'all',
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -255,9 +259,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }));
   };
 
-  const setSelectedCategory = (category: string | undefined) => {
+  const setSelectedCategory = (category: string | string[] | undefined) => {
     setState(s => ({ ...s, selectedCategory: category }));
   };
+
+  const setFilterQuery = (filterQuery: string) => setState(s => ({ ...s, filterQuery }));
+  const setActiveBitrate = (activeBitrate: number | 'all') => setState(s => ({ ...s, activeBitrate }));
 
   const setSleepTimer = (minutes: number | null) => {
     setState(s => ({
@@ -321,6 +328,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setCustomChannels,
       setActiveTab,
       setSelectedCategory,
+      setFilterQuery,
+      setActiveBitrate,
       setSleepTimer,
       setSortBy,
       goBack,

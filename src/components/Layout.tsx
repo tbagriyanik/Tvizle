@@ -21,6 +21,7 @@ import { useAppContext } from '../context/AppContext';
 import { getThemeTextClass, getThemeBgClass } from '../utils/theme';
 import { Player } from './Player';
 import { SearchBar } from './SearchBar';
+import { CountrySelector } from './CountrySelector';
 import { mockChannels } from '../data';
 import { filterChannelsByCountry } from '../utils/country';
 import { t } from '../utils/i18n';
@@ -125,6 +126,11 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           </button>
         </div>
 
+        {/* Sidebar Search */}
+        <div className="p-4 border-b border-gray-200 dark:border-gray-800">
+          <SearchBar compact />
+        </div>
+
         {/* Sidebar Nav Items */}
         <nav className="p-4 space-y-1.5 flex-1 overflow-y-auto">
           {navItems.map((item) => {
@@ -161,6 +167,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
         {/* Sidebar Bottom Utilities */}
         <div className="p-4 border-t border-gray-200 dark:border-gray-800 flex-shrink-0 space-y-2">
+          <CountrySelector variant="sidebar" />
+
           <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-800/60 p-2 rounded-xl border border-gray-200/80 dark:border-gray-700/60">
             <span className="text-xs font-semibold text-gray-600 dark:text-gray-400 pl-1 flex items-center gap-1.5">
               <Sun size={13} className="text-amber-500" />
@@ -235,6 +243,12 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
           {/* Right: Quick Action Controls */}
           <div className="flex items-center gap-2">
+            <div className="hidden md:block w-56">
+              <SearchBar compact />
+            </div>
+
+            <CountrySelector />
+
             <button
               onClick={() => setShowShortcutsModal(true)}
               className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
@@ -257,7 +271,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
         {/* Page Main Content Container */}
         <div className="p-4 md:p-8 max-w-7xl w-full mx-auto flex-1">
-          <SearchBar />
           {children}
         </div>
       </main>

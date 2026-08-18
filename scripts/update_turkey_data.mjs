@@ -7,17 +7,23 @@ const DATA_TS = './src/data.ts';
 const rdRaw = JSON.parse(fs.readFileSync(RD_SRC, 'utf-8'));
 const tvRaw = JSON.parse(fs.readFileSync(TV_SRC, 'utf-8'));
 
-// Radio tag -> category mapping
-const radioCategory = (tags = []) => {
-  const first = (tags[0] || '').toString().toLowerCase();
-  if (tags.some(t => /islamic|kuran|kur'an|dini/i.test(t))) return 'Dini & Kültür';
-  if (tags.some(t => /news|haber/i.test(t))) return 'Haber';
-  if (tags.some(t => /folk|türkü|kurdish/i.test(t))) return 'Türkü';
-  if (tags.some(t => /classical|klasik|sanat/i.test(t))) return 'Klasik';
-  if (tags.some(t => /arabesk|fantazi/i.test(t))) return 'Arabesk';
-  if (tags.some(t => /pop|turkey|turkish/i.test(t))) return 'Türkçe Pop';
-  if (tags.some(t => /rock/i.test(t))) return 'Rock';
-  if (tags.some(t => /dance|club|edm/i.test(t))) return 'Dans / Club';
+// Radio tag + name -> category mapping. Names are used because many stations
+// have no descriptive tags, but their names clearly indicate the genre.
+const radioCategory = (name = '', tags = []) => {
+  const tag = (tags || []).map(t => t.toString().toLowerCase()).join(' ');
+  const nm = (name || '').toLowerCase();
+  const has = (re) => re.test(tag) || re.test(nm);
+
+  if (has(/islamic|kuran|kur'an|dini|ilahi/)) return 'Dini & Kültür';
+  if (has(/spor|sport|futbol|\bgol\b|lig radyo|futbolcu/)) return 'Spor';
+  if (has(/haber|news|trafik|gazete|radyo gol/)) return 'Haber';
+  if (has(/slow|romant|love|sevgili|45lik|nostalji|sarkilar|ballad|radyo 45/)) return 'Slow';
+  if (has(/folk|türkü|kurdish|türk halk/)) return 'Türkü';
+  if (has(/classical|klasik|sanat|klasik/)) return 'Klasik';
+  if (has(/arabesk|fantazi/)) return 'Arabesk';
+  if (has(/pop|top ?40|hit|turkey|turkish pop/)) return 'Türkçe Pop';
+  if (has(/rock/)) return 'Rock';
+  if (has(/dance|club|clubbin|edm|chill/)) return 'Dans / Club';
   return 'Karma';
 };
 
@@ -49,7 +55,7 @@ const radioChannels = rdRaw
     type: 'radio',
     url: c.url,
     logo: c.favicon || '',
-    category: radioCategory(c.tags),
+    category: radioCategory(c.name, c.tags),
     country: 'tr',
     bitrate: c.bitrate || undefined,
   }));

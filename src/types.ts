@@ -40,7 +40,9 @@ export interface AppState {
   navHistory: string[];
   historyIndex: number;
   sortBy: SortOrder;
-  selectedCategory?: string;
+  selectedCategory?: string | string[];
+  filterQuery: string;
+  activeBitrate: number | 'all';
   sleepTimerMinutes?: number | null;
   sleepTimerEnd?: number | null;
 }

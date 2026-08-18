@@ -4,7 +4,7 @@ import { useAppContext } from '../context/AppContext';
 import { getThemeRingClass } from '../utils/theme';
 import { t } from '../utils/i18n';
 
-export const SearchBar: React.FC = () => {
+export const SearchBar: React.FC<{ compact?: boolean }> = ({ compact = false }) => {
   const { searchQuery, setSearchQuery, themeColor, language } = useAppContext();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -21,6 +21,37 @@ export const SearchBar: React.FC = () => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
+
+  if (compact) {
+    return (
+      <div className="relative w-full">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+          <Search className="h-4 w-4" />
+        </div>
+        <input
+          ref={inputRef}
+          type="text"
+          placeholder={t(language, 'search.placeholder')}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className={`block w-full pl-9 pr-8 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all shadow-2xs ${getThemeRingClass(themeColor)}`}
+        />
+        {searchQuery ? (
+          <button
+            onClick={() => setSearchQuery('')}
+            className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+            title={t(language, 'search.clear')}
+          >
+            <X className="h-4 w-4" />
+          </button>
+        ) : (
+          <kbd className="absolute inset-y-0 right-0 pr-3 flex items-center text-[10px] font-mono font-bold text-gray-400 dark:text-gray-500">
+            ⌘K
+          </kbd>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="relative mb-6 animate-in fade-in duration-300">

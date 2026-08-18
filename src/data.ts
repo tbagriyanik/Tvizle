@@ -2167,7 +2167,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://listen.powerapp.com.tr/powerpop/128/chunks.m3u8",
     "logo": "https://www.powerapp.com.tr/i/favicov2/apple-icon-120x120.png?v=817",
-    "category": "Karma",
+    "category": "Türkçe Pop",
     "country": "tr"
   },
   {
@@ -2186,7 +2186,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://trkvz-radyolar.ercdn.net/ahaberradyo/playlist.m3u8",
     "logo": "",
-    "category": "Karma",
+    "category": "Haber",
     "country": "tr",
     "bitrate": 64
   },
@@ -2236,7 +2236,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/JOY_TURK_SC?/",
     "logo": "",
-    "category": "Karma",
+    "category": "Türkçe Pop",
     "country": "tr",
     "bitrate": 64
   },
@@ -2246,7 +2246,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://radyo.duhnet.tv/ak_dtvh_slowturk",
     "logo": "https://www.slowturk.com.tr/_next/image?url=https%3A%2F%2Fassets.blupoint.io%2Fimg%2F85%2F330x175%2F6410d8c4310c17000763c62b&w=256&q=75",
-    "category": "Karma",
+    "category": "Slow",
     "country": "tr"
   },
   {
@@ -2285,7 +2285,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://stream.radyo45lik.com:4545/",
     "logo": "",
-    "category": "Karma",
+    "category": "Slow",
     "country": "tr",
     "bitrate": 128
   },
@@ -2305,7 +2305,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/SUPER2_SC?/",
     "logo": "",
-    "category": "Karma",
+    "category": "Türkçe Pop",
     "country": "tr",
     "bitrate": 64
   },
@@ -2315,7 +2315,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://rd-trtturku.medya.trt.com.tr/master_128.m3u8",
     "logo": "",
-    "category": "Karma",
+    "category": "Türkü",
     "country": "tr"
   },
   {
@@ -2324,7 +2324,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://moondigitaledge.radyotvonline.net/houseland/playlist.m3u8",
     "logo": "",
-    "category": "Karma",
+    "category": "Türkçe Pop",
     "country": "tr",
     "bitrate": 127
   },
@@ -2344,7 +2344,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/METRO_FM_SC?",
     "logo": "",
-    "category": "Karma",
+    "category": "Türkçe Pop",
     "country": "tr",
     "bitrate": 64
   },
@@ -2354,7 +2354,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://haberturkradyo.radyotvonline.net/haberturkradyo",
     "logo": "https://www.haberturkradyo.com.tr/wp-content/uploads/2017/07/cropped-RADYO_LOGO_Son-180x180.png",
-    "category": "Karma",
+    "category": "Haber",
     "country": "tr",
     "bitrate": 128
   },
@@ -2482,7 +2482,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://live.radyofenomen.com/fenomenpop/abr/fenomenpop/128/chunks.m3u8",
     "logo": "",
-    "category": "Karma",
+    "category": "Türkçe Pop",
     "country": "tr"
   },
   {
@@ -2531,7 +2531,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://ssldyg.radyotvonline.com/smil/smil:kralpop.smil/playlist.m3u8",
     "logo": "",
-    "category": "Karma",
+    "category": "Türkçe Pop",
     "country": "tr",
     "bitrate": 128
   },
@@ -2559,7 +2559,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://moondigitaledge.radyotvonline.net/palnostalji/playlist.m3u8",
     "logo": "",
-    "category": "Karma",
+    "category": "Slow",
     "country": "tr",
     "bitrate": 95
   },
@@ -2599,7 +2599,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://sslyayin.netyayin.net/3442/stream",
     "logo": "",
-    "category": "Karma",
+    "category": "Türkçe Pop",
     "country": "tr",
     "bitrate": 96
   },
@@ -2657,7 +2657,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://moondigitalmaster.radyotvonline.net/egehavalari/playlist.m3u8",
     "logo": "",
-    "category": "Karma",
+    "category": "Türkçe Pop",
     "country": "tr",
     "bitrate": 128
   },
@@ -2667,7 +2667,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/JOYTURK_ROCK_SC?/",
     "logo": "",
-    "category": "Karma",
+    "category": "Türkçe Pop",
     "country": "tr",
     "bitrate": 64
   },
@@ -2687,7 +2687,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://moondigitalmaster.radyotvonline.net/efsane4lu/playlist.m3u8",
     "logo": "",
-    "category": "Karma",
+    "category": "Türkçe Pop",
     "country": "tr",
     "bitrate": 128
   },
@@ -2697,7 +2697,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://listen.powerapp.com.tr/powerdance/abr/powerdance/128/playlist.m3u8",
     "logo": "",
-    "category": "Karma",
+    "category": "Dans / Club",
     "country": "tr",
     "bitrate": 150
   },
@@ -2716,7 +2716,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://listen.powerapp.com.tr/powerextralounge/abr/powerextralounge/96/playlist.m3u8",
     "logo": "",
-    "category": "Karma",
+    "category": "Türkçe Pop",
     "country": "tr",
     "bitrate": 108
   },
@@ -2736,7 +2736,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://anadolu.liderhost.com.tr:10964/",
     "logo": "",
-    "category": "Karma",
+    "category": "Slow",
     "country": "tr",
     "bitrate": 128
   },
@@ -2766,7 +2766,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://live.powerapp.com.tr/powerturk/abr/powerturk/128/playlist.m3u8",
     "logo": "",
-    "category": "Karma",
+    "category": "Türkçe Pop",
     "country": "tr",
     "bitrate": 149
   },
@@ -2816,7 +2816,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://moondigitaledge.radyotvonline.net/danceland/playlist.m3u8",
     "logo": "",
-    "category": "Karma",
+    "category": "Türkçe Pop",
     "country": "tr",
     "bitrate": 128
   },
@@ -2836,7 +2836,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://dygedge2.radyotvonline.net/kralfm/playlist.m3u8",
     "logo": "https://cdn1.kralmuzik.com.tr/media/content/19-05/20/kralpop.png",
-    "category": "Karma",
+    "category": "Türkçe Pop",
     "country": "tr",
     "bitrate": 128
   },
@@ -2846,7 +2846,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://moondigitaledge.radyotvonline.net/radyospor/playlist.m3u8",
     "logo": "",
-    "category": "Klasik",
+    "category": "Spor",
     "country": "tr",
     "bitrate": 63
   },
@@ -2935,7 +2935,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://ssl4.radyotvonline.com/radyohome/klasikhome.stream_aac/playlist.m3u8",
     "logo": "",
-    "category": "Karma",
+    "category": "Türkçe Pop",
     "country": "tr",
     "bitrate": 128
   },
@@ -2955,7 +2955,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://listen.powerapp.com.tr/powerlove/abr/powerlove/128/playlist.m3u8",
     "logo": "",
-    "category": "Karma",
+    "category": "Slow",
     "country": "tr",
     "bitrate": 150
   },
@@ -2965,7 +2965,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://anadolu.liderhost.com.tr:10929/",
     "logo": "",
-    "category": "Karma",
+    "category": "Türkçe Pop",
     "country": "tr",
     "bitrate": 128
   },
@@ -2995,7 +2995,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://moondigitaledge.radyotvonline.net/classicland/playlist.m3u8",
     "logo": "",
-    "category": "Karma",
+    "category": "Türkçe Pop",
     "country": "tr",
     "bitrate": 128
   },
@@ -3034,7 +3034,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://trkvz-radyolar.ercdn.net/asporradyo/chunklist.m3u8",
     "logo": "",
-    "category": "Karma",
+    "category": "Spor",
     "country": "tr"
   },
   {
@@ -3063,7 +3063,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://edge1.radyotvonline.net/shoutcast/play/radyogol",
     "logo": "",
-    "category": "Karma",
+    "category": "Spor",
     "country": "tr",
     "bitrate": 128
   },
@@ -3073,7 +3073,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://moondigitaledge.radyotvonline.net/babyland/playlist.m3u8",
     "logo": "",
-    "category": "Karma",
+    "category": "Türkçe Pop",
     "country": "tr",
     "bitrate": 128
   },
@@ -3092,7 +3092,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://turkmedya.radyotvonline.com/turkmedya/ligradyo.stream/playlist.m3u8",
     "logo": "https://www.ligradyo.com.tr/assets/img/ligradyo-apple-touch-icon.png",
-    "category": "Karma",
+    "category": "Spor",
     "country": "tr",
     "bitrate": 141
   },
@@ -3151,7 +3151,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://radyoserver3.okeylisans.com:8040/stream",
     "logo": "https://hemdemradyo.com/favicon.ico",
-    "category": "Arabesk",
+    "category": "Türkü",
     "country": "tr",
     "bitrate": 104
   },
@@ -3161,7 +3161,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://n10101m.mediatriple.net/videoonlylive/mtkgeuihrlfwlive/u_stream_5c9e2f95dcb16_1/playlist.m3u8",
     "logo": "",
-    "category": "Karma",
+    "category": "Türkçe Pop",
     "country": "tr",
     "bitrate": 48
   },
@@ -3171,7 +3171,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://stream.radyo45lik.com:4545/",
     "logo": "",
-    "category": "Karma",
+    "category": "Slow",
     "country": "tr",
     "bitrate": 128
   },
@@ -3181,7 +3181,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://moondigitaledge.radyotvonline.net/radyolanddoksanlar/playlist.m3u8",
     "logo": "",
-    "category": "Karma",
+    "category": "Türkçe Pop",
     "country": "tr",
     "bitrate": 127
   },
@@ -3210,7 +3210,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://yayin.turkhosted.com/4591/stream",
     "logo": "https://turkuradyo.net/wp-content/themes/TurkuRadyo/images/logo.png",
-    "category": "Karma",
+    "category": "Türkü",
     "country": "tr",
     "bitrate": 64
   },
@@ -3270,7 +3270,7 @@ export const mockChannels: Channel[] = [
     "type": "radio",
     "url": "https://radyo.yayin.com.tr:4090/mp3",
     "logo": "",
-    "category": "Karma",
+    "category": "Slow",
     "country": "tr",
     "bitrate": 128
   },

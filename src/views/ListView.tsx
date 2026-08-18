@@ -42,14 +42,18 @@ export const ListView: React.FC<ListViewProps> = ({
     toggleFavorite,
     language,
     sortBy,
-    setSortBy
+    setSortBy,
+    filterQuery,
+    setFilterQuery,
+    activeBitrate,
+    setActiveBitrate
   } = useAppContext();
 
   const finalEmptyMessage = emptyMessage || t(language, 'list.empty');
 
-  const [filterQuery, setFilterQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState<string>(selectedCategory || 'all');
-  const [activeBitrate, setActiveBitrate] = useState<number | 'all'>('all');
+  // Category filter reads directly from context so it stays in sync with the
+  // Player's prev/next navigation (single source of truth).
+  const activeCategory = selectedCategory ?? 'all';
   const [viewMode, setViewMode] = useState<'grid' | 'compact'>('grid');
 
   // Extract unique categories and their counts
@@ -75,7 +79,7 @@ export const ListView: React.FC<ListViewProps> = ({
     });
     return Object.keys(counts)
       .map(Number)
-      .sort((a, b) => a - b)
+      .sort((a, b) => b - a)
       .map(b => ({ bitrate: b, count: counts[b] }));
   }, [channels]);
 
@@ -83,9 +87,13 @@ export const ListView: React.FC<ListViewProps> = ({
   const filteredChannels = useMemo(() => {
     let list = [...channels];
 
-    // 1. Category Filter
+    // 1. Category Filter (supports single category or a list, e.g. quick pills)
     if (activeCategory !== 'all') {
-      list = list.filter(c => c.category === activeCategory);
+      if (Array.isArray(activeCategory)) {
+        list = list.filter(c => activeCategory.includes(c.category));
+      } else {
+        list = list.filter(c => c.category === activeCategory);
+      }
     }
 
     // 1b. Bitrate Filter (radio only)
@@ -103,17 +111,19 @@ export const ListView: React.FC<ListViewProps> = ({
     }
 
     // 3. Sorting
-    if (sortBy === 'name-asc') {
+    if (activeBitrate !== 'all') {
+      // When filtering by bitrate, order the list low -> high
+      list.sort((a, b) => (a.bitrate ?? 0) - (b.bitrate ?? 0));
+    } else if (sortBy === 'name-asc') {
       list.sort((a, b) => a.name.localeCompare(b.name, 'tr'));
     } else if (sortBy === 'name-desc') {
       list.sort((a, b) => b.name.localeCompare(a.name, 'tr'));
     }
 
     return list;
-  }, [channels, activeCategory, activeBitrate, filterQuery, sortBy]);
+  }, [channels, selectedCategory, activeBitrate, filterQuery, sortBy]);
 
   const handleCategorySelect = (cat: string) => {
-    setActiveCategory(cat);
     setSelectedCategory(cat === 'all' ? undefined : cat);
   };
 
@@ -288,7 +298,6 @@ export const ListView: React.FC<ListViewProps> = ({
             <button
               onClick={() => {
                 setFilterQuery('');
-                setActiveCategory('all');
                 setSelectedCategory(undefined);
                 setActiveBitrate('all');
               }}

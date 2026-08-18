@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { ChannelCard } from '../components/ChannelCard';
 import { mockChannels } from '../data';
 import { useAppContext } from '../context/AppContext';
-import { Play, Radio, Tv, Heart, Clock, ChevronRight, Sparkles, Globe2 } from 'lucide-react';
+import { Play, Radio, Tv, Heart, Clock, ChevronRight, Sparkles } from 'lucide-react';
 import { getThemeBgClass, getThemeTextClass } from '../utils/theme';
 import { getChannelBrand } from '../utils/channelLogos';
 import { filterChannelsByCountry } from '../utils/country';
-import { t, COUNTRY_LABELS } from '../utils/i18n';
-import { Channel, Country } from '../types';
+import { t } from '../utils/i18n';
+import { Channel } from '../types';
 
 const RecentChannelItem: React.FC<{ channel: Channel; onSelect: () => void }> = ({ channel, onSelect }) => {
   const [imgError, setImgError] = useState(false);
@@ -53,7 +53,6 @@ export const HomeView: React.FC = () => {
     favorites,
     customChannels,
     country,
-    setCountry,
     language
   } = useAppContext();
 
@@ -70,65 +69,23 @@ export const HomeView: React.FC = () => {
   // Favorite channels
   const favoriteChannels = allChannels.filter(c => favorites.includes(c.id)).slice(0, 4);
 
-  const quickCategories = [
+  const quickCategories: { label: string; type: 'tv' | 'radio'; cat: string | string[] }[] = [
     { label: 'Ulusal', type: 'tv', cat: 'Ulusal' },
     { label: 'Haber', type: 'tv', cat: 'Haber' },
     { label: 'Spor', type: 'tv', cat: 'Spor' },
     { label: 'Müzik', type: 'tv', cat: 'Müzik' },
-    { label: 'Pop Radyo', type: 'radio', cat: 'Pop' },
-    { label: 'Slow Radyo', type: 'radio', cat: 'Slow' },
-    { label: 'Haber / Spor', type: 'radio', cat: 'Haber/Spor' },
+    { label: 'Pop Radyo', type: 'radio', cat: ['Türkçe Pop', 'Yabancı Pop', 'Yabancı Hit'] },
+    { label: 'Slow Radyo', type: 'radio', cat: ['Slow'] },
+    { label: 'Haber / Spor', type: 'radio', cat: ['Haber', 'Spor', 'Yabancı Haber'] },
   ];
 
-  const countryOptions: { id: Country; flag: string; label: string }[] = [
-    { id: 'all', flag: '🌍', label: COUNTRY_LABELS.all[language] },
-    { id: 'tr', flag: '🇹🇷', label: COUNTRY_LABELS.tr[language] },
-    { id: 'us', flag: '🇺🇸', label: COUNTRY_LABELS.us[language] },
-    { id: 'de', flag: '🇩🇪', label: COUNTRY_LABELS.de[language] },
-    { id: 'fr', flag: '🇫🇷', label: COUNTRY_LABELS.fr[language] },
-    { id: 'gb', flag: '🇬🇧', label: COUNTRY_LABELS.gb[language] },
-    { id: 'qa', flag: '🇶🇦', label: COUNTRY_LABELS.qa[language] },
-    { id: 'it', flag: '🇮🇹', label: COUNTRY_LABELS.it[language] },
-    { id: 'es', flag: '🇪🇸', label: COUNTRY_LABELS.es[language] },
-    { id: 'nl', flag: '🇳🇱', label: COUNTRY_LABELS.nl[language] },
-    { id: 'au', flag: '🇦🇺', label: COUNTRY_LABELS.au[language] },
-    { id: 'ca', flag: '🇨🇦', label: COUNTRY_LABELS.ca[language] },
-    { id: 'jp', flag: '🇯🇵', label: COUNTRY_LABELS.jp[language] },
-    { id: 'ru', flag: '🇷🇺', label: COUNTRY_LABELS.ru[language] },
-    { id: 'cn', flag: '🇨🇳', label: COUNTRY_LABELS.cn[language] },
-    { id: 'kr', flag: '🇰🇷', label: COUNTRY_LABELS.kr[language] },
-    { id: 'pt', flag: '🇵🇹', label: COUNTRY_LABELS.pt[language] },
-  ];
-
-  const handleCategoryClick = (type: 'tv' | 'radio', cat: string) => {
+  const handleCategoryClick = (type: 'tv' | 'radio', cat: string | string[]) => {
     setActiveTab(type);
     setSelectedCategory(cat);
   };
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
-
-      {/* Country Filter Bar */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-        <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-1 flex-shrink-0 mr-1">
-          <Globe2 size={14} className={getThemeTextClass(themeColor)} />
-          <span>{t(language, 'home.country')}</span>
-        </span>
-        {countryOptions.map(c => (
-          <button
-            key={c.id}
-            onClick={() => setCountry(c.id)}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap border transition-all cursor-pointer flex items-center gap-1.5 ${
-              country === c.id
-                ? `${getThemeBgClass(themeColor)} text-white border-transparent shadow-sm`
-                : 'bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-700 shadow-2xs'
-            }`}
-          >
-            <span>{c.flag}</span>
-            <span>{c.label}</span>
-          </button>
-        ))}
-      </div>
 
       {/* Quick Category Discovery Pills */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">

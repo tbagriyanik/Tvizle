@@ -21,6 +21,7 @@ const translations: Record<string, { tr: string; en: string }> = {
   'nav.goForward': { tr: 'İleri Git', en: 'Go Forward' },
   'nav.lightMode': { tr: 'Aydınlık Moda Geç', en: 'Switch to Light Mode' },
   'nav.darkMode': { tr: 'Karanlık Moda Geç', en: 'Switch to Dark Mode' },
+  'nav.country': { tr: 'Ülke', en: 'Country' },
 
   // Settings
   'settings.title': { tr: 'Görünüm ve Ayarlar', en: 'Appearance & Settings' },
