@@ -647,10 +647,20 @@ export const Player: React.FC = () => {
     const mediaElement = currentChannel.type === 'tv' ? videoRef.current : audioRef.current;
     if (!mediaElement) return;
 
+    const isM3u8 = currentChannel.url.includes('.m3u8');
+
     let loadTimeout = setTimeout(() => {
       setHasError(true);
       setIsLoading(false);
     }, 15000);
+
+    // Load direct streams in CORS mode so the analyser can capture real
+    // frequency data. Some servers don't send CORS headers, so retry once
+    // without CORS on failure (bars then fall back to a synthetic wave).
+    let didRetryCors = false;
+    if (currentChannel.type === 'radio' && !isM3u8) {
+      mediaElement.crossOrigin = 'anonymous';
+    }
 
     const handleLoadedOrPlaying = () => {
       clearTimeout(loadTimeout);
@@ -660,14 +670,19 @@ export const Player: React.FC = () => {
 
     const handleError = () => {
       clearTimeout(loadTimeout);
+      if (!didRetryCors && currentChannel.type === 'radio' && !isM3u8) {
+        didRetryCors = true;
+        mediaElement.removeAttribute('crossorigin');
+        mediaElement.src = currentChannel.url;
+        mediaElement.load();
+        return;
+      }
       setHasError(true);
       setIsLoading(false);
     };
 
     mediaElement.addEventListener('playing', handleLoadedOrPlaying);
     mediaElement.addEventListener('error', handleError);
-
-    const isM3u8 = currentChannel.url.includes('.m3u8');
 
     if (isM3u8 && Hls.isSupported()) {
       if (hlsRef.current) {
