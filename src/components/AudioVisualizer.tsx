@@ -15,6 +15,7 @@ let sharedAnalyser: AnalyserNode | null = null;
 let connectedSource: MediaStreamAudioSourceNode | null = null;
 let connectedStream: MediaStream | null = null;
 let connectedElement: HTMLMediaElement | null = null;
+let connectedSrc: string | null = null;
 
 const getSharedAnalyser = (): AnalyserNode | null => {
   if (typeof window === 'undefined') return null;
@@ -36,7 +37,12 @@ const getSharedAnalyser = (): AnalyserNode | null => {
 
 const connectElement = (el: HTMLMediaElement) => {
   if (!sharedCtx || !sharedAnalyser) return;
-  if (connectedElement === el) return;
+  const src = el.currentSrc || el.src;
+  // Reuse the connection only if it targets the SAME element AND the SAME
+  // source. When the channel changes the element is reused, so we must
+  // reconnect to its fresh capture stream — otherwise the analyser keeps
+  // feeding stale frequency data from the previous channel.
+  if (connectedElement === el && connectedSrc === src) return;
   if (connectedSource) {
     try {
       connectedSource.disconnect();
@@ -57,14 +63,17 @@ const connectElement = (el: HTMLMediaElement) => {
     const captureStream = (el as HTMLMediaElement & { captureStream?: () => MediaStream }).captureStream;
     if (typeof captureStream !== 'function') {
       connectedElement = null;
+      connectedSrc = null;
       return;
     }
     connectedStream = captureStream.call(el);
     connectedSource = sharedCtx.createMediaStreamSource(connectedStream);
     connectedSource.connect(sharedAnalyser);
     connectedElement = el;
+    connectedSrc = src;
   } catch (_) {
     connectedElement = null;
+    connectedSrc = null;
   }
 };
 

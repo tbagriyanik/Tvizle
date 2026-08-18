@@ -8,6 +8,8 @@ export interface Channel {
   logo: string;
   category: string;
   country?: string;
+  bitrate?: number;
+  resolution?: string;
 }
 
 export interface HistoryItem {

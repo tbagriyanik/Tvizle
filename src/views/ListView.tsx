@@ -49,6 +49,7 @@ export const ListView: React.FC<ListViewProps> = ({
 
   const [filterQuery, setFilterQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>(selectedCategory || 'all');
+  const [activeBitrate, setActiveBitrate] = useState<number | 'all'>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'compact'>('grid');
 
   // Extract unique categories and their counts
@@ -64,6 +65,20 @@ export const ListView: React.FC<ListViewProps> = ({
     return Object.keys(categoriesWithCounts).sort();
   }, [categoriesWithCounts]);
 
+  // Unique bitrate values present in the radio channels (for bitrate filtering)
+  const bitrateList = useMemo(() => {
+    const counts: Record<number, number> = {};
+    channels.forEach(ch => {
+      if (ch.type === 'radio' && typeof ch.bitrate === 'number' && ch.bitrate > 0) {
+        counts[ch.bitrate] = (counts[ch.bitrate] || 0) + 1;
+      }
+    });
+    return Object.keys(counts)
+      .map(Number)
+      .sort((a, b) => a - b)
+      .map(b => ({ bitrate: b, count: counts[b] }));
+  }, [channels]);
+
   // Filter and sort channels
   const filteredChannels = useMemo(() => {
     let list = [...channels];
@@ -71,6 +86,11 @@ export const ListView: React.FC<ListViewProps> = ({
     // 1. Category Filter
     if (activeCategory !== 'all') {
       list = list.filter(c => c.category === activeCategory);
+    }
+
+    // 1b. Bitrate Filter (radio only)
+    if (activeBitrate !== 'all') {
+      list = list.filter(c => c.type === 'radio' && c.bitrate === activeBitrate);
     }
 
     // 2. In-page filter search
@@ -90,7 +110,7 @@ export const ListView: React.FC<ListViewProps> = ({
     }
 
     return list;
-  }, [channels, activeCategory, filterQuery, sortBy]);
+  }, [channels, activeCategory, activeBitrate, filterQuery, sortBy]);
 
   const handleCategorySelect = (cat: string) => {
     setActiveCategory(cat);
@@ -215,6 +235,48 @@ export const ListView: React.FC<ListViewProps> = ({
               })}
             </div>
           )}
+
+          {/* Bitrate Filter Chips (Radio only) */}
+          {bitrateList.length > 0 && (
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+              <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-1.5 flex-shrink-0">
+                <ArrowUpDown size={12} />
+                <span>Bitrate</span>
+              </span>
+              <button
+                onClick={() => setActiveBitrate('all')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                  activeBitrate === 'all'
+                    ? `${getThemeBgClass(themeColor)} text-white shadow-xs`
+                    : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                }`}
+              >
+                <span>{t(language, 'list.all')}</span>
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${activeBitrate === 'all' ? 'bg-white/25 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}`}>
+                  {bitrateList.reduce((acc, b) => acc + b.count, 0)}
+                </span>
+              </button>
+              {bitrateList.map(b => {
+                const isSelected = activeBitrate === b.bitrate;
+                return (
+                  <button
+                    key={b.bitrate}
+                    onClick={() => setActiveBitrate(isSelected ? 'all' : b.bitrate)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                      isSelected
+                        ? `${getThemeBgClass(themeColor)} text-white shadow-xs`
+                        : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    <span>{b.bitrate} kbps</span>
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${isSelected ? 'bg-white/25 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}`}>
+                      {b.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
@@ -222,12 +284,13 @@ export const ListView: React.FC<ListViewProps> = ({
       {filteredChannels.length === 0 ? (
         <div className="p-12 text-center bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 space-y-3">
           <p className="text-gray-500 dark:text-gray-400 text-base font-medium">{emptyMessage}</p>
-          {(filterQuery || activeCategory !== 'all') && (
+          {(filterQuery || activeCategory !== 'all' || activeBitrate !== 'all') && (
             <button
               onClick={() => {
                 setFilterQuery('');
                 setActiveCategory('all');
                 setSelectedCategory(undefined);
+                setActiveBitrate('all');
               }}
               className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-white ${getThemeBgClass(themeColor)} hover:opacity-90`}
             >

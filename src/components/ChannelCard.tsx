@@ -79,6 +79,20 @@ export const ChannelCard: React.FC<{ channel: Channel }> = ({ channel }) => {
           <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
             {channel.category}
           </p>
+          {(channel.type === 'radio' && channel.bitrate) || (channel.type === 'tv' && channel.resolution) ? (
+            <div className="flex items-center gap-1 mt-1 flex-wrap">
+              {channel.type === 'radio' && channel.bitrate ? (
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium leading-none">
+                  {channel.bitrate} kbps
+                </span>
+              ) : null}
+              {channel.type === 'tv' && channel.resolution ? (
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium leading-none">
+                  {channel.resolution}
+                </span>
+              ) : null}
+            </div>
+          ) : null}
         </div>
 
         <div className="flex items-center gap-1 flex-shrink-0">

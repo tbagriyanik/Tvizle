@@ -21,6 +21,13 @@ const radioCategory = (tags = []) => {
   return 'Karma';
 };
 
+// Derive a display resolution string from the stream URL when it contains one
+// (e.g. "atv_1080p.m3u8" -> "1080p").
+const tvResolution = (url = '') => {
+  const m = url.match(/(\d{3,4})p/i);
+  return m ? `${m[1].toLowerCase()}p` : undefined;
+};
+
 const tvChannels = tvRaw
   .filter(c => (c.country ?? 'tr') === 'tr')
   .map(c => ({
@@ -31,6 +38,7 @@ const tvChannels = tvRaw
     logo: c.logo || '',
     category: c.group || 'Genel',
     country: 'tr',
+    resolution: tvResolution(c.url),
   }));
 
 const radioChannels = rdRaw
@@ -43,6 +51,7 @@ const radioChannels = rdRaw
     logo: c.favicon || '',
     category: radioCategory(c.tags),
     country: 'tr',
+    bitrate: c.bitrate || undefined,
   }));
 
 // Parse existing data.ts mockChannels and split into Turkey vs non-Turkey
